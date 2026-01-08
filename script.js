@@ -520,15 +520,15 @@ function displayJobResults(jobs) {
         jobCard.innerHTML = `
             <div class="job-card-header">
                 <div class="job-card-title">
-                    <h3 class="job-title">Job #${job.jobID}</h3>
+                    <h3 class="job-title">Job #${job.jobTitle}</h3>
                     ${scoreBadge}
                 </div>
             </div>
             <div class="job-card-body">
-                <p class="job-description">${escapeHtml(job.jobDesc || 'No description available')}</p>
+                <p class="job-description">${escapeHtmlAllowBreaks(job.jobDesc || 'No description available')}</p>
                 ${job.reason ? `<div class="job-reason">
                     <strong>Why this matches:</strong>
-                    <p>${escapeHtml(job.reason)}</p>
+                    <p>${escapeHtmlAllowBreaks(job.reason)}</p>
                 </div>` : ''}
             </div>
             <div class="job-card-footer">
@@ -545,6 +545,22 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// Escape HTML but allow <br> tags to be rendered
+function escapeHtmlAllowBreaks(text) {
+    if (!text) return '';
+    // Use a placeholder for <br> tags to preserve them
+    const placeholder = '___BR_TAG_PLACEHOLDER___';
+    // Replace <br> and <br/> with placeholder
+    let processed = text.replace(/<br\s*\/?>/gi, placeholder);
+    // Escape all HTML
+    const div = document.createElement('div');
+    div.textContent = processed;
+    let escaped = div.innerHTML;
+    // Replace placeholder back with actual <br> tags
+    escaped = escaped.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
+    return escaped;
 }
 
 // Update progress indicator
