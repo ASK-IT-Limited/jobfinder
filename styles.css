@@ -839,6 +839,11 @@ body {
         align-items: stretch;
     }
 
+    .form-select[multiple] {
+        min-height: 60px;
+        max-height: 60px;
+    }
+
     .btn-primary.btn-large {
         width: 100%;
     }
