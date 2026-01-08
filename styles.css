@@ -6,15 +6,16 @@
 }
 
 :root {
-    --primary-blue: #0066CC;
-    --primary-blue-light: #0080FF;
-    --primary-blue-dark: #0052A3;
-    --accent-teal: #00A8CC;
-    --gray-dark: #1F2937;
-    --gray-medium: #6B7280;
-    --gray-light: #9CA3AF;
-    --gray-lighter: #E5E7EB;
-    --gray-lightest: #F3F4F6;
+    --primary-blue: #2563EB;
+    --primary-blue-light: #3B82F6;
+    --primary-blue-dark: #1E40AF;
+    --accent-cyan: #06B6D4;
+    --accent-teal: #14B8A6;
+    --gray-dark: #0F172A;
+    --gray-medium: #475569;
+    --gray-light: #94A3B8;
+    --gray-lighter: #CBD5E1;
+    --gray-lightest: #F1F5F9;
     --white: #FFFFFF;
     --border-radius: 8px;
     --border-radius-large: 12px;
@@ -30,7 +31,7 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: var(--gray-dark);
-    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #FFFFFF 100%);
+    background: linear-gradient(135deg, #E0F2FE 0%, #F0F9FF 30%, #FAFBFC 70%, #FFFFFF 100%);
     min-height: 100vh;
     line-height: 1.6;
 }
@@ -197,14 +198,12 @@ body {
     font-size: 48px;
     font-weight: 700;
     background: linear-gradient(90deg, 
-        #FF6B6B 0%, 
-        #FF8E53 14%, 
-        #FFA500 28%, 
-        #FFD93D 42%, 
-        #6BCF7F 57%, 
-        #4ECDC4 71%, 
-        #45B7D1 85%, 
-        #96CEB4 100%
+        #1E40AF 0%, 
+        #2563EB 20%, 
+        #3B82F6 40%, 
+        #06B6D4 60%, 
+        #14B8A6 80%, 
+        #0EA5E9 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -369,7 +368,7 @@ body {
 .form-select {
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231F2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%230F172A' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 12px center;
     padding-right: 40px;
@@ -415,7 +414,7 @@ body {
 .form-textarea:focus {
     outline: none;
     border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .form-input.required-error,
