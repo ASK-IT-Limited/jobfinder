@@ -129,11 +129,6 @@ function initializeEventListeners() {
         });
     });
 
-    // Header Start Search button
-    document.querySelector('.btn-header').addEventListener('click', () => {
-        showView('form');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
 }
 
 // Form submission handler

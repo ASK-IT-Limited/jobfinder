@@ -30,7 +30,8 @@
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: var(--gray-dark);
-    background-color: var(--white);
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #FFFFFF 100%);
+    min-height: 100vh;
     line-height: 1.6;
 }
 
@@ -56,12 +57,19 @@ body {
 
 .logo {
     display: flex;
-    align-items: baseline;
-    gap: 4px;
+    align-items: center;
+    gap: 10px;
     font-size: 22px;
     font-weight: 700;
     color: var(--primary-blue);
     text-decoration: none;
+}
+
+.logo-image {
+    height: 45px;
+    width: auto;
+    display: block;
+    object-fit: contain;
 }
 
 .logo-text {
@@ -188,8 +196,32 @@ body {
 .hero-title {
     font-size: 48px;
     font-weight: 700;
-    color: var(--gray-dark);
+    background: linear-gradient(90deg, 
+        #FF6B6B 0%, 
+        #FF8E53 14%, 
+        #FFA500 28%, 
+        #FFD93D 42%, 
+        #6BCF7F 57%, 
+        #4ECDC4 71%, 
+        #45B7D1 85%, 
+        #96CEB4 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
     margin-bottom: 16px;
+    background-size: 200% 100%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .hero-subtitle {
@@ -525,10 +557,18 @@ body {
 .review-actions {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 16px;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-lighter);
+    margin-top: 24px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.review-actions-buttons {
+    display: flex;
+    gap: 16px;
+    align-items: center;
 }
 
 .clear-session {
@@ -544,6 +584,14 @@ body {
 .loading-content {
     text-align: center;
     padding: 80px 20px;
+}
+
+.loading-actions {
+    text-align: center;
+    margin-top: 24px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .spinner {
@@ -692,10 +740,14 @@ body {
 }
 
 .results-actions {
-    text-align: center;
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--gray-lighter);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Footer */
@@ -859,6 +911,26 @@ body {
 
     .review-actions {
         flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .review-actions-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .review-actions-buttons .btn-secondary,
+    .review-actions-buttons .btn-primary {
+        width: 100%;
+    }
+
+    .results-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .results-actions .btn-secondary {
+        width: 100%;
     }
 
     .review-item {

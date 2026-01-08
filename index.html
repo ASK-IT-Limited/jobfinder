@@ -12,8 +12,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <span class="logo-text">ASK IT</span>
-                    <span class="logo-limited">Limited</span>
+                    <img src="askit_logo.png" alt="ASK IT" class="logo-image">
                 </div>
                 <nav class="nav-links">
                     <a href="https://askit.com.hk/" class="nav-link" target="_blank">Home</a>
@@ -21,7 +20,6 @@
                     <a href="https://askit.com.hk/success-stories/" class="nav-link" target="_blank">Success Stories</a>
                     <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank">Contact Us</a>
                 </nav>
-                <button class="btn-primary btn-header">Start Search</button>
             </div>
         </div>
     </header>
@@ -94,7 +92,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="skills" class="form-label">Skills / Experience / Background</label>
+                            <label for="skills" class="form-label">Skills / Experience</label>
                             <textarea id="skills" name="skills" class="form-textarea" rows="4" placeholder="Briefly describe your key skills, experience, or what you're looking for..."></textarea>
                             <p class="form-helper">Help us understand your strengths to find better matches.</p>
                         </div>
@@ -174,7 +172,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="location" class="form-label">Preferred Location</label>
+                            <label for="location" class="form-label">Work Location</label>
                             <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Hong Kong Island">
                             <p class="form-helper">Enter a city, state, or 'Remote' for remote-only jobs.</p>
                         </div>
@@ -199,11 +197,45 @@
                         <button class="btn-edit" id="edit-all">✏️ Edit All</button>
                     </div>
 
+                    <div class="review-category">
+                        <h3 class="category-title">Background</h3>
+                        <div class="review-item">
+                            <span class="review-label">Name</span>
+                            <span class="review-value" id="review-name">—</span>
+                            <button class="btn-edit-small" data-field="name">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Email</span>
+                            <span class="review-value" id="review-email">—</span>
+                            <button class="btn-edit-small" data-field="email">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Age Range</span>
+                            <span class="review-value" id="review-age-range">—</span>
+                            <button class="btn-edit-small" data-field="ageRange">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Education</span>
+                            <span class="review-value" id="review-education">—</span>
+                            <button class="btn-edit-small" data-field="education">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Skills / Experience</span>
+                            <span class="review-value" id="review-skills">—</span>
+                            <button class="btn-edit-small" data-field="skills">✏️</button>
+                        </div>
+                    </div>
+
                     <div class="review-content">
                         <div class="review-category">
-                            <h3 class="category-title">Location & Logistics</h3>
+                            <h3 class="category-title">Preferences</h3>
                             <div class="review-item">
-                                <span class="review-label">Location</span>
+                                <span class="review-label">Job Type</span>
+                                <span class="review-value" id="review-job-type">—</span>
+                                <button class="btn-edit-small" data-field="jobType">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Work Location</span>
                                 <span class="review-value" id="review-location">—</span>
                                 <button class="btn-edit-small" data-field="location">✏️</button>
                             </div>
@@ -212,14 +244,10 @@
                                 <span class="review-value" id="review-work-arrangement">—</span>
                                 <button class="btn-edit-small" data-field="workArrangement">✏️</button>
                             </div>
-                        </div>
-
-                        <div class="review-category">
-                            <h3 class="category-title">Role Preferences</h3>
                             <div class="review-item">
-                                <span class="review-label">Job Type</span>
-                                <span class="review-value" id="review-job-type">—</span>
-                                <button class="btn-edit-small" data-field="jobType">✏️</button>
+                                <span class="review-label">Job Function</span>
+                                <span class="review-value" id="review-job-function">—</span>
+                                <button class="btn-edit-small" data-field="jobFunction">✏️</button>
                             </div>
                             <div class="review-item">
                                 <span class="review-label">Experience Level</span>
@@ -232,61 +260,26 @@
                                 <button class="btn-edit-small" data-field="salaryRange">✏️</button>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Job Function</span>
-                                <span class="review-value" id="review-job-function">—</span>
-                                <button class="btn-edit-small" data-field="jobFunction">✏️</button>
-                            </div>
-                            <div class="review-item">
                                 <span class="review-label">Company Size</span>
                                 <span class="review-value" id="review-company-size">—</span>
                                 <button class="btn-edit-small" data-field="companySize">✏️</button>
-                            </div>
-                        </div>
-
-                        <div class="review-category">
-                            <h3 class="category-title">Background</h3>
-                            <div class="review-item">
-                                <span class="review-label">Skills</span>
-                                <span class="review-value" id="review-skills">—</span>
-                                <button class="btn-edit-small" data-field="skills">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Name</span>
-                                <span class="review-value" id="review-name">—</span>
-                                <button class="btn-edit-small" data-field="name">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Email</span>
-                                <span class="review-value" id="review-email">—</span>
-                                <button class="btn-edit-small" data-field="email">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Age Range</span>
-                                <span class="review-value" id="review-age-range">—</span>
-                                <button class="btn-edit-small" data-field="ageRange">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Education</span>
-                                <span class="review-value" id="review-education">—</span>
-                                <button class="btn-edit-small" data-field="education">✏️</button>
-                            </div>
+                            </div>                            
                         </div>
                     </div>
+                </div>
 
-                    <div class="review-actions">
+                <div class="review-actions">
+                    <a href="#" class="link-clear" id="clear-session-review">
+                        <span class="icon-refresh">↻</span>
+                        Clear Session & Start Over
+                    </a>
+                    <div class="review-actions-buttons">
                         <button class="btn-secondary" id="back-to-survey">Back to Survey</button>
                         <button class="btn-primary btn-large" id="find-jobs">
                             <span class="icon-search">🔍</span>
                             Find My Jobs
                         </button>
                     </div>
-                </div>
-
-                <div class="clear-session">
-                    <a href="#" class="link-clear" id="clear-session-review">
-                        <span class="icon-refresh">↻</span>
-                        Clear Session & Start Over
-                    </a>
                 </div>
             </div>
 
@@ -295,6 +288,8 @@
                 <div class="loading-content">
                     <div class="spinner"></div>
                     <p class="loading-text">Finding tailored roles for you...</p>
+                </div>
+                <div class="loading-actions">
                     <a href="#" class="link-clear" id="clear-session-loading">
                         <span class="icon-refresh">↻</span>
                         Clear Session & Start Over
@@ -313,17 +308,14 @@
                     <div id="results-list" class="results-list">
                         <!-- Job cards will be inserted here -->
                     </div>
+                </div>
 
-                    <div class="results-actions">
-                        <button class="btn-secondary" id="back-to-form">Start New Search</button>
-                    </div>
-
-                    <div class="clear-session">
-                        <a href="#" class="link-clear" id="clear-session-results">
-                            <span class="icon-refresh">↻</span>
-                            Clear Session & Start Over
-                        </a>
-                    </div>
+                <div class="results-actions">
+                    <a href="#" class="link-clear" id="clear-session-results">
+                        <span class="icon-refresh">↻</span>
+                        Clear Session & Start Over
+                    </a>
+                    <button class="btn-secondary" id="back-to-form">Start New Search</button>
                 </div>
             </div>
         </div>
