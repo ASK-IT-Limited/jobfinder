@@ -227,7 +227,7 @@ body {
 .hero-subtitle {
     font-size: 18px;
     color: var(--gray-medium);
-    max-width: 600px;
+    max-width: 400px;
     margin: 0 auto;
 }
 
@@ -837,11 +837,6 @@ body {
         flex-direction: column;
         gap: 16px;
         align-items: stretch;
-    }
-
-    .form-select[multiple] {
-        min-height: 60px;
-        max-height: 60px;
     }
 
     .btn-primary.btn-large {
