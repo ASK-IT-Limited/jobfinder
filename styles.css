@@ -649,6 +649,42 @@ body {
 .results-subtitle {
     font-size: 16px;
     color: var(--gray-medium);
+    margin-bottom: 16px;
+}
+
+.kiosk-code {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 20px;
+    background-color: var(--gray-lightest);
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+}
+
+.kiosk-code-label {
+    font-weight: 600;
+    color: var(--gray-dark);
+}
+
+.kiosk-code-value {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--primary-blue);
+    letter-spacing: 2px;
+    font-family: 'Courier New', monospace;
+}
+
+.kiosk-code-instruction {
+    font-size: 14px;
+    color: var(--gray-medium);
+    margin-top: 12px;
+    line-height: 1.5;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .results-list {

@@ -17,6 +17,34 @@ let formData = {
 // View management
 let views = {};
 let jobResults = [];
+let kioskCode = '';
+
+// Generate unique 5-character Kiosk Code with timestamp component
+// Format: H + 4 random letters (H = hour indicator, 0-9 for hours 0-9, A-N for hours 10-23)
+// This provides 24 * 26^4 = 10,967,424 unique combinations per hour
+function generateKioskCode() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const now = new Date();
+    
+    // Get hour (0-23) and convert to single character
+    // 0-9 for hours 0-9, A-N for hours 10-23
+    const hour = now.getHours();
+    let hourChar;
+    if (hour < 10) {
+        hourChar = hour.toString();
+    } else {
+        hourChar = String.fromCharCode(65 + (hour - 10)); // A-N for hours 10-23
+    }
+    
+    // Generate 4 random letters
+    let randomPart = '';
+    for (let i = 0; i < 4; i++) {
+        randomPart += letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+    
+    // Format: H + 4 random letters (e.g., "AXYZ" for hour 10 with random XYZ)
+    return hourChar + randomPart;
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -379,6 +407,9 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
+    // Generate unique Kiosk Code
+    kioskCode = generateKioskCode();
+    
     // Show loading view
     showLoading();
     
@@ -395,7 +426,8 @@ async function submitJobSearch() {
         experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : []),
         salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : []),
         companySize: Array.isArray(formData.companySize) ? formData.companySize : (formData.companySize ? [formData.companySize] : []),
-        location: formData.location || ''
+        location: formData.location || '',
+        kioskCode: kioskCode
     };
     
     const apiUrl = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f27dec901814802b7ab56f193b31790/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n3JBo3Jl9GCO4p3jhknnqM721MTm8DGhMxCqEzRfDo0';
@@ -452,8 +484,12 @@ async function submitJobSearch() {
 function displayJobResults(jobs) {
     const resultsList = document.getElementById('results-list');
     const resultsCount = document.getElementById('results-count');
+    const kioskCodeElement = document.getElementById('kiosk-code');
     
     resultsCount.textContent = jobs.length;
+    if (kioskCodeElement && kioskCode) {
+        kioskCodeElement.textContent = kioskCode;
+    }
     resultsList.innerHTML = '';
     
     if (jobs.length === 0) {
