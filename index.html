@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapJob Finder - Find Your Perfect Job</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">SnapJob Finder</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="#" class="nav-link">Find Jobs</a>
+                    <a href="#" class="nav-link">LinkedIn</a>
+                    <a href="#" class="nav-link">Indeed</a>
+                    <a href="#" class="nav-link">Glassdoor</a>
+                </nav>
+                <button class="btn-primary btn-header">Start Search</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">Find Your Perfect Job in Seconds</h1>
+                <p class="hero-subtitle">Answer a few quick questions and let our AI match you with tailored job opportunities.</p>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="progress-indicator">
+                <div class="progress-step active" data-step="1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Quick Survey</span>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step" data-step="2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Reviewing Matches</span>
+                </div>
+            </div>
+
+            <!-- Form View -->
+            <div id="form-view" class="view active">
+                <form id="job-form" class="job-form" novalidate>
+                    <!-- Your Background -->
+                    <div class="form-section">
+                        <h2 class="section-title">About Yourself</h2>
+
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name <span class="required-asterisk">*</span></label>
+                            <input type="text" id="name" name="name" class="form-input" placeholder="John Doe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email <span class="required-asterisk">*</span></label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+                            <p class="form-helper">Save your results for later reference.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="age-range" class="form-label">Age Range</label>
+                            <select id="age-range" name="ageRange" class="form-select" data-placeholder="Select age range">
+                                <option value="" selected>Select age range (optional)</option>
+                                <option value="" disabled selected hidden>Select age range</option>
+                                <option value="18-24">18 - 24</option>
+                                <option value="25-34">25 - 34</option>
+                                <option value="35-44">35 - 44</option>
+                                <option value="45-54">45 - 54</option>
+                                <option value="55-64">55 - 64</option>
+                                <option value="65+">65+</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="education" class="form-label">Education <span class="required-asterisk">*</span></label>
+                            <select id="education" name="education" class="form-select" data-placeholder="Select education level" required>
+                                <option value="" disabled selected hidden>Select education level</option>
+                                <option value="high-school">High School</option>
+                                <option value="diploma">Diploma</option>
+                                <option value="associate">Associate Degree</option>
+                                <option value="bachelor">Bachelor's Degree</option>
+                                <option value="master">Master's Degree</option>
+                                <option value="phd">PhD / Doctorate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="skills" class="form-label">Skills / Experience / Background</label>
+                            <textarea id="skills" name="skills" class="form-textarea" rows="4" placeholder="Briefly describe your key skills, experience, or what you're looking for..."></textarea>
+                            <p class="form-helper">Help us understand your strengths to find better matches.</p>
+                        </div>
+                    </div>
+
+                    <!-- Role Preferences -->
+                    <div class="form-section">
+                        <h2 class="section-title">Job Preferences</h2>
+                        
+                        <div class="form-group">
+                            <label for="job-type" class="form-label">Job Type</label>
+                            <select id="job-type" name="jobType" class="form-select" data-placeholder="Select job type" multiple>
+                                <option value="full-time">Full-time</option>
+                                <option value="part-time">Part-time</option>
+                                <option value="contract">Contract</option>
+                                <option value="internship">Internship</option>
+                                <option value="temporary">Temporary</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="work-arrangement" class="form-label">Work Arrangement</label>
+                            <select id="work-arrangement" name="workArrangement" class="form-select" data-placeholder="Select work arrangement" multiple>
+                                <option value="remote">Remote</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="onsite">On-site</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="job-function" class="form-label">Job Function</label>
+                            <select id="job-function" name="jobFunction" class="form-select" data-placeholder="Select job function" multiple>
+                                <option value="software-engineering">Software Engineering</option>
+                                <option value="systems-engineering">Systems Engineering</option>
+                                <option value="it-helpdesk-customer-support">IT Helpdesk / Customer Support</option>
+                                <option value="data-science-analytics">Data Science / Analytics</option>
+                                <option value="ui-ux-design">UI/UX Design</option>
+                                <option value="automation-rpa">Automation / RPA</option>
+                                <option value="database">Database</option>
+                                <option value="devops">DevOps</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experience-level" class="form-label">Experience Level</label>
+                            <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level" multiple>
+                                <option value="entry">Entry Level</option>
+                                <option value="mid">Mid Level</option>
+                                <option value="senior">Senior Level</option>
+                                <option value="executive">Executive</option>
+                            </select>
+                            <p class="form-helper">Choose the level that best matches your current expertise.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="salary-range" class="form-label">Salary Range</label>
+                            <select id="salary-range" name="salaryRange" class="form-select" data-placeholder="Select salary range (optional)" multiple>
+                                <option value="below-20k">Below HK$20,000</option>
+                                <option value="20k-30k">HK$20,001 - HK$30,000</option>
+                                <option value="30k-50k">HK$30,001 - HK$50,000</option>
+                                <option value="50k-80k">HK$50,001 - HK$80,000</option>
+                                <option value="80k-100k">HK$80,001 - HK$100,000</option>
+                                <option value="above-100k">Above HK$100,000</option>
+                            </select>
+                            <p class="form-helper">Annual, pre-tax salary expectation.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company-size" class="form-label">Company Size</label>
+                            <select id="company-size" name="companySize" class="form-select" data-placeholder="Select company size (optional)" multiple>
+                                <option value="startup">Startup (1-50)</option>
+                                <option value="small">Small (51-200)</option>
+                                <option value="medium">Medium (201-1000)</option>
+                                <option value="large">Large (1001-5000)</option>
+                                <option value="enterprise">Enterprise (5000+)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location" class="form-label">Preferred Location</label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Hong Kong Island">
+                            <p class="form-helper">Enter a city, state, or 'Remote' for remote-only jobs.</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="#" class="link-clear" id="clear-form">
+                            <span class="icon-refresh">↻</span>
+                            Clear Session & Start Over
+                        </a>
+                        <button type="submit" class="btn-primary btn-large">Review My Answers</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Review View -->
+            <div id="review-view" class="view">
+                <div class="review-section">
+                    <div class="review-header">
+                        <h2 class="review-title">Review Your Answers</h2>
+                        <button class="btn-edit" id="edit-all">✏️ Edit All</button>
+                    </div>
+
+                    <div class="review-content">
+                        <div class="review-category">
+                            <h3 class="category-title">Location & Logistics</h3>
+                            <div class="review-item">
+                                <span class="review-label">Location</span>
+                                <span class="review-value" id="review-location">—</span>
+                                <button class="btn-edit-small" data-field="location">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Work Arrangement</span>
+                                <span class="review-value" id="review-work-arrangement">—</span>
+                                <button class="btn-edit-small" data-field="workArrangement">✏️</button>
+                            </div>
+                        </div>
+
+                        <div class="review-category">
+                            <h3 class="category-title">Role Preferences</h3>
+                            <div class="review-item">
+                                <span class="review-label">Job Type</span>
+                                <span class="review-value" id="review-job-type">—</span>
+                                <button class="btn-edit-small" data-field="jobType">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Experience Level</span>
+                                <span class="review-value" id="review-experience-level">—</span>
+                                <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Salary Range</span>
+                                <span class="review-value" id="review-salary-range">—</span>
+                                <button class="btn-edit-small" data-field="salaryRange">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Job Function</span>
+                                <span class="review-value" id="review-job-function">—</span>
+                                <button class="btn-edit-small" data-field="jobFunction">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Company Size</span>
+                                <span class="review-value" id="review-company-size">—</span>
+                                <button class="btn-edit-small" data-field="companySize">✏️</button>
+                            </div>
+                        </div>
+
+                        <div class="review-category">
+                            <h3 class="category-title">Background</h3>
+                            <div class="review-item">
+                                <span class="review-label">Skills</span>
+                                <span class="review-value" id="review-skills">—</span>
+                                <button class="btn-edit-small" data-field="skills">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Name</span>
+                                <span class="review-value" id="review-name">—</span>
+                                <button class="btn-edit-small" data-field="name">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Email</span>
+                                <span class="review-value" id="review-email">—</span>
+                                <button class="btn-edit-small" data-field="email">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Age Range</span>
+                                <span class="review-value" id="review-age-range">—</span>
+                                <button class="btn-edit-small" data-field="ageRange">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Education</span>
+                                <span class="review-value" id="review-education">—</span>
+                                <button class="btn-edit-small" data-field="education">✏️</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="review-actions">
+                        <button class="btn-secondary" id="back-to-survey">Back to Survey</button>
+                        <button class="btn-primary btn-large" id="find-jobs">
+                            <span class="icon-search">🔍</span>
+                            Find My Jobs
+                        </button>
+                    </div>
+                </div>
+
+                <div class="clear-session">
+                    <a href="#" class="link-clear" id="clear-session-review">
+                        <span class="icon-refresh">↻</span>
+                        Clear Session & Start Over
+                    </a>
+                </div>
+            </div>
+
+            <!-- Loading View -->
+            <div id="loading-view" class="view">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Finding tailored roles for you...</p>
+                    <a href="#" class="link-clear" id="clear-session-loading">
+                        <span class="icon-refresh">↻</span>
+                        Clear Session & Start Over
+                    </a>
+                </div>
+            </div>
+
+            <!-- Results View -->
+            <div id="results-view" class="view">
+                <div class="results-section">
+                    <div class="results-header">
+                        <h2 class="results-title">Your Job Matches</h2>
+                        <p class="results-subtitle">We found <span id="results-count">0</span> matching opportunities for you</p>
+                    </div>
+
+                    <div id="results-list" class="results-list">
+                        <!-- Job cards will be inserted here -->
+                    </div>
+
+                    <div class="results-actions">
+                        <button class="btn-secondary" id="back-to-form">Start New Search</button>
+                    </div>
+
+                    <div class="clear-session">
+                        <a href="#" class="link-clear" id="clear-session-results">
+                            <span class="icon-refresh">↻</span>
+                            Clear Session & Start Over
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-tagline">Find your next opportunity faster with AI-powered job matching.</p>
+            <p class="footer-copyright">© 2026 SnapJob Finder. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
