@@ -389,6 +389,12 @@ function showView(viewName) {
     // Scroll to top when switching views
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
+    // Show "Clear Session & Start Over" link when leaving loading view
+    const clearSessionLink = document.getElementById('clear-session-loading');
+    if (clearSessionLink && viewName !== 'loading') {
+        clearSessionLink.style.display = '';
+    }
+    
     if (viewName === 'form') {
         updateProgress(1);
     } else if (viewName === 'review') {
@@ -400,6 +406,11 @@ function showView(viewName) {
 function showLoading() {
     showView('loading');
     updateProgress(2);
+    // Hide "Clear Session & Start Over" link during loading
+    const clearSessionLink = document.getElementById('clear-session-loading');
+    if (clearSessionLink) {
+        clearSessionLink.style.display = 'none';
+    }
 }
 
 // Submit job search to API
