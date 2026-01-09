@@ -516,9 +516,6 @@ function displayJobResults(jobs) {
                     <p>${escapeHtmlAllowBreaks(job.reason)}</p>
                 </div>` : ''}
             </div>
-            <div class="job-card-footer">
-                <a href="${job.jobUrl || '#'}" target="_blank" class="btn-primary btn-view-job">View Job Details</a>
-            </div>
         `;
         
         resultsList.appendChild(jobCard);

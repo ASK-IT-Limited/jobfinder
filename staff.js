@@ -297,9 +297,6 @@ function displayJobMatches(jobs) {
                     <p>${escapeHtmlAllowBreaks(job.Reason)}</p>
                 </div>` : ''}
             </div>
-            <div class="job-card-footer">
-                <a href="${job.jobUrl || '#'}" target="_blank" class="btn-primary btn-view-job">View Job Details</a>
-            </div>
         `;
         
         jobsList.appendChild(jobCard);
