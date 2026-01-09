@@ -8,7 +8,7 @@
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 40px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
 }
 
 .login-form {
@@ -46,7 +46,7 @@
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 20px 32px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
 }
 
 .kiosk-display {
@@ -64,12 +64,12 @@
 .kiosk-value {
     font-weight: 700;
     font-size: 18px;
-    color: var(--primary-blue);
+    color: var(--primary-navy);
     letter-spacing: 2px;
     font-family: 'Courier New', monospace;
     padding: 8px 16px;
     background-color: var(--gray-lightest);
-    border: 2px solid var(--primary-blue);
+    border: 2px solid var(--primary-navy);
     border-radius: var(--border-radius);
 }
 
@@ -105,7 +105,13 @@
     padding: 16px;
     background-color: var(--gray-lightest);
     border-radius: var(--border-radius);
-    border-left: 4px solid var(--primary-blue);
+    border-left: 4px solid var(--primary-navy);
+    transition: all 0.2s;
+}
+
+.info-item:hover {
+    background-color: #E8EDF3;
+    border-left-color: var(--primary-navy-dark);
 }
 
 .info-label {
