@@ -42,7 +42,7 @@ async function handleLogin(e) {
     e.preventDefault();
     
     const kioskCode = document.getElementById('kiosk-code').value.trim().toUpperCase();
-    const passcode = document.getElementById('passcode').value;
+    const passCode = document.getElementById('pass-code').value;
     const errorDiv = document.getElementById('login-error');
     
     // Clear previous errors
@@ -65,14 +65,31 @@ async function handleLogin(e) {
     } catch (error) {
         console.error('Error fetching candidate data:', error);
         showView('login');
-        errorDiv.textContent = 'Error loading data. Please check the Kiosk Code and try again.';
+        
+        const kioskCodeInput = document.getElementById('kiosk-code');
+        const passCodeInput = document.getElementById('pass-code');
+        
+        // Check for incorrect passcode error
+        if (error.message === 'INCORRECT_PASSCODE') {
+            errorDiv.textContent = 'Incorrect passcode. Please check and try again.';
+            // Highlight passcode input
+            passCodeInput.classList.add('required-error');
+            passCodeInput.focus();
+        } else if (error.message === 'NO_SURVEY_DATA') {
+            errorDiv.textContent = 'No survey data found for this Kiosk Code.';
+            // Highlight kiosk code input
+            kioskCodeInput.classList.add('required-error');
+            kioskCodeInput.focus();
+        } else {
+            errorDiv.textContent = 'Error loading data. Please check and try again.';
+        }
         errorDiv.style.display = 'block';
     }
 }
 
 // Fetch candidate data by kiosk code
 async function fetchCandidateData(kioskCode) {
-    const passcode = document.getElementById('passcode').value;
+    const passCode = document.getElementById('pass-code').value;
     
     const response = await fetch(RETRIEVE_API_URL, {
         method: 'POST',
@@ -81,19 +98,24 @@ async function fetchCandidateData(kioskCode) {
         },
         body: JSON.stringify({
             kioskCode: kioskCode,
-            passCode: passcode
+            passCode: passCode
         })
     });
-    
-    // Check if response status is 200
-    if (response.status !== 200) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     
     const data = await response.json();
     
     // Log the response for debugging
     console.log('API Response:', data);
+    
+    // Check for status code 5001 (incorrect passcode)
+    if (response.status === 500) {
+        throw new Error('INCORRECT_PASSCODE');
+    }
+    
+    // Check if response status is 200
+    if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
     // Handle different response formats
     let body = null;
@@ -124,7 +146,7 @@ async function fetchCandidateData(kioskCode) {
     const matchesArray = body.matches || [];
     
     if (surveyArray.length === 0) {
-        throw new Error('No survey data found for this Kiosk Code');
+        throw new Error('NO_SURVEY_DATA');
     }
     
     const surveyData = surveyArray[0]; // First item in survey array
