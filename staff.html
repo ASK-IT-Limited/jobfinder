@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASK IT Job Finder - Staff Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="staff.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="askit_logo.png" alt="ASK IT" class="logo-image">
+                    <span class="logo-text">ASK IT</span>
+                    <span class="logo-limited">Staff Portal</span>
+                </div>
+                <nav class="nav-links">
+                    <a href="index.html" class="nav-link">Job Finder</a>
+                    <a href="https://askit.com.hk/" class="nav-link" target="_blank">Home</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title">Staff Portal</h1>
+                <p class="hero-subtitle">Enter Kiosk Code to view candidate information and job matches</p>
+            </div>
+
+            <!-- Login View -->
+            <div id="login-view" class="view active">
+                <div class="login-section">
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="kiosk-code" class="form-label">Kiosk Code <span class="required-asterisk">*</span></label>
+                            <input type="text" id="kiosk-code" name="kioskCode" class="form-input" placeholder="e.g., AXYZ" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label for="passcode" class="form-label">Passcode <span class="required-asterisk">*</span></label>
+                            <input type="password" id="passcode" name="passcode" class="form-input" placeholder="Enter passcode" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary btn-large">View Details</button>
+                        </div>
+                        <div id="login-error" class="error-message" style="display: none;"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results View -->
+            <div id="results-view" class="view">
+                <div class="results-header-section">
+                    <div class="results-header-actions">
+                        <button class="btn-secondary" id="back-to-login">← Back to Search</button>
+                        <div class="kiosk-display">
+                            <span class="kiosk-label">Kiosk Code:</span>
+                            <span class="kiosk-value" id="display-kiosk-code">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Survey Answers Section -->
+                <div class="info-section">
+                    <h2 class="section-title">Candidate Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Name</span>
+                            <span class="info-value" id="info-name">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value" id="info-email">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Age Range</span>
+                            <span class="info-value" id="info-age-range">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Education</span>
+                            <span class="info-value" id="info-education">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Skills / Experience</span>
+                            <span class="info-value" id="info-skills">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Job Type</span>
+                            <span class="info-value" id="info-job-type">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Work Arrangement</span>
+                            <span class="info-value" id="info-work-arrangement">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Job Function</span>
+                            <span class="info-value" id="info-job-function">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Experience Level</span>
+                            <span class="info-value" id="info-experience-level">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Salary Range</span>
+                            <span class="info-value" id="info-salary-range">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Company Size</span>
+                            <span class="info-value" id="info-company-size">—</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Work Location</span>
+                            <span class="info-value" id="info-location">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Matches Section -->
+                <div class="jobs-section">
+                    <h2 class="section-title">Job Matches</h2>
+                    <p class="results-subtitle">Found <span id="results-count">0</span> matching job(s)</p>
+                    <div id="jobs-list" class="jobs-list">
+                        <!-- Job cards will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading View -->
+            <div id="loading-view" class="view">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Loading candidate information...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-tagline">ASK IT Staff Portal - View candidate information and job matches</p>
+            <p class="footer-copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
+        </div>
+    </footer>
+
+    <script src="staff.js"></script>
+</body>
+</html>
