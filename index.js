@@ -252,22 +252,10 @@ function clearValidationErrors() {
 function collectFormData() {
     const form = document.getElementById('job-form');
     
-    // Helper function to get selected values from multiple select
-    const getSelectedValues = (selectElement) => {
-        if (selectElement.hasAttribute('multiple')) {
-            // Filter out empty values (like "No Preference") and return array
-            const values = Array.from(selectElement.selectedOptions)
-                .map(option => option.value)
-                .filter(val => val !== '');
-            return values.length > 0 ? values : [];
-        }
-        return selectElement.value || '';
-    };
-    
     formData = {
         workLocation: form.querySelector('#work-location').value.trim(),
-        experienceLevel: getSelectedValues(form.querySelector('#experience-level')),
-        salaryRange: getSelectedValues(form.querySelector('#salary-range')),
+        experienceLevel: form.querySelector('#experience-level').value || '',
+        salaryRange: form.querySelector('#salary-range').value || '',
         jobFunction: form.querySelector('#job-function').value.trim(),
         skills: form.querySelector('#skills').value.trim(),
         name: form.querySelector('#name').value.trim(),
@@ -301,19 +289,20 @@ function populateForm() {
     const form = document.getElementById('job-form');
     if (formData.workLocation) form.querySelector('#work-location').value = formData.workLocation;
     
-    // Helper function to set multiple select values
-    const setSelectValues = (selectElement, values) => {
-        if (!values || (Array.isArray(values) && values.length === 0)) return;
+    // Handle single select values (support both old array format and new string format for backward compatibility)
+    const setSelectValue = (selectElement, value) => {
+        if (!value || (Array.isArray(value) && value.length === 0)) return;
         
-        const valuesArray = Array.isArray(values) ? values : [values];
-        Array.from(selectElement.options).forEach(option => {
-            option.selected = valuesArray.includes(option.value);
-        });
-        selectElement.style.color = 'var(--gray-dark)';
+        // If it's an array (old format), use the first value
+        const singleValue = Array.isArray(value) ? value[0] : value;
+        if (singleValue) {
+            selectElement.value = singleValue;
+            selectElement.style.color = 'var(--gray-dark)';
+        }
     };
     
-    setSelectValues(form.querySelector('#experience-level'), formData.experienceLevel);
-    setSelectValues(form.querySelector('#salary-range'), formData.salaryRange);
+    setSelectValue(form.querySelector('#experience-level'), formData.experienceLevel);
+    setSelectValue(form.querySelector('#salary-range'), formData.salaryRange);
     
     if (formData.jobFunction) form.querySelector('#job-function').value = formData.jobFunction;
     if (formData.skills) form.querySelector('#skills').value = formData.skills;
@@ -338,18 +327,17 @@ function populateReviewPage() {
     };
 
     const formatSelectValue = (value, selectId) => {
-        if (!value || value === '' || (Array.isArray(value) && value.length === 0)) return '—';
+        if (!value || value === '') return '—';
+        
+        // Handle backward compatibility with old array format
+        const singleValue = Array.isArray(value) ? value[0] : value;
+        if (!singleValue) return '—';
         
         const select = document.querySelector(`#${selectId}`);
-        if (!select) return Array.isArray(value) ? value.join(', ') : value;
+        if (!select) return singleValue;
         
-        const valuesArray = Array.isArray(value) ? value : [value];
-        const displayTexts = valuesArray.map(val => {
-            const option = select.querySelector(`option[value="${val}"]`);
-            return option ? option.textContent : val;
-        });
-        
-        return displayTexts.join(', ');
+        const option = select.querySelector(`option[value="${singleValue}"]`);
+        return option ? option.textContent : singleValue;
     };
 
     document.getElementById('review-work-location').textContent = formatValue(formData.workLocation);
@@ -416,6 +404,14 @@ async function submitJobSearch() {
     showLoading();
     
     // Prepare request body
+    // Convert single values to arrays for API compatibility (API expects arrays)
+    const getArrayValue = (value) => {
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value : ['Any'];
+        }
+        return value ? [value] : ['Any'];
+    };
+    
     const requestBody = {
         name: formData.name || 'N/A',
         email: formData.email || 'N/A',
@@ -423,8 +419,8 @@ async function submitJobSearch() {
         education: formData.education || 'N/A',
         skills: formData.skills || 'N/A',
         jobFunction: formData.jobFunction || 'Any',
-        experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : ['Any']),
-        salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : ['Any']),
+        experienceLevel: getArrayValue(formData.experienceLevel),
+        salaryRange: getArrayValue(formData.salaryRange),
         workLocation: formData.workLocation || 'Any',
         kioskCode: kioskCode
     };

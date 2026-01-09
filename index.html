@@ -51,7 +51,7 @@
                 <form id="job-form" class="job-form" novalidate>
                     <!-- Your Background -->
                     <div class="form-section">
-                        <h2 class="section-title">Background</h2>
+                        <h2 class="section-title">Information</h2>
 
                         <div class="form-group">
                             <label for="name" class="form-label">Name <span class="required-asterisk">*</span></label>
@@ -61,12 +61,13 @@
                         <div class="form-group">
                             <label for="email" class="form-label">Email <span class="required-asterisk">*</span></label>
                             <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+                            <p class="form-helper">Receive job matches and any relevant information.</p>
                         </div>
 
                         <div class="form-group">
-                            <label for="age-range" class="form-label">Age Range</label>
+                            <label for="age-range" class="form-label">Age</label>
                             <select id="age-range" name="ageRange" class="form-select" data-placeholder="Select age range">
-                                <option value="" disabled selected hidden>Select age range</option>
+                                <option value="" selected>Select age range</option>
                                 <option value="18-24">18 - 24</option>
                                 <option value="25-34">25 - 34</option>
                                 <option value="35-44">35 - 44</option>
@@ -79,21 +80,21 @@
                         <div class="form-group">
                             <label for="education" class="form-label">Education <span class="required-asterisk">*</span></label>
                             <select id="education" name="education" class="form-select" data-placeholder="Select education level" required>
-                                <option value="" disabled selected hidden>Select education level</option>
-                                <option value="high-school">High School</option>
-                                <option value="diploma">Diploma</option>
-                                <option value="associate">Associate Degree</option>
-                                <option value="bachelor">Bachelor's Degree</option>
-                                <option value="master">Master's Degree</option>
-                                <option value="phd">PhD / Doctorate</option>
-                                <option value="other">Other</option>
+                                <option value="" selected>Select education level</option>
+                                <option value="High School">High School</option>
+                                <option value="Diploma">Diploma</option>
+                                <option value="Associate Degree">Associate Degree</option>
+                                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                <option value="Master's Degree">Master's Degree</option>
+                                <option value="PhD / Doctorate">PhD / Doctorate</option>
+                                <option value="Other">Other</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="skills" class="form-label">Skills / Experience</label>
-                            <textarea id="skills" name="skills" class="form-textarea" rows="4" placeholder="Briefly describe your key skills, experience, or what you're looking for..."></textarea>
-                            <p class="form-helper">Help us understand your strengths to find better matches.</p>
+                            <label for="skills" class="form-label">Background</label>
+                            <textarea id="skills" name="skills" class="form-textarea" rows="4" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..."></textarea>
+                            <p class="form-helper">Help us understand your background to find better matches.</p>
                         </div>
                     </div>
 
@@ -102,28 +103,33 @@
                         <h2 class="section-title">Preferences</h2>
                         
                         <div class="form-group">
-                            <label for="job-function" class="form-label">Job Category / Title</label>
+                            <label for="job-function" class="form-label">Category</label>
                             <input type="text" id="job-function" name="jobFunction" class="form-input" placeholder="e.g., Software Engineering, IT Helpdesk, etc.">
+                            <p class="form-helper">Provide a job title, function or category for your desired role.</p>
                         </div>
 
                         <div class="form-group">
                             <label for="work-location" class="form-label">Location</label>
                             <input type="text" id="work-location" name="workLocation" class="form-input" placeholder="e.g., Central, Wan Chai, Tsuen Wan, etc.">
+                            <p class="form-helper">Enter a district, area or 'Remote' for remote-only jobs.</p>
                         </div>
 
                         <div class="form-group">
                             <label for="experience-level" class="form-label">Experience Level</label>
-                            <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level" multiple>
+                            <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level">
+                                <option value="" selected>Select experience level</option>
                                 <option value="Entry Level">Entry Level</option>
                                 <option value="Mid Level">Mid Level</option>
                                 <option value="Senior Level">Senior Level</option>
                                 <option value="Executive">Executive</option>
                             </select>
+                            <p class="form-helper">Choose the level that best matches your current expertise.</p>
                         </div>
 
                         <div class="form-group">
                             <label for="salary-range" class="form-label">Salary Range</label>
-                            <select id="salary-range" name="salaryRange" class="form-select" data-placeholder="Select salary range (optional)" multiple>
+                            <select id="salary-range" name="salaryRange" class="form-select" data-placeholder="Select salary range">
+                                <option value="" selected>Select salary range</option>
                                 <option value="Below HK$20,000">Below HK$20,000</option>
                                 <option value="HK$20,001 - HK$30,000">HK$20,001 - HK$30,000</option>
                                 <option value="HK$30,001 - HK$50,000">HK$30,001 - HK$50,000</option>
@@ -131,6 +137,7 @@
                                 <option value="HK$80,001 - HK$100,000">HK$80,001 - HK$100,000</option>
                                 <option value="Above HK$100,000">Above HK$100,000</option>
                             </select>
+                            <p class="form-helper">Select monthly, pre-tax salary expectation.</p>
                         </div>
                     </div>
 
@@ -154,7 +161,7 @@
                     </div>
 
                     <div class="review-category">
-                        <h3 class="category-title">Background</h3>
+                        <h3 class="category-title">Information</h3>
                         <div class="review-item">
                             <span class="review-label">Name</span>
                             <span class="review-value" id="review-name">—</span>
@@ -166,7 +173,7 @@
                             <button class="btn-edit-small" data-field="email">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Age Range</span>
+                            <span class="review-label">Age</span>
                             <span class="review-value" id="review-age-range">—</span>
                             <button class="btn-edit-small" data-field="ageRange">✏️</button>
                         </div>
@@ -176,7 +183,7 @@
                             <button class="btn-edit-small" data-field="education">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Skills / Experience</span>
+                            <span class="review-label">Background</span>
                             <span class="review-value" id="review-skills">—</span>
                             <button class="btn-edit-small" data-field="skills">✏️</button>
                         </div>
@@ -186,24 +193,24 @@
                         <div class="review-category">
                             <h3 class="category-title">Preferences</h3>
                             <div class="review-item">
-                                <span class="review-label">Job Function</span>
+                                <span class="review-label">Category</span>
                                 <span class="review-value" id="review-job-function">—</span>
                                 <button class="btn-edit-small" data-field="jobFunction">✏️</button>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Work Location</span>
+                                <span class="review-label">Location</span>
                                 <span class="review-value" id="review-work-location">—</span>
                                 <button class="btn-edit-small" data-field="workLocation">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Experience Level</span>
-                                <span class="review-value" id="review-experience-level">—</span>
-                                <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                             </div>
                             <div class="review-item">
                                 <span class="review-label">Salary Range</span>
                                 <span class="review-value" id="review-salary-range">—</span>
                                 <button class="btn-edit-small" data-field="salaryRange">✏️</button>
+                            </div>
+                            <div class="review-item">
+                                <span class="review-label">Experience Level</span>
+                                <span class="review-value" id="review-experience-level">—</span>
+                                <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                             </div>
                         </div>
                     </div>
