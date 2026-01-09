@@ -149,9 +149,10 @@ async function handleLogin(e) {
         const passCodeInput = document.getElementById('pass-code');
         
         // Check for incorrect passcode error
-        if (error.message === 'INCORRECT_PASSCODE') {
-            errorDiv.textContent = 'Incorrect passcode. Please check and try again.';
-            // Highlight passcode input
+        if (error.message === 'INCORRECT_CODES') {
+            errorDiv.textContent = 'Incorrect Codes. Please check and try again.';
+            // Highlight kiosk code and pass code inputs
+            kioskCodeInput.classList.add('required-error');
             passCodeInput.classList.add('required-error');
             passCodeInput.focus();
         } else if (error.message === 'NO_SURVEY_DATA') {
@@ -188,7 +189,7 @@ async function fetchCandidateData(kioskCode) {
     
     // Check for status code 5001 (incorrect passcode)
     if (response.status === 500) {
-        throw new Error('INCORRECT_PASSCODE');
+        throw new Error('INCORRECT_CODES');
     }
     
     // Check if response status is 200
