@@ -3,7 +3,7 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 
 // State management
 let formData = {
-    location: '',
+    workLocation: '',
     experienceLevel: '',
     salaryRange: '',
     jobFunction: '',
@@ -265,7 +265,7 @@ function collectFormData() {
     };
     
     formData = {
-        location: form.querySelector('#location').value.trim(),
+        workLocation: form.querySelector('#work-location').value.trim(),
         experienceLevel: getSelectedValues(form.querySelector('#experience-level')),
         salaryRange: getSelectedValues(form.querySelector('#salary-range')),
         jobFunction: form.querySelector('#job-function').value.trim(),
@@ -299,7 +299,7 @@ function loadFormData() {
 // Populate form with saved data
 function populateForm() {
     const form = document.getElementById('job-form');
-    if (formData.location) form.querySelector('#location').value = formData.location;
+    if (formData.workLocation) form.querySelector('#work-location').value = formData.workLocation;
     
     // Helper function to set multiple select values
     const setSelectValues = (selectElement, values) => {
@@ -352,7 +352,7 @@ function populateReviewPage() {
         return displayTexts.join(', ');
     };
 
-    document.getElementById('review-location').textContent = formatValue(formData.location);
+    document.getElementById('review-work-location').textContent = formatValue(formData.workLocation);
     document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
     document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
     document.getElementById('review-job-function').textContent = formatValue(formData.jobFunction);
@@ -425,7 +425,7 @@ async function submitJobSearch() {
         jobFunction: formData.jobFunction || 'Any',
         experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : ['Any']),
         salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : ['Any']),
-        location: formData.location || 'Any',
+        workLocation: formData.workLocation || 'Any',
         kioskCode: kioskCode
     };
     
@@ -540,7 +540,7 @@ function updateProgress(step) {
 // Clear form
 function clearForm() {
     formData = {
-        location: '',
+        workLocation: '',
         experienceLevel: '',
         salaryRange: '',
         jobFunction: '',
@@ -580,7 +580,7 @@ function clearForm() {
 // Get field element by name
 function getFieldElement(fieldName) {
     const fieldMap = {
-        'location': '#location',
+        'workLocation': '#work-location',
         'experienceLevel': '#experience-level',
         'salaryRange': '#salary-range',
         'jobFunction': '#job-function',
