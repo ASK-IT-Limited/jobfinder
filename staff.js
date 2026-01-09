@@ -72,9 +72,8 @@ function initializeEventListeners() {
     
     document.getElementById('back-to-login').addEventListener('click', () => {
         showView('login');
-        // Clear form
-        loginForm.reset();
-        currentKioskCode = '';
+        // Reload saved credentials instead of clearing
+        loadSavedCredentials();
     });
 }
 
