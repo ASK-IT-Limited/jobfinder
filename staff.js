@@ -23,6 +23,12 @@ function initializeEventListeners() {
     const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', handleLogin);
     
+    // Auto-uppercase kiosk code input as user types
+    const kioskCodeInput = document.getElementById('kiosk-code');
+    kioskCodeInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+    });
+    
     document.getElementById('back-to-login').addEventListener('click', () => {
         showView('login');
         // Clear form
