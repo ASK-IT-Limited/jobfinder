@@ -254,8 +254,8 @@ function collectFormData() {
     
     formData = {
         workLocation: form.querySelector('#work-location').value.trim(),
-        experienceLevel: form.querySelector('#experience-level').value || '',
-        salaryRange: form.querySelector('#salary-range').value || '',
+        experienceLevel: form.querySelector('#experience-level').value,
+        salaryRange: form.querySelector('#salary-range').value,
         jobFunction: form.querySelector('#job-function').value.trim(),
         skills: form.querySelector('#skills').value.trim(),
         name: form.querySelector('#name').value.trim(),
@@ -287,7 +287,6 @@ function loadFormData() {
 // Populate form with saved data
 function populateForm() {
     const form = document.getElementById('job-form');
-    if (formData.workLocation) form.querySelector('#work-location').value = formData.workLocation;
     
     // Handle single select values (support both old array format and new string format for backward compatibility)
     const setSelectValue = (selectElement, value) => {
@@ -301,9 +300,7 @@ function populateForm() {
         }
     };
     
-    setSelectValue(form.querySelector('#experience-level'), formData.experienceLevel);
-    setSelectValue(form.querySelector('#salary-range'), formData.salaryRange);
-    
+    if (formData.workLocation) form.querySelector('#work-location').value = formData.workLocation;
     if (formData.jobFunction) form.querySelector('#job-function').value = formData.jobFunction;
     if (formData.skills) form.querySelector('#skills').value = formData.skills;
     if (formData.name) form.querySelector('#name').value = formData.name;
@@ -315,6 +312,14 @@ function populateForm() {
     if (formData.education) {
         form.querySelector('#education').value = formData.education;
         form.querySelector('#education').style.color = 'var(--gray-dark)';
+    }
+    if (formData.experienceLevel) {
+        form.querySelector('#experience-level').value = formData.experienceLevel;
+        form.querySelector('#experience-level').style.color = 'var(--gray-dark)';
+    }
+    if (formData.salaryRange) {
+        form.querySelector('#salary-range').value = formData.salaryRange;
+        form.querySelector('#salary-range').style.color = 'var(--gray-dark)';
     }
 }
 
@@ -419,8 +424,8 @@ async function submitJobSearch() {
         education: formData.education || 'N/A',
         skills: formData.skills || 'N/A',
         jobFunction: formData.jobFunction || 'Any',
-        experienceLevel: getArrayValue(formData.experienceLevel),
-        salaryRange: getArrayValue(formData.salaryRange),
+        experienceLevel: formData.experienceLevel || 'Any',
+        salaryRange: formData.salaryRange || 'Any',
         workLocation: formData.workLocation || 'Any',
         kioskCode: kioskCode
     };
