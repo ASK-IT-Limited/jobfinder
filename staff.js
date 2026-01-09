@@ -281,7 +281,7 @@ function displayJobMatches(jobs) {
         const jobCard = document.createElement('div');
         jobCard.className = 'job-card';
         
-        const scoreBadge = job.Score ? `<div class="job-score">Score: ${job.Score}/10</div>` : '';
+        const scoreBadge = job.Score ? `<div class="job-score">Score: ${job.Score || 0}/10</div>` : '';
         
         jobCard.innerHTML = `
             <div class="job-card-header">
@@ -291,10 +291,10 @@ function displayJobMatches(jobs) {
                 </div>
             </div>
             <div class="job-card-body">
-                <p class="job-description">${escapeHtmlAllowBreaks(job.JobDesc || 'No description available')}</p>
+                <p class="job-description">${escapeHtmlAllowBreaks(job.JobDesc) || 'No description available'}</p>
                 ${job.Reason ? `<div class="job-reason">
                     <strong>Why this matches:</strong>
-                    <p>${escapeHtmlAllowBreaks(job.Reason)}</p>
+                    <p>${escapeHtmlAllowBreaks(job.Reason) || 'No reason available'}</p>
                 </div>` : ''}
             </div>
         `;
