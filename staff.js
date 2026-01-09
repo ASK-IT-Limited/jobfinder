@@ -1,7 +1,7 @@
 // Staff Portal - View candidate data by Kiosk Code
 
 // Configuration
-const RETRIEVE_API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a253fc5340ef46d0b59a23a1b63cf471/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=HhMIpVO3FAEDS_UVqomxpWWUBLe-qTel2Yh7wgLI-eY';
+const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a253fc5340ef46d0b59a23a1b63cf471/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=HhMIpVO3FAEDS_UVqomxpWWUBLe-qTel2Yh7wgLI-eY';
 
 // State
 let views = {};
@@ -166,7 +166,7 @@ async function handleLogin(e) {
 async function fetchCandidateData(kioskCode) {
     const passCode = document.getElementById('pass-code').value;
     
-    const response = await fetch(RETRIEVE_API_URL, {
+    const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -320,5 +320,3 @@ function showView(viewName) {
     // Scroll to top when switching views
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-// Shared utility functions are now in script.js
