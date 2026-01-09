@@ -20,10 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Save credentials to localStorage
-function saveCredentials(kioskCode, passCode) {
+function saveCredentials(kioskCode, accessCode) {
     const credentials = {
         kioskCode: kioskCode,
-        passCode: passCode
+        accessCode: accessCode
     };
     localStorage.setItem('staffPortalCredentials', JSON.stringify(credentials));
 }
@@ -35,14 +35,14 @@ function loadSavedCredentials() {
         try {
             const credentials = JSON.parse(saved);
             const kioskCodeInput = document.getElementById('kiosk-code');
-            const passCodeInput = document.getElementById('pass-code');
+            const accessCodeInput = document.getElementById('access-code');
             
             if (credentials.kioskCode && kioskCodeInput) {
                 kioskCodeInput.value = credentials.kioskCode;
             }
             
-            if (credentials.passCode && passCodeInput) {
-                passCodeInput.value = credentials.passCode;
+            if (credentials.accessCode && accessCodeInput) {
+                accessCodeInput.value = credentials.accessCode;
             }
         } catch (e) {
             console.error('Error loading saved credentials:', e);
@@ -57,7 +57,7 @@ function initializeEventListeners() {
     
     // Auto-uppercase and filter kiosk code input as user types
     const kioskCodeInput = document.getElementById('kiosk-code');
-    const passCodeInput = document.getElementById('pass-code');
+    const accessCodeInput = document.getElementById('access-code');
     
     kioskCodeInput.addEventListener('input', (e) => {
         // Only allow uppercase letters, numbers, and special characters @, #, $, %
@@ -68,7 +68,7 @@ function initializeEventListeners() {
         e.target.classList.remove('required-error');
     });
     
-    passCodeInput.addEventListener('input', (e) => {
+    accessCodeInput.addEventListener('input', (e) => {
         // Clear error state when user types
         e.target.classList.remove('required-error');
     });
@@ -85,19 +85,19 @@ async function handleLogin(e) {
     e.preventDefault();
     
     const kioskCodeInput = document.getElementById('kiosk-code');
-    const passCodeInput = document.getElementById('pass-code');
+    const accessCodeInput = document.getElementById('access-code');
     const kioskCode = kioskCodeInput.value.trim().toUpperCase();
-    const passCode = passCodeInput.value;
+    const accessCode = accessCodeInput.value;
     const errorDiv = document.getElementById('login-error');
     
     // Save credentials to localStorage immediately when button is clicked
-    saveCredentials(kioskCode, passCode);
+    saveCredentials(kioskCode, accessCode);
     
     // Clear previous errors
     errorDiv.style.display = 'none';
     errorDiv.textContent = '';
     kioskCodeInput.classList.remove('required-error');
-    passCodeInput.classList.remove('required-error');
+    accessCodeInput.classList.remove('required-error');
     
     // Validate required fields
     let hasError = false;
@@ -107,8 +107,8 @@ async function handleLogin(e) {
         hasError = true;
     }
     
-    if (!passCode || passCode.length === 0) {
-        passCodeInput.classList.add('required-error');
+    if (!accessCode || accessCode.length === 0) {
+        accessCodeInput.classList.add('required-error');
         hasError = true;
     }
     
@@ -119,7 +119,7 @@ async function handleLogin(e) {
         if (!kioskCode || kioskCode.length === 0) {
             kioskCodeInput.focus();
         } else {
-            passCodeInput.focus();
+            accessCodeInput.focus();
         }
         return;
     }
@@ -146,15 +146,15 @@ async function handleLogin(e) {
         showView('login');
         
         const kioskCodeInput = document.getElementById('kiosk-code');
-        const passCodeInput = document.getElementById('pass-code');
+        const accessCodeInput = document.getElementById('access-code');
         
-        // Check for incorrect passcode error
+        // Check for incorrect codes error
         if (error.message === 'INCORRECT_CODES') {
             errorDiv.textContent = 'Incorrect Codes. Please check and try again.';
-            // Highlight kiosk code and pass code inputs
+            // Highlight kiosk code and access code inputs
             kioskCodeInput.classList.add('required-error');
-            passCodeInput.classList.add('required-error');
-            passCodeInput.focus();
+            accessCodeInput.classList.add('required-error');
+            accessCodeInput.focus();
         } else if (error.message === 'NO_SURVEY_DATA') {
             errorDiv.textContent = 'No survey data found for this Kiosk Code.';
             // Highlight kiosk code input
@@ -169,7 +169,7 @@ async function handleLogin(e) {
 
 // Fetch candidate data by kiosk code
 async function fetchCandidateData(kioskCode) {
-    const passCode = document.getElementById('pass-code').value;
+    const accessCode = document.getElementById('access-code').value;
     
     const response = await fetch(API_URL, {
         method: 'POST',
@@ -178,7 +178,7 @@ async function fetchCandidateData(kioskCode) {
         },
         body: JSON.stringify({
             kioskCode: kioskCode,
-            passCode: passCode
+            accessCode: accessCode
         })
     });
     
@@ -187,7 +187,7 @@ async function fetchCandidateData(kioskCode) {
     // Log the response for debugging
     console.log('API Response:', data);
     
-    // Check for status code 5001 (incorrect passcode)
+    // Check for status code 5001 (incorrect access code)
     if (response.status === 500) {
         throw new Error('INCORRECT_CODES');
     }

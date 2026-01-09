@@ -20,7 +20,7 @@ let formData = {
 let views = {};
 let jobResults = [];
 let kioskCode = '';
-let accessToken = '';
+let accessCode = '';
 
 // Generate unique 7-character Kiosk Code with uppercase letters, numbers, and special characters
 // Allowed characters: A-Z, 0-9, @, #, $, %
@@ -40,23 +40,23 @@ function generateKioskCode() {
     return code;
 }
 
-// Generate unique 12-character access accessToken with uppercase, lowercase, numbers, and special characters
+// Generate unique 12-character access code with uppercase, lowercase, numbers, and special characters
 // Allowed characters: A-Z, a-z, 0-9, and special characters
-function generateAccessToken() {
+function generateAccessCode() {
     const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
     const numbers = '0123456789';
     const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
     const allChars = uppercaseLetters + lowercaseLetters + numbers + specialChars;
     
-    let accessToken = '';
+    let accessCode = '';
     
     // Generate 12 random characters from the allowed set
     for (let i = 0; i < 12; i++) {
-        accessToken += allChars.charAt(Math.floor(Math.random() * allChars.length));
+        accessCode += allChars.charAt(Math.floor(Math.random() * allChars.length));
     }
     
-    return accessToken;
+    return accessCode;
 }
 
 // Initialize
@@ -309,18 +309,6 @@ function loadFormData() {
 function populateForm() {
     const form = document.getElementById('job-form');
     
-    // Handle single select values (support both old array format and new string format for backward compatibility)
-    const setSelectValue = (selectElement, value) => {
-        if (!value || (Array.isArray(value) && value.length === 0)) return;
-        
-        // If it's an array (old format), use the first value
-        const singleValue = Array.isArray(value) ? value[0] : value;
-        if (singleValue) {
-            selectElement.value = singleValue;
-            selectElement.style.color = 'var(--gray-dark)';
-        }
-    };
-    
     // Handle multi-select for jobFunction
     const jobFunctionSelect = form.querySelector('#job-function');
     if (jobFunctionSelect && jobFunctionSelect.hasAttribute('multiple')) {
@@ -459,9 +447,9 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
-    // Generate unique Kiosk Code and Access Token
+    // Generate unique Kiosk Code and Access Code
     kioskCode = generateKioskCode();
-    accessToken = generateAccessToken();
+    accessCode = generateAccessCode();
     
     // Show loading view
     showLoading();
@@ -488,7 +476,7 @@ async function submitJobSearch() {
         availability: formData.availability || '',
         livingDistrict: formData.livingDistrict || '',
         kioskCode: kioskCode,
-        accessToken: accessToken
+        accessCode: accessCode
     };
     
     try {
