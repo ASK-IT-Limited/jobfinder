@@ -505,7 +505,7 @@ function displayJobResults(jobs) {
         jobCard.innerHTML = `
             <div class="job-card-header">
                 <div class="job-card-title">
-                    <h3 class="job-title">${job.jobTitle}</h3>
+                    <h3 class="job-title">${job.jobTitle || `#${job.jobID}` || 'N/A'}</h3>
                     ${scoreBadge}
                 </div>
             </div>
@@ -522,26 +522,48 @@ function displayJobResults(jobs) {
     });
 }
 
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
 // Escape HTML but allow <br> tags to be rendered
 function escapeHtmlAllowBreaks(text) {
     if (!text) return '';
-    // Use a placeholder for <br> tags to preserve them
-    const placeholder = '___BR_TAG_PLACEHOLDER___';
-    // Replace <br> and <br/> with placeholder
-    let processed = text.replace(/<br\s*\/?>/gi, placeholder);
+    
+    // Placeholders for preserving HTML tags
+    const brPlaceholder = '___BR_TAG_PLACEHOLDER___';
+    const labelPlaceholders = {
+        jobId: '___LABEL_JOB_ID___',
+        jobTitle: '___LABEL_JOB_TITLE___',
+        salaryRange: '___LABEL_SALARY_RANGE___',
+        location: '___LABEL_LOCATION___',
+        responsibilities: '___LABEL_RESPONSIBILITIES___',
+        requirements: '___LABEL_REQUIREMENTS___'
+    };
+    
+    // Replace <br> tags with placeholder
+    let processed = text.replace(/<br\s*\/?>/gi, brPlaceholder);
+    
+    // Replace field labels with placeholders before escaping
+    processed = processed.replace(/Job ID:\s*/gi, labelPlaceholders.jobId);
+    processed = processed.replace(/Job Title:\s*/gi, labelPlaceholders.jobTitle);
+    processed = processed.replace(/Salary Range:\s*/gi, labelPlaceholders.salaryRange);
+    processed = processed.replace(/Location:\s*/gi, labelPlaceholders.location);
+    processed = processed.replace(/Job Responsibilities:\s*/gi, labelPlaceholders.responsibilities);
+    processed = processed.replace(/Job Requirements:\s*/gi, labelPlaceholders.requirements);
+    
     // Escape all HTML
     const div = document.createElement('div');
     div.textContent = processed;
     let escaped = div.innerHTML;
-    // Replace placeholder back with actual <br> tags
-    escaped = escaped.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
+    
+    // Replace label placeholders back with formatted HTML
+    escaped = escaped.replace(new RegExp(labelPlaceholders.jobId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Job ID: </strong>');
+    escaped = escaped.replace(new RegExp(labelPlaceholders.jobTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Job Title: </strong>');
+    escaped = escaped.replace(new RegExp(labelPlaceholders.salaryRange.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Salary Range: </strong>');
+    escaped = escaped.replace(new RegExp(labelPlaceholders.location.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Location: </strong>');
+    escaped = escaped.replace(new RegExp(labelPlaceholders.responsibilities.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br><strong>Job Responsibilities: </strong><br>');
+    escaped = escaped.replace(new RegExp(labelPlaceholders.requirements.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br><strong>Job Requirements: </strong><br>');
+    
+    // Replace <br> placeholder back with actual <br> tags
+    escaped = escaped.replace(new RegExp(brPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
+    
     return escaped;
 }
 

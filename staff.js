@@ -286,7 +286,7 @@ function displayJobMatches(jobs) {
         jobCard.innerHTML = `
             <div class="job-card-header">
                 <div class="job-card-title">
-                    <h3 class="job-title">${escapeHtml(job.JobTitle || `Job #${job.JobID || 'N/A'}`)}</h3>
+                    <h3 class="job-title">${job.JobTitle || `#${job.JobID}` || 'N/A'}</h3>
                     ${scoreBadge}
                 </div>
             </div>
@@ -321,26 +321,4 @@ function showView(viewName) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Escape HTML but allow <br> tags to be rendered
-function escapeHtmlAllowBreaks(text) {
-    if (!text) return '';
-    // Use a placeholder for <br> tags to preserve them
-    const placeholder = '___BR_TAG_PLACEHOLDER___';
-    // Replace <br> and <br/> with placeholder
-    let processed = text.replace(/<br\s*\/?>/gi, placeholder);
-    // Escape all HTML
-    const div = document.createElement('div');
-    div.textContent = processed;
-    let escaped = div.innerHTML;
-    // Replace placeholder back with actual <br> tags
-    escaped = escaped.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
-    return escaped;
-}
+// Shared utility functions are now in script.js
