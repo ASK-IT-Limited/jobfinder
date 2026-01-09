@@ -109,11 +109,6 @@
     transition: all 0.2s;
 }
 
-.info-item:hover {
-    background-color: #E8EDF3;
-    border-left-color: var(--primary-navy-dark);
-}
-
 .info-label {
     font-size: 12px;
     font-weight: 600;

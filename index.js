@@ -20,32 +20,43 @@ let formData = {
 let views = {};
 let jobResults = [];
 let kioskCode = '';
+let accessToken = '';
 
-// Generate unique 5-character Kiosk Code with timestamp component
-// Format: H + 4 random letters (H = hour indicator, 0-9 for hours 0-9, A-N for hours 10-23)
-// This provides 24 * 26^4 = 10,967,424 unique combinations per hour
+// Generate unique 7-character Kiosk Code with uppercase letters, numbers, and special characters
+// Allowed characters: A-Z, 0-9, @, #, $, %
 function generateKioskCode() {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const now = new Date();
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const numbers = '0123456789';
+    const specialChars = '@#$%';
+    const allChars = uppercaseLetters + numbers + specialChars;
     
-    // Get hour (0-23) and convert to single character
-    // 0-9 for hours 0-9, A-N for hours 10-23
-    const hour = now.getHours();
-    let hourChar;
-    if (hour < 10) {
-        hourChar = hour.toString();
-    } else {
-        hourChar = String.fromCharCode(65 + (hour - 10)); // A-N for hours 10-23
+    let code = '';
+    
+    // Generate 7 random characters from the allowed set
+    for (let i = 0; i < 7; i++) {
+        code += allChars.charAt(Math.floor(Math.random() * allChars.length));
     }
     
-    // Generate 4 random letters
-    let randomPart = '';
-    for (let i = 0; i < 4; i++) {
-        randomPart += letters.charAt(Math.floor(Math.random() * letters.length));
+    return code;
+}
+
+// Generate unique 12-character access accessToken with uppercase, lowercase, numbers, and special characters
+// Allowed characters: A-Z, a-z, 0-9, and special characters
+function generateAccessToken() {
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const numbers = '0123456789';
+    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+    const allChars = uppercaseLetters + lowercaseLetters + numbers + specialChars;
+    
+    let accessToken = '';
+    
+    // Generate 12 random characters from the allowed set
+    for (let i = 0; i < 12; i++) {
+        accessToken += allChars.charAt(Math.floor(Math.random() * allChars.length));
     }
     
-    // Format: H + 4 random letters (e.g., "AXYZ" for hour 10 with random XYZ)
-    return hourChar + randomPart;
+    return accessToken;
 }
 
 // Initialize
@@ -448,8 +459,9 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
-    // Generate unique Kiosk Code
+    // Generate unique Kiosk Code and Access Token
     kioskCode = generateKioskCode();
+    accessToken = generateAccessToken();
     
     // Show loading view
     showLoading();
@@ -475,7 +487,8 @@ async function submitJobSearch() {
         phone: formData.phone || '',
         availability: formData.availability || '',
         livingDistrict: formData.livingDistrict || '',
-        kioskCode: kioskCode
+        kioskCode: kioskCode,
+        accessToken: accessToken
     };
     
     try {

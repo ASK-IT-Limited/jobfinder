@@ -55,12 +55,15 @@ function initializeEventListeners() {
     const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', handleLogin);
     
-    // Auto-uppercase kiosk code input as user types
+    // Auto-uppercase and filter kiosk code input as user types
     const kioskCodeInput = document.getElementById('kiosk-code');
     const passCodeInput = document.getElementById('pass-code');
     
     kioskCodeInput.addEventListener('input', (e) => {
-        e.target.value = e.target.value.toUpperCase();
+        // Only allow uppercase letters, numbers, and special characters @, #, $, %
+        const allowedChars = /[A-Z0-9@#$%]/g;
+        let filteredValue = e.target.value.toUpperCase().match(allowedChars);
+        e.target.value = filteredValue ? filteredValue.join('') : '';
         // Clear error state when user types
         e.target.classList.remove('required-error');
     });
@@ -121,10 +124,11 @@ async function handleLogin(e) {
         return;
     }
     
-    // Validate kiosk code format (should be 5 characters)
-    if (kioskCode.length !== 5) {
+    // Validate kiosk code format (should be 7 characters with uppercase letters, numbers, and special characters)
+    const kioskCodePattern = /^[A-Z0-9@#$%]{7}$/;
+    if (kioskCode.length !== 7 || !kioskCodePattern.test(kioskCode)) {
         kioskCodeInput.classList.add('required-error');
-        errorDiv.textContent = 'Invalid Kiosk Code format. Please enter a 5-character code.';
+        errorDiv.textContent = 'Invalid Kiosk Code format. Please enter a 7-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
         errorDiv.style.display = 'block';
         kioskCodeInput.focus();
         return;

@@ -42,7 +42,7 @@
                     <form id="login-form" class="login-form" novalidate>
                         <div class="form-group">
                             <label for="kiosk-code" class="form-label">Kiosk Code <span class="required-asterisk">*</span></label>
-                            <input type="text" id="kiosk-code" name="kioskCode" class="form-input" placeholder="e.g., AXYZ" required autocomplete="off" maxlength="5">
+                            <input type="text" id="kiosk-code" name="kioskCode" class="form-input" placeholder="e.g., A1B@C#D" required autocomplete="off" maxlength="7">
                         </div>
                         <div class="form-group">
                             <label for="pass-code" class="form-label">Pass Code <span class="required-asterisk">*</span></label>
@@ -105,14 +105,14 @@
                             <span class="info-value" id="info-experience-level">—</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Preferred Job Category</span>
-                            <span class="info-value" id="info-job-function">—</span>
-                        </div>
-                        <div class="info-item">
                             <span class="info-label">Preferred Salary Range</span>
                             <span class="info-value" id="info-salary-range">—</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-item" style="grid-column: span 2;">
+                            <span class="info-label">Preferred Job Category</span>
+                            <span class="info-value" id="info-job-function">—</span>
+                        </div>
+                        <div class="info-item" style="grid-column: span 2;">
                             <span class="info-label">Background</span>
                             <span class="info-value" id="info-remarks">—</span>
                         </div>
