@@ -251,11 +251,13 @@ function displayCandidateData(surveyData, jobMatches) {
     document.getElementById('info-email').textContent = formatValue(surveyData.Email);
     document.getElementById('info-age-range').textContent = formatValue(surveyData.AgeRange);
     document.getElementById('info-education').textContent = formatValue(surveyData.Education);
-    document.getElementById('info-skills').textContent = formatValue(surveyData.Skills);
+    document.getElementById('info-phone').textContent = formatValue(surveyData.Phone);
+    document.getElementById('info-availability').textContent = formatValue(surveyData.Availability);
+    document.getElementById('info-living-district').textContent = formatValue(surveyData.LivingDistrict);
+    document.getElementById('info-remarks').textContent = formatValue(surveyData.Remarks || surveyData.Skills);
     document.getElementById('info-job-function').textContent = formatValue(surveyData.JobFunction);
     document.getElementById('info-experience-level').textContent = formatValue(surveyData.ExperienceLevel);
     document.getElementById('info-salary-range').textContent = formatValue(surveyData.SalaryRange);
-    document.getElementById('info-location').textContent = formatValue(surveyData.WorkLocation);
     
     // Display job matches (remaining items from the response array)
     const jobs = jobMatches || [];

@@ -3,15 +3,17 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 
 // State management
 let formData = {
-    workLocation: '',
     experienceLevel: '',
     salaryRange: '',
-    jobFunction: '',
-    skills: '',
+    jobFunction: [],
+    remarks: '',
     name: '',
     email: '',
     ageRange: '',
-    education: ''
+    education: '',
+    phone: '',
+    availability: '',
+    livingDistrict: ''
 };
 
 // View management
@@ -252,16 +254,24 @@ function clearValidationErrors() {
 function collectFormData() {
     const form = document.getElementById('job-form');
     
+    // Handle multi-select for jobFunction
+    const jobFunctionSelect = form.querySelector('#job-function');
+    const jobFunctionValues = jobFunctionSelect.hasAttribute('multiple') 
+        ? Array.from(jobFunctionSelect.selectedOptions).map(option => option.value)
+        : (jobFunctionSelect.value.trim() || []);
+    
     formData = {
-        workLocation: form.querySelector('#work-location').value.trim(),
         experienceLevel: form.querySelector('#experience-level').value,
         salaryRange: form.querySelector('#salary-range').value,
-        jobFunction: form.querySelector('#job-function').value.trim(),
-        skills: form.querySelector('#skills').value.trim(),
+        jobFunction: jobFunctionValues,
+        remarks: form.querySelector('#remarks').value.trim(),
         name: form.querySelector('#name').value.trim(),
         email: form.querySelector('#email').value.trim(),
         ageRange: form.querySelector('#age-range').value,
-        education: form.querySelector('#education').value
+        education: form.querySelector('#education').value,
+        phone: form.querySelector('#phone').value.trim(),
+        availability: form.querySelector('#availability').value,
+        livingDistrict: form.querySelector('#living-district').value
     };
 }
 
@@ -300,9 +310,31 @@ function populateForm() {
         }
     };
     
-    if (formData.workLocation) form.querySelector('#work-location').value = formData.workLocation;
-    if (formData.jobFunction) form.querySelector('#job-function').value = formData.jobFunction;
-    if (formData.skills) form.querySelector('#skills').value = formData.skills;
+    // Handle multi-select for jobFunction
+    const jobFunctionSelect = form.querySelector('#job-function');
+    if (jobFunctionSelect && jobFunctionSelect.hasAttribute('multiple')) {
+        // Clear previous selections
+        Array.from(jobFunctionSelect.options).forEach(option => {
+            option.selected = false;
+        });
+        // Set selected options
+        if (formData.jobFunction && Array.isArray(formData.jobFunction) && formData.jobFunction.length > 0) {
+            formData.jobFunction.forEach(value => {
+                const option = jobFunctionSelect.querySelector(`option[value="${value}"]`);
+                if (option) {
+                    option.selected = true;
+                }
+            });
+            jobFunctionSelect.style.color = 'var(--gray-dark)';
+        }
+    } else if (formData.jobFunction) {
+        // Backward compatibility: handle as string if not multi-select
+        const jobFunctionValue = Array.isArray(formData.jobFunction) ? formData.jobFunction[0] : formData.jobFunction;
+        if (jobFunctionValue) {
+            jobFunctionSelect.value = jobFunctionValue;
+        }
+    }
+    if (formData.remarks) form.querySelector('#remarks').value = formData.remarks;
     if (formData.name) form.querySelector('#name').value = formData.name;
     if (formData.email) form.querySelector('#email').value = formData.email;
     if (formData.ageRange) {
@@ -321,6 +353,15 @@ function populateForm() {
         form.querySelector('#salary-range').value = formData.salaryRange;
         form.querySelector('#salary-range').style.color = 'var(--gray-dark)';
     }
+    if (formData.phone) form.querySelector('#phone').value = formData.phone;
+    if (formData.availability) {
+        form.querySelector('#availability').value = formData.availability;
+        form.querySelector('#availability').style.color = 'var(--gray-dark)';
+    }
+    if (formData.livingDistrict) {
+        form.querySelector('#living-district').value = formData.livingDistrict;
+        form.querySelector('#living-district').style.color = 'var(--gray-dark)';
+    }
 }
 
 // Populate review page
@@ -328,6 +369,9 @@ function populateReviewPage() {
     // Format values for display
     const formatValue = (value) => {
         if (!value || value === '') return '—';
+        if (Array.isArray(value)) {
+            return value.length > 0 ? value.join(', ') : '—';
+        }
         return value;
     };
 
@@ -345,15 +389,17 @@ function populateReviewPage() {
         return option ? option.textContent : singleValue;
     };
 
-    document.getElementById('review-work-location').textContent = formatValue(formData.workLocation);
     document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
     document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
     document.getElementById('review-job-function').textContent = formatValue(formData.jobFunction);
-    document.getElementById('review-skills').textContent = formatValue(formData.skills);
+    document.getElementById('review-remarks').textContent = formatValue(formData.remarks);
     document.getElementById('review-name').textContent = formatValue(formData.name);
     document.getElementById('review-email').textContent = formatValue(formData.email);
     document.getElementById('review-age-range').textContent = formatSelectValue(formData.ageRange, 'age-range');
     document.getElementById('review-education').textContent = formatSelectValue(formData.education, 'education');
+    document.getElementById('review-phone').textContent = formatValue(formData.phone);
+    document.getElementById('review-availability').textContent = formatSelectValue(formData.availability, 'availability');
+    document.getElementById('review-living-district').textContent = formatSelectValue(formData.livingDistrict, 'living-district');
 }
 
 // Show specific view
@@ -418,15 +464,17 @@ async function submitJobSearch() {
     };
     
     const requestBody = {
-        name: formData.name || 'N/A',
-        email: formData.email || 'N/A',
-        ageRange: formData.ageRange || 'N/A',
-        education: formData.education || 'N/A',
-        skills: formData.skills || 'N/A',
-        jobFunction: formData.jobFunction || 'Any',
-        experienceLevel: formData.experienceLevel || 'Any',
-        salaryRange: formData.salaryRange || 'Any',
-        workLocation: formData.workLocation || 'Any',
+        name: formData.name || '',
+        email: formData.email || '',
+        ageRange: formData.ageRange || '',
+        education: formData.education || '',
+        remarks: formData.remarks || '',
+        jobFunction: getArrayValue(formData.jobFunction),
+        experienceLevel: formData.experienceLevel || '',
+        salaryRange: formData.salaryRange || '',
+        phone: formData.phone || '',
+        availability: formData.availability || '',
+        livingDistrict: formData.livingDistrict || '',
         kioskCode: kioskCode
     };
     
@@ -541,15 +589,17 @@ function updateProgress(step) {
 // Clear form
 function clearForm() {
     formData = {
-        workLocation: '',
         experienceLevel: '',
         salaryRange: '',
-        jobFunction: '',
-        skills: '',
+        jobFunction: [],
+        remarks: '',
         name: '',
         email: '',
         ageRange: '',
-        education: ''
+        education: '',
+        phone: '',
+        availability: '',
+        livingDistrict: ''
     };
     
     const form = document.getElementById('job-form');
@@ -563,14 +613,15 @@ function clearForm() {
             Array.from(select.options).forEach(option => {
                 option.selected = false;
             });
-        } else {
-            select.selectedIndex = 0;
-        }
-        // Set color based on whether it has a value
-        if (select.value === '' || select.value === null) {
             select.style.color = 'var(--gray-medium)';
         } else {
-            select.style.color = 'var(--gray-dark)';
+            select.selectedIndex = 0;
+            // Set color based on whether it has a value
+            if (select.value === '' || select.value === null) {
+                select.style.color = 'var(--gray-medium)';
+            } else {
+                select.style.color = 'var(--gray-dark)';
+            }
         }
     });
     
@@ -581,15 +632,17 @@ function clearForm() {
 // Get field element by name
 function getFieldElement(fieldName) {
     const fieldMap = {
-        'workLocation': '#work-location',
         'experienceLevel': '#experience-level',
         'salaryRange': '#salary-range',
         'jobFunction': '#job-function',
-        'skills': '#skills',
+        'remarks': '#remarks',
         'name': '#name',
         'email': '#email',
         'ageRange': '#age-range',
-        'education': '#education'
+        'education': '#education',
+        'phone': '#phone',
+        'availability': '#availability',
+        'livingDistrict': '#living-district'
     };
     
     const selector = fieldMap[fieldName];

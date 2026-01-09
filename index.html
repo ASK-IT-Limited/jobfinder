@@ -61,7 +61,6 @@
                         <div class="form-group">
                             <label for="email" class="form-label">Email <span class="required-asterisk">*</span></label>
                             <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
-                            <p class="form-helper">Receive job matches and any relevant information.</p>
                         </div>
 
                         <div class="form-group">
@@ -75,6 +74,11 @@
                                 <option value="55-64">55 - 64</option>
                                 <option value="65+">65+</option>
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" id="phone" name="phone" class="form-input" placeholder="+852 1234 5678">
                         </div>
 
                         <div class="form-group">
@@ -92,8 +96,56 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="skills" class="form-label">Background</label>
-                            <textarea id="skills" name="skills" class="form-textarea" rows="4" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..."></textarea>
+                            <label for="availability" class="form-label">Availability</label>
+                            <select id="availability" name="availability" class="form-select" data-placeholder="Select availability">
+                                <option value="" selected>Select availability</option>
+                                <option value="immediate">Immediate</option>
+                                <option value="1 week notice">1 week notice</option>
+                                <option value="1 month notice">1 month notice</option>
+                                <option value="more than 1 month notice">More than 1 month notice</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="living-district" class="form-label">Living District</label>
+                            <select id="living-district" name="livingDistrict" class="form-select" data-placeholder="Select living district">
+                                <option value="" selected>Select living district</option>
+                                <option value="Central and Western">Central and Western</option>
+                                <option value="Eastern">Eastern</option>
+                                <option value="Southern">Southern</option>
+                                <option value="Wan Chai">Wan Chai</option>
+                                <option value="Kowloon City">Kowloon City</option>
+                                <option value="Yau Tsim Mong">Yau Tsim Mong</option>
+                                <option value="Sham Shui Po">Sham Shui Po</option>
+                                <option value="Wong Tai Sin">Wong Tai Sin</option>
+                                <option value="Kwun Tong">Kwun Tong</option>
+                                <option value="Tai Po">Tai Po</option>
+                                <option value="Yuen Long">Yuen Long</option>
+                                <option value="Tuen Mun">Tuen Mun</option>
+                                <option value="North">North</option>
+                                <option value="Sai Kung">Sai Kung</option>
+                                <option value="Sha Tin">Sha Tin</option>
+                                <option value="Tsuen Wan">Tsuen Wan</option>
+                                <option value="Kwai Tsing">Kwai Tsing</option>
+                                <option value="Islands">Islands</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="experience-level" class="form-label">Experience Level</label>
+                            <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level">
+                                <option value="" selected>Select experience level</option>
+                                <option value="0 - 2 years">0 - 2 years</option>
+                                <option value="3 - 4 years">3 - 4 years</option>
+                                <option value="5 - 8 years">5 - 8 years</option>
+                                <option value="9 - 10 years">9 - 10 years</option>
+                                <option value="over 10 years">over 10 years</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="remarks" class="form-label">Background</label>
+                            <textarea id="remarks" name="remarks" class="form-textarea" rows="4" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..."></textarea>
                             <p class="form-helper">Help us understand your background to find better matches.</p>
                         </div>
                     </div>
@@ -104,26 +156,19 @@
                         
                         <div class="form-group">
                             <label for="job-function" class="form-label">Category</label>
-                            <input type="text" id="job-function" name="jobFunction" class="form-input" placeholder="e.g., Software Engineering, IT Helpdesk, etc.">
-                            <p class="form-helper">Provide a job title, function or category for your desired role.</p>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="work-location" class="form-label">Location</label>
-                            <input type="text" id="work-location" name="workLocation" class="form-input" placeholder="e.g., Central, Wan Chai, Tsuen Wan, etc.">
-                            <p class="form-helper">Enter a district, area or 'Remote' for remote-only jobs.</p>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="experience-level" class="form-label">Experience Level</label>
-                            <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level">
-                                <option value="" selected>Select experience level</option>
-                                <option value="Entry Level">Entry Level</option>
-                                <option value="Mid Level">Mid Level</option>
-                                <option value="Senior Level">Senior Level</option>
-                                <option value="Executive">Executive</option>
+                            <select id="job-function" name="jobFunction" class="form-select" multiple data-placeholder="Select job functions">
+                                <option value="Administration">Administration</option>
+                                <option value="Accounting">Accounting</option>
+                                <option value="Human Resources">Human Resources</option>
+                                <option value="Sales/ CS/ Business Development">Sales/ CS/ Business Development</option>
+                                <option value="Business Analysis">Business Analysis</option>
+                                <option value="Data Analytics">Data Analytics</option>
+                                <option value="Systems Engineering">Systems Engineering</option>
+                                <option value="Software Engineering">Software Engineering</option>
+                                <option value="Project Management">Project Management</option>
+                                <option value="Technical Support">Technical Support</option>
                             </select>
-                            <p class="form-helper">Choose the level that best matches your current expertise.</p>
+                            <p class="form-helper">Select one or more job functions that match your preferences.</p>
                         </div>
 
                         <div class="form-group">
@@ -183,9 +228,24 @@
                             <button class="btn-edit-small" data-field="education">✏️</button>
                         </div>
                         <div class="review-item">
+                            <span class="review-label">Phone Number</span>
+                            <span class="review-value" id="review-phone">—</span>
+                            <button class="btn-edit-small" data-field="phone">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Availability</span>
+                            <span class="review-value" id="review-availability">—</span>
+                            <button class="btn-edit-small" data-field="availability">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Living District</span>
+                            <span class="review-value" id="review-living-district">—</span>
+                            <button class="btn-edit-small" data-field="livingDistrict">✏️</button>
+                        </div>
+                        <div class="review-item">
                             <span class="review-label">Background</span>
-                            <span class="review-value" id="review-skills">—</span>
-                            <button class="btn-edit-small" data-field="skills">✏️</button>
+                            <span class="review-value" id="review-remarks">—</span>
+                            <button class="btn-edit-small" data-field="remarks">✏️</button>
                         </div>
                     </div>
 
@@ -196,11 +256,6 @@
                                 <span class="review-label">Category</span>
                                 <span class="review-value" id="review-job-function">—</span>
                                 <button class="btn-edit-small" data-field="jobFunction">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Location</span>
-                                <span class="review-value" id="review-work-location">—</span>
-                                <button class="btn-edit-small" data-field="workLocation">✏️</button>
                             </div>
                             <div class="review-item">
                                 <span class="review-label">Salary Range</span>
