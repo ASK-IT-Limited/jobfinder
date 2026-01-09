@@ -57,8 +57,17 @@ function initializeEventListeners() {
     
     // Auto-uppercase kiosk code input as user types
     const kioskCodeInput = document.getElementById('kiosk-code');
+    const passCodeInput = document.getElementById('pass-code');
+    
     kioskCodeInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase();
+        // Clear error state when user types
+        e.target.classList.remove('required-error');
+    });
+    
+    passCodeInput.addEventListener('input', (e) => {
+        // Clear error state when user types
+        e.target.classList.remove('required-error');
     });
     
     document.getElementById('back-to-login').addEventListener('click', () => {
@@ -73,25 +82,56 @@ function initializeEventListeners() {
 async function handleLogin(e) {
     e.preventDefault();
     
-    const kioskCode = document.getElementById('kiosk-code').value.trim().toUpperCase();
-    const passCode = document.getElementById('pass-code').value;
+    const kioskCodeInput = document.getElementById('kiosk-code');
+    const passCodeInput = document.getElementById('pass-code');
+    const kioskCode = kioskCodeInput.value.trim().toUpperCase();
+    const passCode = passCodeInput.value;
     const errorDiv = document.getElementById('login-error');
+    
+    // Save credentials to localStorage immediately when button is clicked
+    saveCredentials(kioskCode, passCode);
     
     // Clear previous errors
     errorDiv.style.display = 'none';
     errorDiv.textContent = '';
+    kioskCodeInput.classList.remove('required-error');
+    passCodeInput.classList.remove('required-error');
+    
+    // Validate required fields
+    let hasError = false;
+    
+    if (!kioskCode || kioskCode.length === 0) {
+        kioskCodeInput.classList.add('required-error');
+        hasError = true;
+    }
+    
+    if (!passCode || passCode.length === 0) {
+        passCodeInput.classList.add('required-error');
+        hasError = true;
+    }
+    
+    if (hasError) {
+        errorDiv.textContent = 'Please fill in all required fields.';
+        errorDiv.style.display = 'block';
+        // Focus on first error field
+        if (!kioskCode || kioskCode.length === 0) {
+            kioskCodeInput.focus();
+        } else {
+            passCodeInput.focus();
+        }
+        return;
+    }
     
     // Validate kiosk code format (should be 5 characters)
     if (kioskCode.length !== 5) {
+        kioskCodeInput.classList.add('required-error');
         errorDiv.textContent = 'Invalid Kiosk Code format. Please enter a 5-character code.';
         errorDiv.style.display = 'block';
+        kioskCodeInput.focus();
         return;
     }
     
     currentKioskCode = kioskCode;
-    
-    // Save credentials to localStorage
-    saveCredentials(kioskCode, passCode);
     
     showView('loading');
     
