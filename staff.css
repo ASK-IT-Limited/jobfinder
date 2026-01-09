@@ -105,7 +105,7 @@
     padding: 16px;
     background-color: var(--gray-lightest);
     border-radius: var(--border-radius);
-    border-left: 4px solid var(--primary-navy);
+    /* border-left: 4px solid var(--primary-navy); */
     transition: all 0.2s;
 }
 
