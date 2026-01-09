@@ -144,7 +144,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="remarks" class="form-label">Background</label>
+                            <label for="remarks" class="form-label">Remarks</label>
                             <textarea id="remarks" name="remarks" class="form-textarea" rows="4" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..."></textarea>
                             <p class="form-helper">Help us understand your background to find better matches.</p>
                         </div>
@@ -213,14 +213,24 @@
                             <button class="btn-edit-small" data-field="name">✏️</button>
                         </div>
                         <div class="review-item">
+                            <span class="review-label">Age</span>
+                            <span class="review-value" id="review-age-range">—</span>
+                            <button class="btn-edit-small" data-field="ageRange">✏️</button>
+                        </div>
+                        <div class="review-item">
                             <span class="review-label">Email</span>
                             <span class="review-value" id="review-email">—</span>
                             <button class="btn-edit-small" data-field="email">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Age</span>
-                            <span class="review-value" id="review-age-range">—</span>
-                            <button class="btn-edit-small" data-field="ageRange">✏️</button>
+                            <span class="review-label">Phone</span>
+                            <span class="review-value" id="review-phone">—</span>
+                            <button class="btn-edit-small" data-field="phone">✏️</button>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label">Location</span>
+                            <span class="review-value" id="review-living-district">—</span>
+                            <button class="btn-edit-small" data-field="livingDistrict">✏️</button>
                         </div>
                         <div class="review-item">
                             <span class="review-label">Education</span>
@@ -228,9 +238,9 @@
                             <button class="btn-edit-small" data-field="education">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Phone Number</span>
-                            <span class="review-value" id="review-phone">—</span>
-                            <button class="btn-edit-small" data-field="phone">✏️</button>
+                            <span class="review-label">Experience Level</span>
+                            <span class="review-value" id="review-experience-level">—</span>
+                            <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                         </div>
                         <div class="review-item">
                             <span class="review-label">Availability</span>
@@ -238,12 +248,7 @@
                             <button class="btn-edit-small" data-field="availability">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Living District</span>
-                            <span class="review-value" id="review-living-district">—</span>
-                            <button class="btn-edit-small" data-field="livingDistrict">✏️</button>
-                        </div>
-                        <div class="review-item">
-                            <span class="review-label">Background</span>
+                            <span class="review-label">Remarks</span>
                             <span class="review-value" id="review-remarks">—</span>
                             <button class="btn-edit-small" data-field="remarks">✏️</button>
                         </div>
@@ -261,11 +266,6 @@
                                 <span class="review-label">Salary Range</span>
                                 <span class="review-value" id="review-salary-range">—</span>
                                 <button class="btn-edit-small" data-field="salaryRange">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Experience Level</span>
-                                <span class="review-value" id="review-experience-level">—</span>
-                                <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                             </div>
                         </div>
                     </div>
