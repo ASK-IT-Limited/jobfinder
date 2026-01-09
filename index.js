@@ -417,15 +417,15 @@ async function submitJobSearch() {
     
     // Prepare request body
     const requestBody = {
-        name: formData.name || '',
-        email: formData.email || '',
-        ageRange: formData.ageRange || '',
-        education: formData.education || '',
-        skills: formData.skills || '',
-        jobFunction: formData.jobFunction || '',
-        experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : []),
-        salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : []),
-        location: formData.location || '',
+        name: formData.name || 'N/A',
+        email: formData.email || 'N/A',
+        ageRange: formData.ageRange || 'N/A',
+        education: formData.education || 'N/A',
+        skills: formData.skills || 'N/A',
+        jobFunction: formData.jobFunction || 'Any',
+        experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : ['Any']),
+        salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : ['Any']),
+        location: formData.location || 'Any',
         kioskCode: kioskCode
     };
     
