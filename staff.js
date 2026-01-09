@@ -252,12 +252,9 @@ function displayCandidateData(surveyData, jobMatches) {
     document.getElementById('info-age-range').textContent = formatValue(surveyData.AgeRange);
     document.getElementById('info-education').textContent = formatValue(surveyData.Education);
     document.getElementById('info-skills').textContent = formatValue(surveyData.Skills);
-    document.getElementById('info-job-type').textContent = formatValue(surveyData.JobType);
-    document.getElementById('info-work-arrangement').textContent = formatValue(surveyData.WorkArrangement);
     document.getElementById('info-job-function').textContent = formatValue(surveyData.JobFunction);
     document.getElementById('info-experience-level').textContent = formatValue(surveyData.ExperienceLevel);
     document.getElementById('info-salary-range').textContent = formatValue(surveyData.SalaryRange);
-    document.getElementById('info-company-size').textContent = formatValue(surveyData.CompanySize);
     document.getElementById('info-location').textContent = formatValue(surveyData.WorkLocation);
     
     // Display job matches (remaining items from the response array)

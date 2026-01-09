@@ -1,12 +1,9 @@
 // State management
 let formData = {
     location: '',
-    workArrangement: '',
-    jobType: '',
     experienceLevel: '',
     salaryRange: '',
     jobFunction: '',
-    companySize: '',
     skills: '',
     name: '',
     email: '',
@@ -266,12 +263,9 @@ function collectFormData() {
     
     formData = {
         location: form.querySelector('#location').value.trim(),
-        workArrangement: getSelectedValues(form.querySelector('#work-arrangement')),
-        jobType: getSelectedValues(form.querySelector('#job-type')),
         experienceLevel: getSelectedValues(form.querySelector('#experience-level')),
         salaryRange: getSelectedValues(form.querySelector('#salary-range')),
-        jobFunction: getSelectedValues(form.querySelector('#job-function')),
-        companySize: getSelectedValues(form.querySelector('#company-size')),
+        jobFunction: form.querySelector('#job-function').value.trim(),
         skills: form.querySelector('#skills').value.trim(),
         name: form.querySelector('#name').value.trim(),
         email: form.querySelector('#email').value.trim(),
@@ -315,13 +309,10 @@ function populateForm() {
         selectElement.style.color = 'var(--gray-dark)';
     };
     
-    setSelectValues(form.querySelector('#work-arrangement'), formData.workArrangement);
-    setSelectValues(form.querySelector('#job-type'), formData.jobType);
     setSelectValues(form.querySelector('#experience-level'), formData.experienceLevel);
     setSelectValues(form.querySelector('#salary-range'), formData.salaryRange);
-    setSelectValues(form.querySelector('#job-function'), formData.jobFunction);
-    setSelectValues(form.querySelector('#company-size'), formData.companySize);
     
+    if (formData.jobFunction) form.querySelector('#job-function').value = formData.jobFunction;
     if (formData.skills) form.querySelector('#skills').value = formData.skills;
     if (formData.name) form.querySelector('#name').value = formData.name;
     if (formData.email) form.querySelector('#email').value = formData.email;
@@ -359,12 +350,9 @@ function populateReviewPage() {
     };
 
     document.getElementById('review-location').textContent = formatValue(formData.location);
-    document.getElementById('review-work-arrangement').textContent = formatSelectValue(formData.workArrangement, 'work-arrangement');
-    document.getElementById('review-job-type').textContent = formatSelectValue(formData.jobType, 'job-type');
     document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
     document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
-    document.getElementById('review-job-function').textContent = formatSelectValue(formData.jobFunction, 'job-function');
-    document.getElementById('review-company-size').textContent = formatSelectValue(formData.companySize, 'company-size');
+    document.getElementById('review-job-function').textContent = formatValue(formData.jobFunction);
     document.getElementById('review-skills').textContent = formatValue(formData.skills);
     document.getElementById('review-name').textContent = formatValue(formData.name);
     document.getElementById('review-email').textContent = formatValue(formData.email);
@@ -431,12 +419,9 @@ async function submitJobSearch() {
         ageRange: formData.ageRange || '',
         education: formData.education || '',
         skills: formData.skills || '',
-        jobType: Array.isArray(formData.jobType) ? formData.jobType : (formData.jobType ? [formData.jobType] : []),
-        workArrangement: Array.isArray(formData.workArrangement) ? formData.workArrangement : (formData.workArrangement ? [formData.workArrangement] : []),
-        jobFunction: Array.isArray(formData.jobFunction) ? formData.jobFunction : (formData.jobFunction ? [formData.jobFunction] : []),
+        jobFunction: formData.jobFunction || '',
         experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : []),
         salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : []),
-        companySize: Array.isArray(formData.companySize) ? formData.companySize : (formData.companySize ? [formData.companySize] : []),
         location: formData.location || '',
         kioskCode: kioskCode
     };
@@ -511,7 +496,7 @@ function displayJobResults(jobs) {
     // Sort by score (highest first)
     const sortedJobs = [...jobs].sort((a, b) => (b.score || 0) - (a.score || 0));
     
-    sortedJobs.forEach((job, index) => {
+    sortedJobs.forEach((job) => {
         const jobCard = document.createElement('div');
         jobCard.className = 'job-card';
         
@@ -579,12 +564,9 @@ function updateProgress(step) {
 function clearForm() {
     formData = {
         location: '',
-        workArrangement: '',
-        jobType: '',
         experienceLevel: '',
         salaryRange: '',
         jobFunction: '',
-        companySize: '',
         skills: '',
         name: '',
         email: '',
@@ -622,12 +604,9 @@ function clearForm() {
 function getFieldElement(fieldName) {
     const fieldMap = {
         'location': '#location',
-        'workArrangement': '#work-arrangement',
-        'jobType': '#job-type',
         'experienceLevel': '#experience-level',
         'salaryRange': '#salary-range',
         'jobFunction': '#job-function',
-        'companySize': '#company-size',
         'skills': '#skills',
         'name': '#name',
         'email': '#email',

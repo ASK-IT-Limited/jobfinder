@@ -102,37 +102,13 @@
                         <h2 class="section-title">Preferences</h2>
                         
                         <div class="form-group">
-                            <label for="job-type" class="form-label">Job Type</label>
-                            <select id="job-type" name="jobType" class="form-select" data-placeholder="Select job type" multiple>
-                                <option value="full-time">Full-time</option>
-                                <option value="part-time">Part-time</option>
-                                <option value="contract">Contract</option>
-                                <option value="internship">Internship</option>
-                                <option value="temporary">Temporary</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="work-arrangement" class="form-label">Work Arrangement</label>
-                            <select id="work-arrangement" name="workArrangement" class="form-select" data-placeholder="Select work arrangement" multiple>
-                                <option value="remote">Remote</option>
-                                <option value="hybrid">Hybrid</option>
-                                <option value="onsite">On-site</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
                             <label for="job-function" class="form-label">Job Function</label>
-                            <select id="job-function" name="jobFunction" class="form-select" data-placeholder="Select job function" multiple>
-                                <option value="software-engineering">Software Engineering</option>
-                                <option value="systems-engineering">Systems Engineering</option>
-                                <option value="it-helpdesk-customer-support">IT Helpdesk / Customer Support</option>
-                                <option value="data-science-analytics">Data Science / Analytics</option>
-                                <option value="ui-ux-design">UI/UX Design</option>
-                                <option value="automation-rpa">Automation / RPA</option>
-                                <option value="database">Database</option>
-                                <option value="devops">DevOps</option>
-                            </select>
+                            <input type="text" id="job-function" name="jobFunction" class="form-input" placeholder="e.g., Software Engineering, IT Helpdesk, etc.">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location" class="form-label">Work Location</label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Central, Wan Chai, Tsuen Wan, etc.">
                         </div>
 
                         <div class="form-group">
@@ -155,22 +131,6 @@
                                 <option value="80k-100k">HK$80,001 - HK$100,000</option>
                                 <option value="above-100k">Above HK$100,000</option>
                             </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="company-size" class="form-label">Company Size</label>
-                            <select id="company-size" name="companySize" class="form-select" data-placeholder="Select company size (optional)" multiple>
-                                <option value="startup">Startup (1-50)</option>
-                                <option value="small">Small (51-200)</option>
-                                <option value="medium">Medium (201-1000)</option>
-                                <option value="large">Large (1001-5000)</option>
-                                <option value="enterprise">Enterprise (5000+)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="location" class="form-label">Work Location</label>
-                            <input type="text" id="location" name="location" class="form-input" placeholder="e.g., Central, Wan Chai, Tsuen Wan, etc.">
                         </div>
                     </div>
 
@@ -226,19 +186,9 @@
                         <div class="review-category">
                             <h3 class="category-title">Preferences</h3>
                             <div class="review-item">
-                                <span class="review-label">Job Type</span>
-                                <span class="review-value" id="review-job-type">—</span>
-                                <button class="btn-edit-small" data-field="jobType">✏️</button>
-                            </div>
-                            <div class="review-item">
                                 <span class="review-label">Work Location</span>
                                 <span class="review-value" id="review-location">—</span>
                                 <button class="btn-edit-small" data-field="location">✏️</button>
-                            </div>
-                            <div class="review-item">
-                                <span class="review-label">Work Arrangement</span>
-                                <span class="review-value" id="review-work-arrangement">—</span>
-                                <button class="btn-edit-small" data-field="workArrangement">✏️</button>
                             </div>
                             <div class="review-item">
                                 <span class="review-label">Job Function</span>
@@ -255,11 +205,6 @@
                                 <span class="review-value" id="review-salary-range">—</span>
                                 <button class="btn-edit-small" data-field="salaryRange">✏️</button>
                             </div>
-                            <div class="review-item">
-                                <span class="review-label">Company Size</span>
-                                <span class="review-value" id="review-company-size">—</span>
-                                <button class="btn-edit-small" data-field="companySize">✏️</button>
-                            </div>                            
                         </div>
                     </div>
                 </div>
