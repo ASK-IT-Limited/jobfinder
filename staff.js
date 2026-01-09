@@ -16,7 +16,39 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     initializeEventListeners();
+    loadSavedCredentials();
 });
+
+// Save credentials to localStorage
+function saveCredentials(kioskCode, passCode) {
+    const credentials = {
+        kioskCode: kioskCode,
+        passCode: passCode
+    };
+    localStorage.setItem('staffPortalCredentials', JSON.stringify(credentials));
+}
+
+// Load saved credentials from localStorage
+function loadSavedCredentials() {
+    const saved = localStorage.getItem('staffPortalCredentials');
+    if (saved) {
+        try {
+            const credentials = JSON.parse(saved);
+            const kioskCodeInput = document.getElementById('kiosk-code');
+            const passCodeInput = document.getElementById('pass-code');
+            
+            if (credentials.kioskCode && kioskCodeInput) {
+                kioskCodeInput.value = credentials.kioskCode;
+            }
+            
+            if (credentials.passCode && passCodeInput) {
+                passCodeInput.value = credentials.passCode;
+            }
+        } catch (e) {
+            console.error('Error loading saved credentials:', e);
+        }
+    }
+}
 
 // Event Listeners
 function initializeEventListeners() {
@@ -57,6 +89,10 @@ async function handleLogin(e) {
     }
     
     currentKioskCode = kioskCode;
+    
+    // Save credentials to localStorage
+    saveCredentials(kioskCode, passCode);
+    
     showView('loading');
     
     // Fetch candidate data
