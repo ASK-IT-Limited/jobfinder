@@ -20,44 +20,6 @@ let formData = {
 let views = {};
 let jobResults = [];
 let completionCode = '';
-let accessCode = '';
-
-// Generate unique 7-character Completion Code with uppercase letters, numbers, and special characters
-// Allowed characters: A-Z, 0-9, @, #, $, %
-function generateCompletionCode() {
-    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const numbers = '0123456789';
-    const specialChars = '@#$%';
-    const allChars = uppercaseLetters + numbers + specialChars;
-    
-    let code = '';
-    
-    // Generate 7 random characters from the allowed set
-    for (let i = 0; i < 7; i++) {
-        code += allChars.charAt(Math.floor(Math.random() * allChars.length));
-    }
-    
-    return code;
-}
-
-// Generate unique 12-character access code with uppercase, lowercase, numbers, and special characters
-// Allowed characters: A-Z, a-z, 0-9, and special characters
-function generateAccessCode() {
-    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-    const numbers = '0123456789';
-    const specialChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-    const allChars = uppercaseLetters + lowercaseLetters + numbers + specialChars;
-    
-    let accessCode = '';
-    
-    // Generate 12 random characters from the allowed set
-    for (let i = 0; i < 12; i++) {
-        accessCode += allChars.charAt(Math.floor(Math.random() * allChars.length));
-    }
-    
-    return accessCode;
-}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -450,10 +412,6 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
-    // Generate unique Completion Code and Access Code
-    completionCode = generateCompletionCode();
-    accessCode = generateAccessCode();
-    
     // Show loading view
     showLoading();
     
@@ -469,17 +427,15 @@ async function submitJobSearch() {
     const requestBody = {
         name: formData.name || '',
         email: formData.email || '',
+        phone: formData.phone || '',
         ageRange: formData.ageRange || '',
         education: formData.education || '',
-        remarks: formData.remarks || '',
-        jobFunction: getArrayValue(formData.jobFunction),
-        experienceLevel: formData.experienceLevel || '',
-        salaryRange: formData.salaryRange || '',
-        phone: formData.phone || '',
         availability: formData.availability || '',
         livingDistrict: formData.livingDistrict || '',
-        completionCode: completionCode,
-        accessCode: accessCode
+        experienceLevel: formData.experienceLevel || '',
+        remarks: formData.remarks || '',
+        jobFunction: getArrayValue(formData.jobFunction),
+        salaryRange: formData.salaryRange || ''
     };
     
     try {
@@ -495,19 +451,20 @@ async function submitJobSearch() {
             const result = await response.json();
             console.log('Job search submitted successfully:', result);
             
-            // Extract jobs from response - handle both formats
+            // Extract jobs from response.body.data
             let jobs = [];
-            if (Array.isArray(result)) {
-                // Response is directly an array
-                jobs = result;
-            } else if (result.body && Array.isArray(result.body)) {
-                // Response has a body property with array
-                jobs = result.body;
+            if (result.body && result.body.data && Array.isArray(result.body.data)) {
+                jobs = result.body.data;
             } else {
                 console.error('Unexpected response format:', result);
                 showView('form');
                 alert('No jobs found. Please try adjusting your search criteria.');
                 return;
+            }
+            
+            // Extract completion code from response.body.completionCode
+            if (result.body && result.body.completionCode) {
+                completionCode = result.body.completionCode;
             }
             
             if (jobs.length > 0) {
