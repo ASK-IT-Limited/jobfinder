@@ -451,9 +451,13 @@ async function submitJobSearch() {
             const result = await response.json();
             console.log('Job search submitted successfully:', result);
             
-            // Extract jobs from response.body.data
+            // Extract jobs from response - check multiple possible structures
             let jobs = [];
-            if (result.body && result.body.data && Array.isArray(result.body.data)) {
+            if (result.data && Array.isArray(result.data)) {
+                // Response has data at top level
+                jobs = result.data;
+            } else if (result.body && result.body.data && Array.isArray(result.body.data)) {
+                // Response has data nested in body
                 jobs = result.body.data;
             } else {
                 console.error('Unexpected response format:', result);
@@ -462,8 +466,12 @@ async function submitJobSearch() {
                 return;
             }
             
-            // Extract completion code from response.body.completionCode
-            if (result.body && result.body.completionCode) {
+            // Extract completion code - check multiple possible structures
+            if (result.completionCode) {
+                // Completion code at top level
+                completionCode = result.completionCode;
+            } else if (result.body && result.body.completionCode) {
+                // Completion code nested in body
                 completionCode = result.body.completionCode;
             }
             
