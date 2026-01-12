@@ -270,57 +270,20 @@ function displayCandidateData(surveyData, jobMatches) {
 
 // Display job matches
 function displayJobMatches(jobs) {
-    const jobsList = document.getElementById('jobs-list');
-    jobsList.innerHTML = '';
-    
-    if (jobs.length === 0) {
-        jobsList.innerHTML = '<p class="no-results">No job matches found for this candidate.</p>';
-        return;
-    }
-    
-    // Sort by score (highest first)
-    const sortedJobs = [...jobs].sort((a, b) => (b.score || 0) - (a.score || 0));
-    
-    sortedJobs.forEach((job) => {
-        const jobCard = document.createElement('div');
-        jobCard.className = 'job-card';
-        
-        const scoreBadge = job.Score ? `<div class="job-score">Score: ${job.Score || 0}/10</div>` : '';
-        
-        jobCard.innerHTML = `
-            <div class="job-card-header">
-                <div class="job-card-title">
-                    <h3 class="job-title">${job.JobTitle || `#${job.JobID}` || 'N/A'}</h3>
-                    ${scoreBadge}
-                </div>
-            </div>
-            <div class="job-card-body">
-                <p class="job-description">${escapeHtmlAllowBreaks(job.JobDesc) || 'No description available'}</p>
-                ${job.Reason ? `<div class="job-reason">
-                    <strong>Why this matches:</strong>
-                    <p>${escapeHtmlAllowBreaks(job.Reason) || 'No reason available'}</p>
-                </div>` : ''}
-            </div>
-        `;
-        
-        jobsList.appendChild(jobCard);
+    displayJobs(jobs, {
+        listElementId: 'jobs-list',
+        noResultsMessage: 'No job matches found for this candidate.',
+        propertyNames: {
+            score: 'Score',
+            jobTitle: 'JobTitle',
+            jobID: 'JobID',
+            jobDesc: 'JobDesc',
+            reason: 'Reason'
+        }
     });
 }
 
-// Show specific view
+// Show specific view (using shared function from script.js)
 function showView(viewName) {
-    if (!views[viewName]) {
-        console.error('View not found:', viewName);
-        return;
-    }
-    
-    Object.keys(views).forEach(key => {
-        if (views[key]) {
-            views[key].classList.remove('active');
-        }
-    });
-    views[viewName].classList.add('active');
-    
-    // Scroll to top when switching views
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showViewGeneric(views, viewName);
 }

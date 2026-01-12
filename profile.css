@@ -31,6 +31,8 @@
 
 /* Results Header */
 .results-header-section {
+    margin: 0 auto;
+    max-width: 800px;
     margin-bottom: 32px;
 }
 
@@ -73,6 +75,8 @@
 
 /* Info Section */
 .info-section {
+    margin: 0 auto;
+    max-width: 800px;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
@@ -128,6 +132,8 @@
 
 /* Jobs Section */
 .jobs-section {
+    margin: 0 auto;
+    max-width: 800px;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
@@ -162,18 +168,22 @@
         padding: 24px;
     }
 
-    .results-header-actions {
+    /* .results-header-actions {
         flex-direction: column;
         align-items: stretch;
-    }
+    } */
 
-    .results-header-actions .btn-secondary {
+    /* .results-header-actions .btn-secondary {
         width: 100%;
-    }
+    } */
 
-    .code-display {
+    /* .code-display {
         justify-content: center;
         width: 100%;
+    } */
+
+    .code-label {
+        display: none;
     }
 
     .info-grid {

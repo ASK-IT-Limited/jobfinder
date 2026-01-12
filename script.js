@@ -85,3 +85,256 @@ function escapeHtmlAllowBreaks(text) {
     
     return escaped;
 }
+
+// Parse job description and create collapsible sections for responsibilities and requirements
+function formatJobDescriptionWithCollapsible(text) {
+    if (!text) return '';
+    
+    // First, escape the HTML and format it
+    let formatted = escapeHtmlAllowBreaks(text);
+    
+    // Find positions of responsibilities and requirements sections
+    // The escapeHtmlAllowBreaks function formats these as: <br><strong>Job Responsibilities: </strong><br>
+    const responsibilitiesMarker = '<strong>Job Responsibilities: </strong>';
+    const requirementsMarker = '<strong>Job Requirements: </strong>';
+    
+    const respIndex = formatted.indexOf(responsibilitiesMarker);
+    const reqIndex = formatted.indexOf(requirementsMarker);
+    
+    // If neither section exists, return the formatted text as is
+    if (respIndex === -1 && reqIndex === -1) {
+        return formatted;
+    }
+    
+    let result = '';
+    let lastIndex = 0;
+    
+    // Process responsibilities section
+    if (respIndex !== -1) {
+        // Add content before responsibilities
+        if (respIndex > lastIndex) {
+            result += formatted.substring(lastIndex, respIndex);
+        }
+        
+        // Find where responsibilities section ends (either at requirements or end of text)
+        let respEnd = formatted.length;
+        if (reqIndex !== -1 && reqIndex > respIndex) {
+            respEnd = reqIndex;
+        }
+        
+        // Extract responsibilities content (skip the marker)
+        const respStart = respIndex + responsibilitiesMarker.length;
+        const responsibilitiesContent = formatted.substring(respStart, respEnd).trim();
+        
+        // Remove leading <br> tags from content
+        const cleanRespContent = responsibilitiesContent.replace(/^(<br\s*\/?>)+/i, '');
+        
+        // Create collapsible responsibilities section
+        result += `
+            <div class="job-section-collapsible">
+                <button class="job-section-toggle" type="button" aria-expanded="false">
+                    <strong>Job Responsibilities</strong>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="job-section-content" style="display: none;">
+                    ${cleanRespContent}
+                </div>
+            </div>
+        `;
+        
+        lastIndex = respEnd;
+    }
+    
+    // Process requirements section
+    if (reqIndex !== -1) {
+        // Add content between responsibilities and requirements (if any)
+        if (reqIndex > lastIndex) {
+            result += formatted.substring(lastIndex, reqIndex);
+        }
+        
+        // Extract requirements content (skip the marker)
+        const reqStart = reqIndex + requirementsMarker.length;
+        const reqEnd = formatted.length;
+        const requirementsContent = formatted.substring(reqStart, reqEnd).trim();
+        
+        // Remove leading <br> tags from content
+        const cleanReqContent = requirementsContent.replace(/^(<br\s*\/?>)+/i, '');
+        
+        // Create collapsible requirements section
+        result += `
+            <div class="job-section-collapsible">
+                <button class="job-section-toggle" type="button" aria-expanded="false">
+                    <strong>Job Requirements</strong>
+                    <span class="toggle-icon">▼</span>
+                </button>
+                <div class="job-section-content" style="display: none;">
+                    ${cleanReqContent}
+                </div>
+            </div>
+        `;
+        
+        lastIndex = reqEnd;
+    }
+    
+    // Add any remaining content after requirements
+    if (lastIndex < formatted.length) {
+        result += formatted.substring(lastIndex);
+    }
+    
+    return result;
+}
+
+// Initialize collapsible sections after they're added to the DOM
+function initializeCollapsibleSections(container) {
+    if (!container) return;
+    
+    const toggleButtons = container.querySelectorAll('.job-section-toggle');
+    toggleButtons.forEach(button => {
+        // Remove existing listeners by cloning
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        newButton.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+            const icon = this.querySelector('.toggle-icon');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            if (content && content.classList.contains('job-section-content')) {
+                if (isExpanded) {
+                    content.style.display = 'none';
+                    this.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.textContent = '▼';
+                } else {
+                    content.style.display = 'block';
+                    this.setAttribute('aria-expanded', 'true');
+                    if (icon) icon.textContent = '▲';
+                }
+            }
+        });
+    });
+}
+
+// Generic showView function - shared between profile.js and index.js
+// views: object containing view elements
+// viewName: name of the view to show
+// onViewChange: optional callback function called after view is changed
+function showViewGeneric(views, viewName, onViewChange) {
+    if (!views[viewName]) {
+        console.error('View not found:', viewName);
+        return;
+    }
+    
+    Object.keys(views).forEach(key => {
+        if (views[key]) {
+            views[key].classList.remove('active');
+        }
+    });
+    views[viewName].classList.add('active');
+    
+    // Scroll to top when switching views
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Call optional callback if provided
+    if (onViewChange && typeof onViewChange === 'function') {
+        onViewChange(viewName);
+    }
+}
+
+// Generic displayJobs function - shared between profile.js and index.js
+// jobs: array of job objects
+// options: configuration object with:
+//   - listElementId: ID of the container element for job cards
+//   - countElementId: optional ID of element to display job count
+//   - completionCodeElementId: optional ID of element to display completion code
+//   - completionCode: optional completion code value to display
+//   - noResultsMessage: optional custom message when no jobs found
+//   - propertyNames: object mapping property names (defaults to camelCase, can override for PascalCase)
+function displayJobs(jobs, options) {
+    const {
+        listElementId,
+        countElementId,
+        completionCodeElementId,
+        completionCode,
+        noResultsMessage = 'No matching jobs found.',
+        propertyNames = {
+            score: 'score',
+            jobTitle: 'jobTitle',
+            jobID: 'jobID',
+            jobDesc: 'jobDesc',
+            reason: 'reason'
+        }
+    } = options;
+    
+    const jobsList = document.getElementById(listElementId);
+    if (!jobsList) {
+        console.error(`Element with ID "${listElementId}" not found`);
+        return;
+    }
+    
+    // Update count if element provided
+    if (countElementId) {
+        const countElement = document.getElementById(countElementId);
+        if (countElement) {
+            countElement.textContent = jobs.length;
+        }
+    }
+    
+    // Update completion code if element and value provided
+    if (completionCodeElementId && completionCode) {
+        const completionCodeElement = document.getElementById(completionCodeElementId);
+        if (completionCodeElement) {
+            completionCodeElement.textContent = completionCode;
+        }
+    }
+    
+    jobsList.innerHTML = '';
+    
+    if (jobs.length === 0) {
+        jobsList.innerHTML = `<p class="no-results">${noResultsMessage}</p>`;
+        return;
+    }
+    
+    // Sort by score (highest first)
+    // Handle both camelCase and PascalCase property names
+    const scoreProp = propertyNames.score;
+    const sortedJobs = [...jobs].sort((a, b) => {
+        const scoreA = a[scoreProp] || a.Score || a.score || 0;
+        const scoreB = b[scoreProp] || b.Score || b.score || 0;
+        return scoreB - scoreA;
+    });
+    
+    sortedJobs.forEach((job) => {
+        const jobCard = document.createElement('div');
+        jobCard.className = 'job-card';
+        
+        // Handle both camelCase and PascalCase property names
+        const jobScore = job[propertyNames.score] || job.Score || job.score || 0;
+        const jobTitle = job[propertyNames.jobTitle] || job.JobTitle || job.jobTitle || null;
+        const jobID = job[propertyNames.jobID] || job.JobID || job.jobID || null;
+        const jobDesc = job[propertyNames.jobDesc] || job.JobDesc || job.jobDesc || null;
+        const jobReason = job[propertyNames.reason] || job.Reason || job.reason || null;
+        
+        const scoreBadge = jobScore ? `<div class="job-score">Score: ${jobScore}/10</div>` : '';
+        
+        jobCard.innerHTML = `
+            <div class="job-card-header">
+                <div class="job-card-title">
+                    <h3 class="job-title">${jobTitle || (jobID ? `#${jobID}` : 'N/A')}</h3>
+                    ${scoreBadge}
+                </div>
+            </div>
+            <div class="job-card-body">
+                <div class="job-description">${formatJobDescriptionWithCollapsible(jobDesc) || 'No description available'}</div>
+                ${jobReason ? `<div class="job-reason">
+                    <strong>Why this matches:</strong>
+                    <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
+                </div>` : ''}
+            </div>
+        `;
+        
+        jobsList.appendChild(jobCard);
+        
+        // Initialize collapsible sections for this job card
+        initializeCollapsibleSections(jobCard);
+    });
+}

@@ -366,34 +366,21 @@ function populateReviewPage() {
     document.getElementById('review-living-district').textContent = formatSelectValue(formData.livingDistrict, 'living-district');
 }
 
-// Show specific view
+// Show specific view (using shared function from script.js)
 function showView(viewName) {
-    if (!views[viewName]) {
-        console.error('View not found:', viewName);
-        return;
-    }
-    
-    Object.keys(views).forEach(key => {
-        if (views[key]) {
-            views[key].classList.remove('active');
+    showViewGeneric(views, viewName, (viewName) => {
+        // Show "Clear Session & Start Over" link when leaving loading view
+        const clearSessionLink = document.getElementById('clear-session-loading');
+        if (clearSessionLink && viewName !== 'loading') {
+            clearSessionLink.style.display = '';
+        }
+        
+        if (viewName === 'form') {
+            updateProgress(1);
+        } else if (viewName === 'review') {
+            updateProgress(2);
         }
     });
-    views[viewName].classList.add('active');
-    
-    // Scroll to top when switching views
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Show "Clear Session & Start Over" link when leaving loading view
-    const clearSessionLink = document.getElementById('clear-session-loading');
-    if (clearSessionLink && viewName !== 'loading') {
-        clearSessionLink.style.display = '';
-    }
-    
-    if (viewName === 'form') {
-        updateProgress(1);
-    } else if (viewName === 'review') {
-        updateProgress(2);
-    }
 }
 
 // Show loading view
@@ -495,49 +482,21 @@ async function submitJobSearch() {
     }
 }
 
-// Display job results
+// Display job results (using shared function from script.js)
 function displayJobResults(jobs) {
-    const resultsList = document.getElementById('results-list');
-    const resultsCount = document.getElementById('results-count');
-    const completionCodeElement = document.getElementById('completion-code');
-    
-    resultsCount.textContent = jobs.length;
-    if (completionCodeElement && completionCode) {
-        completionCodeElement.textContent = completionCode;
-    }
-    resultsList.innerHTML = '';
-    
-    if (jobs.length === 0) {
-        resultsList.innerHTML = '<p class="no-results">No matching jobs found. Please try adjusting your search criteria.</p>';
-        return;
-    }
-    
-    // Sort by score (highest first)
-    const sortedJobs = [...jobs].sort((a, b) => (b.score || 0) - (a.score || 0));
-    
-    sortedJobs.forEach((job) => {
-        const jobCard = document.createElement('div');
-        jobCard.className = 'job-card';
-        
-        const scoreBadge = job.score ? `<div class="job-score">Score: ${job.score || 0}/10</div>` : '';
-        
-        jobCard.innerHTML = `
-            <div class="job-card-header">
-                <div class="job-card-title">
-                    <h3 class="job-title">${job.jobTitle || `#${job.jobID}` || 'N/A'}</h3>
-                    ${scoreBadge}
-                </div>
-            </div>
-            <div class="job-card-body">
-                <p class="job-description">${escapeHtmlAllowBreaks(job.jobDesc) || 'No description available'}</p>
-                ${job.reason ? `<div class="job-reason">
-                    <strong>Why this matches:</strong>
-                    <p>${escapeHtmlAllowBreaks(job.reason) || 'No reason available'}</p>
-                </div>` : ''}
-            </div>
-        `;
-        
-        resultsList.appendChild(jobCard);
+    displayJobs(jobs, {
+        listElementId: 'results-list',
+        countElementId: 'results-count',
+        completionCodeElementId: 'completion-code',
+        completionCode: completionCode,
+        noResultsMessage: 'No matching jobs found. Please try adjusting your search criteria.',
+        propertyNames: {
+            score: 'score',
+            jobTitle: 'jobTitle',
+            jobID: 'jobID',
+            jobDesc: 'jobDesc',
+            reason: 'reason'
+        }
     });
 }
 
