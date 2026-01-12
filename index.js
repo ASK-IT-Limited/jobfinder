@@ -80,28 +80,26 @@ function initializeEventListeners() {
     const form = document.getElementById('job-form');
     form.addEventListener('submit', handleFormSubmit);
 
-    // Clear form buttons
-    document.getElementById('clear-form').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-    });
-
-    document.getElementById('clear-session-review').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
-    });
-
-    document.getElementById('clear-session-loading').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
-    });
-
-    document.getElementById('clear-session-results').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
+    // Clear form buttons - consolidate handlers
+    const clearSessionButtons = [
+        'clear-form',
+        'clear-session-review',
+        'clear-session-loading',
+        'clear-session-results'
+    ];
+    
+    clearSessionButtons.forEach(buttonId => {
+        const button = document.getElementById(buttonId);
+        if (button) {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearForm();
+                // Show form view for session clear buttons (not the main clear-form button)
+                if (buttonId !== 'clear-form') {
+                    showView('form');
+                }
+            });
+        }
     });
 
     document.getElementById('back-to-form').addEventListener('click', () => {
@@ -139,34 +137,26 @@ function initializeEventListeners() {
 
     // Save form data on input change
     const formInputs = form.querySelectorAll('input, select, textarea');
+    
+    // Helper function to validate email and update error state
+    const validateEmailInput = (input) => {
+        if (input.type === 'email' && input.value.trim()) {
+            const isValid = isValidEmail(input.value.trim());
+            input.classList.toggle('required-error', !isValid);
+        } else {
+            // Remove error state when user starts typing/selecting
+            input.classList.remove('required-error');
+        }
+    };
+    
     formInputs.forEach(input => {
         input.addEventListener('change', () => {
             saveFormData();
-            // Validate email format on change
-            if (input.type === 'email' && input.value.trim()) {
-                if (isValidEmail(input.value.trim())) {
-                    input.classList.remove('required-error');
-                } else {
-                    input.classList.add('required-error');
-                }
-            } else {
-                // Remove error state when user starts typing/selecting
-                input.classList.remove('required-error');
-            }
+            validateEmailInput(input);
         });
         input.addEventListener('input', () => {
             saveFormData();
-            // Validate email format on input (real-time validation)
-            if (input.type === 'email' && input.value.trim()) {
-                if (isValidEmail(input.value.trim())) {
-                    input.classList.remove('required-error');
-                } else {
-                    input.classList.add('required-error');
-                }
-            } else {
-                // Remove error state when user starts typing/selecting
-                input.classList.remove('required-error');
-            }
+            validateEmailInput(input);
         });
     });
 
@@ -352,47 +342,41 @@ function populateForm() {
     
     // Handle multi-select fields generically
     populateSelectField(form, '#job-function', 'jobFunction');
-    if (formData.remarks) form.querySelector('#remarks').value = formData.remarks;
-    if (formData.name) form.querySelector('#name').value = formData.name;
-    if (formData.email) form.querySelector('#email').value = formData.email;
-    if (formData.ageRange) {
-        form.querySelector('#age-range').value = formData.ageRange;
-        form.querySelector('#age-range').style.color = 'var(--gray-dark)';
-    }
-    if (formData.education) {
-        form.querySelector('#education').value = formData.education;
-        form.querySelector('#education').style.color = 'var(--gray-dark)';
-    }
-    if (formData.experienceLevel) {
-        form.querySelector('#experience-level').value = formData.experienceLevel;
-        form.querySelector('#experience-level').style.color = 'var(--gray-dark)';
-    }
-    if (formData.salaryRange) {
-        form.querySelector('#salary-range').value = formData.salaryRange;
-        form.querySelector('#salary-range').style.color = 'var(--gray-dark)';
-    }
-    if (formData.phone) form.querySelector('#phone').value = formData.phone;
-    if (formData.availability) {
-        form.querySelector('#availability').value = formData.availability;
-        form.querySelector('#availability').style.color = 'var(--gray-dark)';
-    }
-    if (formData.livingDistrict) {
-        form.querySelector('#living-district').value = formData.livingDistrict;
-        form.querySelector('#living-district').style.color = 'var(--gray-dark)';
-    }
+    
+    // Helper function to populate text/input fields
+    const populateTextField = (fieldId, fieldName) => {
+        const element = form.querySelector(`#${fieldId}`);
+        if (element && formData[fieldName]) {
+            element.value = formData[fieldName];
+        }
+    };
+    
+    // Helper function to populate select fields with color styling
+    const populateSelectFieldWithColor = (fieldId, fieldName) => {
+        const element = form.querySelector(`#${fieldId}`);
+        if (element && formData[fieldName]) {
+            element.value = formData[fieldName];
+            element.style.color = 'var(--gray-dark)';
+        }
+    };
+    
+    // Populate text fields
+    populateTextField('remarks', 'remarks');
+    populateTextField('name', 'name');
+    populateTextField('email', 'email');
+    populateTextField('phone', 'phone');
+    
+    // Populate select fields with color styling
+    populateSelectFieldWithColor('age-range', 'ageRange');
+    populateSelectFieldWithColor('education', 'education');
+    populateSelectFieldWithColor('experience-level', 'experienceLevel');
+    populateSelectFieldWithColor('salary-range', 'salaryRange');
+    populateSelectFieldWithColor('availability', 'availability');
+    populateSelectFieldWithColor('living-district', 'livingDistrict');
 }
 
 // Populate review page
 function populateReviewPage() {
-    // Format values for display
-    const formatValue = (value) => {
-        if (!value || value === '') return '—';
-        if (Array.isArray(value)) {
-            return value.length > 0 ? value.join(', ') : '—';
-        }
-        return value;
-    };
-
     const formatSelectValue = (value, selectId) => {
         if (!value || value === '') return '—';
         

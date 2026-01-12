@@ -5,6 +5,11 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 let views = {};
 let currentCompletionCode = '';
 
+// Cache DOM elements to avoid repeated queries
+let completionCodeInput = null;
+let accessCodeInput = null;
+let errorDiv = null;
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     views = {
@@ -12,6 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loading: document.getElementById('loading-view'),
         results: document.getElementById('results-view')
     };
+    
+    // Cache frequently accessed DOM elements
+    completionCodeInput = document.getElementById('completion-code');
+    accessCodeInput = document.getElementById('access-code');
+    errorDiv = document.getElementById('login-error');
     
     initializeEventListeners();
     loadSavedCredentials();
@@ -32,8 +42,6 @@ function loadSavedCredentials() {
     if (saved) {
         try {
             const credentials = JSON.parse(saved);
-            const completionCodeInput = document.getElementById('completion-code');
-            const accessCodeInput = document.getElementById('access-code');
             
             if (credentials.completionCode && completionCodeInput) {
                 completionCodeInput.value = credentials.completionCode;
@@ -54,22 +62,23 @@ function initializeEventListeners() {
     loginForm.addEventListener('submit', handleLogin);
     
     // Auto-uppercase and filter completion code input as user types
-    const completionCodeInput = document.getElementById('completion-code');
-    const accessCodeInput = document.getElementById('access-code');
-    
-    completionCodeInput.addEventListener('input', (e) => {
+    if (completionCodeInput) {
+        completionCodeInput.addEventListener('input', (e) => {
         // Only allow uppercase letters, numbers, and special characters @, #, $, %
         const allowedChars = /[A-Z0-9@#$%]/g;
         let filteredValue = e.target.value.toUpperCase().match(allowedChars);
         e.target.value = filteredValue ? filteredValue.join('') : '';
-        // Clear error state when user types
-        e.target.classList.remove('required-error');
-    });
+            // Clear error state when user types
+            e.target.classList.remove('required-error');
+        });
+    }
     
-    accessCodeInput.addEventListener('input', (e) => {
-        // Clear error state when user types
-        e.target.classList.remove('required-error');
-    });
+    if (accessCodeInput) {
+        accessCodeInput.addEventListener('input', (e) => {
+            // Clear error state when user types
+            e.target.classList.remove('required-error');
+        });
+    }
     
     document.getElementById('back-to-login').addEventListener('click', () => {
         showView('login');
@@ -82,11 +91,13 @@ function initializeEventListeners() {
 async function handleLogin(e) {
     e.preventDefault();
     
-    const completionCodeInput = document.getElementById('completion-code');
-    const accessCodeInput = document.getElementById('access-code');
+    if (!completionCodeInput || !accessCodeInput || !errorDiv) {
+        console.error('Required DOM elements not found');
+        return;
+    }
+    
     const completionCode = completionCodeInput.value.trim().toUpperCase();
     const accessCode = accessCodeInput.value;
-    const errorDiv = document.getElementById('login-error');
     
     // Save credentials to localStorage immediately when button is clicked
     saveCredentials(completionCode, accessCode);
@@ -142,9 +153,6 @@ async function handleLogin(e) {
     } catch (error) {
         console.error('Error fetching candidate data:', error);
         showView('login');
-        
-        const completionCodeInput = document.getElementById('completion-code');
-        const accessCodeInput = document.getElementById('access-code');
         
         // Check for incorrect codes error
         if (error.message === 'INCORRECT_CODES') {
@@ -239,15 +247,6 @@ async function fetchCandidateData(completionCode) {
 function displayCandidateData(surveyData, jobMatches) {
     // Display completion code
     document.getElementById('display-code').textContent = currentCompletionCode;
-    
-    // Format value helper
-    const formatValue = (value) => {
-        if (!value || value === '') return '—';
-        if (Array.isArray(value)) {
-            return value.length > 0 ? value.join(', ') : '—';
-        }
-        return value;
-    };
     
     // Display survey answers from the first item in the response array
     document.getElementById('info-name').textContent = formatValue(surveyData.Name);

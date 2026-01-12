@@ -1,5 +1,14 @@
 // Shared utility functions
 
+// Format value for display (handles arrays, empty values, etc.)
+function formatValue(value) {
+    if (!value || value === '') return '—';
+    if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : '—';
+    }
+    return value;
+}
+
 // Hamburger menu toggle
 document.addEventListener('DOMContentLoaded', () => {
     const hamburgerBtn = document.getElementById('hamburger-btn');
