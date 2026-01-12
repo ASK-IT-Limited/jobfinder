@@ -374,11 +374,20 @@ function showView(viewName) {
         if (clearSessionLink && viewName !== 'loading') {
             clearSessionLink.style.display = '';
         }
-        
-        if (viewName === 'form') {
-            updateProgress(1);
-        } else if (viewName === 'review') {
-            updateProgress(2);
+
+        switch (viewName) {
+            case 'form':
+                updateProgress(1);
+                break;
+            case 'review':
+                updateProgress(2);
+                break;
+            case 'results':
+            case 'loading':
+                updateProgress(3);
+                break;
+            default:
+                break;
         }
     });
 }
@@ -386,7 +395,7 @@ function showView(viewName) {
 // Show loading view
 function showLoading() {
     showView('loading');
-    updateProgress(2);
+    updateProgress(3);
     // Hide "Clear Session & Start Over" link during loading
     const clearSessionLink = document.getElementById('clear-session-loading');
     if (clearSessionLink) {
