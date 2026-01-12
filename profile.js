@@ -175,7 +175,7 @@ async function handleLogin(e) {
 
 // Fetch candidate data by completion code
 async function fetchCandidateData(completionCode) {
-    const accessCode = document.getElementById('access-code').value;
+    const accessCode = accessCodeInput ? accessCodeInput.value : '';
     
     const response = await fetch(API_URL, {
         method: 'POST',

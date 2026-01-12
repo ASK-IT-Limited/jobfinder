@@ -195,7 +195,6 @@ function validateForm() {
         if (isEmpty || isInvalidFormat) {
             field.classList.add('required-error');
             isValid = false;
-            console.log('Field is invalid:', field.id || field.name, isEmpty ? 'empty' : 'invalid format', field);
         } else {
             field.classList.remove('required-error');
         }
@@ -286,16 +285,17 @@ function populateSelectField(form, selector, fieldName) {
                     option.selected = true;
                 }
             });
-            selectElement.style.color = 'var(--gray-dark)';
         }
     } else {
         // Handle single-select: backward compatibility for array values
         const singleValue = Array.isArray(fieldValue) ? fieldValue[0] : fieldValue;
         if (singleValue) {
             selectElement.value = singleValue;
-            selectElement.style.color = 'var(--gray-dark)';
         }
     }
+    
+    // Update color styling using existing function
+    updateSelectColor(selectElement);
 }
 
 // Populate form with saved data
@@ -305,36 +305,34 @@ function populateForm() {
     // Handle multi-select fields generically
     populateSelectField(form, '#job-function', 'jobFunction');
     
-    // Helper function to populate text/input fields
-    const populateTextField = (fieldId, fieldName) => {
-        const element = form.querySelector(`#${fieldId}`);
-        if (element && formData[fieldName]) {
-            element.value = formData[fieldName];
+    // Populate text/input fields
+    const textFields = [
+        { id: 'remarks', name: 'remarks' },
+        { id: 'name', name: 'name' },
+        { id: 'email', name: 'email' },
+        { id: 'phone', name: 'phone' }
+    ];
+    
+    textFields.forEach(({ id, name }) => {
+        const element = form.querySelector(`#${id}`);
+        if (element && formData[name]) {
+            element.value = formData[name];
         }
-    };
+    });
     
-    // Helper function to populate select fields with color styling
-    const populateSelectFieldWithColor = (fieldId, fieldName) => {
-        const element = form.querySelector(`#${fieldId}`);
-        if (element && formData[fieldName]) {
-            element.value = formData[fieldName];
-            element.style.color = 'var(--gray-dark)';
-        }
-    };
+    // Populate single-select fields (populateSelectField handles color styling)
+    const selectFields = [
+        { selector: '#age-range', name: 'ageRange' },
+        { selector: '#education', name: 'education' },
+        { selector: '#experience-level', name: 'experienceLevel' },
+        { selector: '#salary-range', name: 'salaryRange' },
+        { selector: '#availability', name: 'availability' },
+        { selector: '#living-district', name: 'livingDistrict' }
+    ];
     
-    // Populate text fields
-    populateTextField('remarks', 'remarks');
-    populateTextField('name', 'name');
-    populateTextField('email', 'email');
-    populateTextField('phone', 'phone');
-    
-    // Populate select fields with color styling
-    populateSelectFieldWithColor('age-range', 'ageRange');
-    populateSelectFieldWithColor('education', 'education');
-    populateSelectFieldWithColor('experience-level', 'experienceLevel');
-    populateSelectFieldWithColor('salary-range', 'salaryRange');
-    populateSelectFieldWithColor('availability', 'availability');
-    populateSelectFieldWithColor('living-district', 'livingDistrict');
+    selectFields.forEach(({ selector, name }) => {
+        populateSelectField(form, selector, name);
+    });
 }
 
 // Populate review page
@@ -395,7 +393,6 @@ function showView(viewName) {
 // Show loading view
 function showLoading() {
     showView('loading');
-    updateProgress(3);
     // Hide "Clear Session & Start Over" link during loading
     const clearSessionLink = document.getElementById('clear-session-loading');
     if (clearSessionLink) {
@@ -473,7 +470,7 @@ async function submitJobSearch() {
             
             if (jobs.length > 0) {
                 jobResults = jobs;
-                displayJobResults(jobResults);
+                displayJobResults(jobs);
                 showView('results');
             } else {
                 showView('form');
@@ -540,7 +537,7 @@ function clearForm() {
     const form = document.getElementById('job-form');
     form.reset();
     
-    // Reset select styling to placeholder
+    // Reset select styling to placeholder using existing function
     const selects = form.querySelectorAll('.form-select');
     selects.forEach(select => {
         if (select.hasAttribute('multiple')) {
@@ -548,16 +545,10 @@ function clearForm() {
             Array.from(select.options).forEach(option => {
                 option.selected = false;
             });
-            select.style.color = 'var(--gray-medium)';
         } else {
             select.selectedIndex = 0;
-            // Set color based on whether it has a value
-            if (select.value === '' || select.value === null) {
-                select.style.color = 'var(--gray-medium)';
-            } else {
-                select.style.color = 'var(--gray-dark)';
-            }
         }
+        updateSelectColor(select);
     });
     
     localStorage.removeItem('jobFinderFormData');
