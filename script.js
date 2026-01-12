@@ -112,7 +112,7 @@ function formatJobDescriptionWithExpandable(text) {
     
     // Check for next section markers (Job Responsibilities or Job Requirements)
     const responsibilitiesMarker = '<br><strong>Job Responsibilities: </strong>';
-    const requirementsMarker = '<strong>Job Requirements: </strong>';
+    const requirementsMarker = '<br><strong>Job Requirements: </strong>';
     
     const respIndex = formatted.indexOf(responsibilitiesMarker, locationValueStart);
     const reqIndex = formatted.indexOf(requirementsMarker, locationValueStart);
@@ -125,25 +125,20 @@ function formatJobDescriptionWithExpandable(text) {
     if (respIndex !== -1) {
         splitPoint = respIndex;
         foundSectionMarker = true;
+    } else if (reqIndex !== -1) {
+        splitPoint = reqIndex;
+        foundSectionMarker = true;
     }
-    if (reqIndex !== -1 && reqIndex < splitPoint) {
+    if (respIndex !== -1 && reqIndex !== -1 && reqIndex < splitPoint) {
         splitPoint = reqIndex;
         foundSectionMarker = true;
     }
     
     // If no section marker found, look for the next <br> tag after Location value
     if (!foundSectionMarker) {
-        const brFormats = [
-            { pattern: '<br>', length: 4 },
-            { pattern: '<br/>', length: 5 },
-            { pattern: '<br />', length: 6 }
-        ];
-        
-        for (const brFormat of brFormats) {
-            const brIndex = formatted.indexOf(brFormat.pattern, locationValueStart);
-            if (brIndex !== -1 && brIndex < splitPoint) {
-                splitPoint = brIndex + brFormat.length;
-            }
+        const brIndex = formatted.indexOf('<br>', locationValueStart);
+        if (brIndex !== -1 && brIndex < splitPoint) {
+            splitPoint = brIndex + 4;
         }
     }
     
@@ -182,8 +177,8 @@ function formatJobDescriptionWithCollapsible(text) {
     
     // Find positions of responsibilities and requirements sections
     // The escapeHtmlAllowBreaks function formats these as: <br><strong>Job Responsibilities: </strong><br>
-    const responsibilitiesMarker = '<strong>Job Responsibilities: </strong>';
-    const requirementsMarker = '<strong>Job Requirements: </strong>';
+    const responsibilitiesMarker = '<br><strong>Job Responsibilities: </strong>';
+    const requirementsMarker = '<br><strong>Job Requirements: </strong>';
     
     const respIndex = formatted.indexOf(responsibilitiesMarker);
     const reqIndex = formatted.indexOf(requirementsMarker);
