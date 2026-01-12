@@ -261,20 +261,28 @@ function clearValidationErrors() {
     });
 }
 
+// Generic helper function to collect select field values (handles both single and multi-select)
+function collectSelectFieldValue(form, selector) {
+    const selectElement = form.querySelector(selector);
+    if (!selectElement) return '';
+    
+    if (selectElement.hasAttribute('multiple')) {
+        // Handle multi-select: return array of selected values
+        return Array.from(selectElement.selectedOptions).map(option => option.value);
+    } else {
+        // Handle single-select: return single value
+        return selectElement.value.trim() || '';
+    }
+}
+
 // Collect form data
 function collectFormData() {
     const form = document.getElementById('job-form');
     
-    // Handle multi-select for jobFunction
-    const jobFunctionSelect = form.querySelector('#job-function');
-    const jobFunctionValues = jobFunctionSelect.hasAttribute('multiple') 
-        ? Array.from(jobFunctionSelect.selectedOptions).map(option => option.value)
-        : (jobFunctionSelect.value.trim() || []);
-    
     formData = {
         experienceLevel: form.querySelector('#experience-level').value,
         salaryRange: form.querySelector('#salary-range').value,
-        jobFunction: jobFunctionValues,
+        jobFunction: collectSelectFieldValue(form, '#job-function'),
         remarks: form.querySelector('#remarks').value.trim(),
         name: form.querySelector('#name').value.trim(),
         email: form.querySelector('#email').value.trim(),
@@ -305,34 +313,45 @@ function loadFormData() {
     }
 }
 
-// Populate form with saved data
-function populateForm() {
-    const form = document.getElementById('job-form');
+// Generic helper function to populate select fields (handles both single and multi-select)
+function populateSelectField(form, selector, fieldName) {
+    const selectElement = form.querySelector(selector);
+    if (!selectElement) return;
     
-    // Handle multi-select for jobFunction
-    const jobFunctionSelect = form.querySelector('#job-function');
-    if (jobFunctionSelect && jobFunctionSelect.hasAttribute('multiple')) {
-        // Clear previous selections
-        Array.from(jobFunctionSelect.options).forEach(option => {
+    const fieldValue = formData[fieldName];
+    if (!fieldValue) return;
+    
+    if (selectElement.hasAttribute('multiple')) {
+        // Handle multi-select: clear previous selections
+        Array.from(selectElement.options).forEach(option => {
             option.selected = false;
         });
         // Set selected options
-        if (formData.jobFunction && Array.isArray(formData.jobFunction) && formData.jobFunction.length > 0) {
-            formData.jobFunction.forEach(value => {
-                const option = jobFunctionSelect.querySelector(`option[value="${value}"]`);
+        if (Array.isArray(fieldValue) && fieldValue.length > 0) {
+            fieldValue.forEach(value => {
+                const option = selectElement.querySelector(`option[value="${value}"]`);
                 if (option) {
                     option.selected = true;
                 }
             });
-            jobFunctionSelect.style.color = 'var(--gray-dark)';
+            selectElement.style.color = 'var(--gray-dark)';
         }
-    } else if (formData.jobFunction) {
-        // Backward compatibility: handle as string if not multi-select
-        const jobFunctionValue = Array.isArray(formData.jobFunction) ? formData.jobFunction[0] : formData.jobFunction;
-        if (jobFunctionValue) {
-            jobFunctionSelect.value = jobFunctionValue;
+    } else {
+        // Handle single-select: backward compatibility for array values
+        const singleValue = Array.isArray(fieldValue) ? fieldValue[0] : fieldValue;
+        if (singleValue) {
+            selectElement.value = singleValue;
+            selectElement.style.color = 'var(--gray-dark)';
         }
     }
+}
+
+// Populate form with saved data
+function populateForm() {
+    const form = document.getElementById('job-form');
+    
+    // Handle multi-select fields generically
+    populateSelectField(form, '#job-function', 'jobFunction');
     if (formData.remarks) form.querySelector('#remarks').value = formData.remarks;
     if (formData.name) form.querySelector('#name').value = formData.name;
     if (formData.email) form.querySelector('#email').value = formData.email;
