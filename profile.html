@@ -41,12 +41,12 @@
                 <div class="login-section">
                     <form id="login-form" class="login-form" novalidate>
                         <div class="form-group">
-                            <label for="kiosk-code" class="form-label">Kiosk Code <span class="required-asterisk">*</span></label>
-                            <input type="text" id="kiosk-code" name="kioskCode" class="form-input" placeholder="e.g., A1B@C#D" required autocomplete="off" maxlength="7">
+                            <label for="completion-code" class="form-label">Completion Code <span class="required-asterisk">*</span></label>
+                            <input type="text" id="completion-code" name="completionCode" class="form-input" placeholder="e.g., A1B@C#D" required autocomplete="off" maxlength="7">
                         </div>
                         <div class="form-group">
                             <label for="access-code" class="form-label">Access Code <span class="required-asterisk">*</span></label>
-                            <input type="password" id="access-code" name="access-code" class="form-input" placeholder="Enter access code" required>
+                            <input type="password" id="access-code" name="accessCode" class="form-input" placeholder="Enter access code" required>
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn-primary btn-large">View Profile</button>
@@ -61,9 +61,9 @@
                 <div class="results-header-section">
                     <div class="results-header-actions">
                         <button class="btn-secondary" id="back-to-login">← Back</button>
-                        <div class="kiosk-display">
-                            <span class="kiosk-label">Kiosk Code:</span>
-                            <span class="kiosk-value" id="display-kiosk-code">—</span>
+                        <div class="code-display">
+                            <span class="code-label">Completion Code:</span>
+                            <span class="code-value" id="display-code">—</span>
                         </div>
                     </div>
                 </div>
@@ -101,18 +101,18 @@
                             <span class="info-value" id="info-education">—</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Experience Level</span>
+                            <span class="info-label">Experience</span>
                             <span class="info-value" id="info-experience-level">—</span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Preferred Salary Range</span>
+                            <span class="info-label">Expected Salary</span>
                             <span class="info-value" id="info-salary-range">—</span>
                         </div>
-                        <div class="info-item" style="grid-column: span 2;">
-                            <span class="info-label">Preferred Job Category</span>
+                        <div class="info-item">
+                            <span class="info-label">Job Function</span>
                             <span class="info-value" id="info-job-function">—</span>
                         </div>
-                        <div class="info-item" style="grid-column: span 2;">
+                        <div class="info-item">
                             <span class="info-label">Background</span>
                             <span class="info-value" id="info-remarks">—</span>
                         </div>

@@ -19,12 +19,12 @@ let formData = {
 // View management
 let views = {};
 let jobResults = [];
-let kioskCode = '';
+let completionCode = '';
 let accessCode = '';
 
-// Generate unique 7-character Kiosk Code with uppercase letters, numbers, and special characters
+// Generate unique 7-character Completion Code with uppercase letters, numbers, and special characters
 // Allowed characters: A-Z, 0-9, @, #, $, %
-function generateKioskCode() {
+function generateCompletionCode() {
     const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const numbers = '0123456789';
     const specialChars = '@#$%';
@@ -447,8 +447,8 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
-    // Generate unique Kiosk Code and Access Code
-    kioskCode = generateKioskCode();
+    // Generate unique Completion Code and Access Code
+    completionCode = generateCompletionCode();
     accessCode = generateAccessCode();
     
     // Show loading view
@@ -475,7 +475,7 @@ async function submitJobSearch() {
         phone: formData.phone || '',
         availability: formData.availability || '',
         livingDistrict: formData.livingDistrict || '',
-        kioskCode: kioskCode,
+        completionCode: completionCode,
         accessCode: accessCode
     };
     
@@ -531,11 +531,11 @@ async function submitJobSearch() {
 function displayJobResults(jobs) {
     const resultsList = document.getElementById('results-list');
     const resultsCount = document.getElementById('results-count');
-    const kioskCodeElement = document.getElementById('kiosk-code');
+    const completionCodeElement = document.getElementById('completion-code');
     
     resultsCount.textContent = jobs.length;
-    if (kioskCodeElement && kioskCode) {
-        kioskCodeElement.textContent = kioskCode;
+    if (completionCodeElement && completionCode) {
+        completionCodeElement.textContent = completionCode;
     }
     resultsList.innerHTML = '';
     

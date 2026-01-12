@@ -625,7 +625,7 @@ body {
     margin-bottom: 16px;
 }
 
-.kiosk-code {
+.completion-code {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -637,12 +637,12 @@ body {
     font-size: 16px;
 }
 
-.kiosk-code-label {
+.completion-code-label {
     font-weight: 600;
     color: var(--gray-dark);
 }
 
-.kiosk-code-value {
+.completion-code-value {
     font-weight: 700;
     font-size: 18px;
     color: var(--primary-navy);
@@ -650,7 +650,7 @@ body {
     font-family: 'Courier New', monospace;
 }
 
-.kiosk-code-instruction {
+.completion-code-instruction {
     font-size: 14px;
     color: var(--gray-medium);
     margin-top: 12px;

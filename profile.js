@@ -3,7 +3,7 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 
 // State
 let views = {};
-let currentKioskCode = '';
+let currentCompletionCode = '';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Save credentials to localStorage
-function saveCredentials(kioskCode, accessCode) {
+function saveCredentials(completionCode, accessCode) {
     const credentials = {
-        kioskCode: kioskCode,
+        completionCode: completionCode,
         accessCode: accessCode
     };
     localStorage.setItem('staffPortalCredentials', JSON.stringify(credentials));
@@ -32,11 +32,11 @@ function loadSavedCredentials() {
     if (saved) {
         try {
             const credentials = JSON.parse(saved);
-            const kioskCodeInput = document.getElementById('kiosk-code');
+            const completionCodeInput = document.getElementById('completion-code');
             const accessCodeInput = document.getElementById('access-code');
             
-            if (credentials.kioskCode && kioskCodeInput) {
-                kioskCodeInput.value = credentials.kioskCode;
+            if (credentials.completionCode && completionCodeInput) {
+                completionCodeInput.value = credentials.completionCode;
             }
             
             if (credentials.accessCode && accessCodeInput) {
@@ -53,11 +53,11 @@ function initializeEventListeners() {
     const loginForm = document.getElementById('login-form');
     loginForm.addEventListener('submit', handleLogin);
     
-    // Auto-uppercase and filter kiosk code input as user types
-    const kioskCodeInput = document.getElementById('kiosk-code');
+    // Auto-uppercase and filter completion code input as user types
+    const completionCodeInput = document.getElementById('completion-code');
     const accessCodeInput = document.getElementById('access-code');
     
-    kioskCodeInput.addEventListener('input', (e) => {
+    completionCodeInput.addEventListener('input', (e) => {
         // Only allow uppercase letters, numbers, and special characters @, #, $, %
         const allowedChars = /[A-Z0-9@#$%]/g;
         let filteredValue = e.target.value.toUpperCase().match(allowedChars);
@@ -82,26 +82,26 @@ function initializeEventListeners() {
 async function handleLogin(e) {
     e.preventDefault();
     
-    const kioskCodeInput = document.getElementById('kiosk-code');
+    const completionCodeInput = document.getElementById('completion-code');
     const accessCodeInput = document.getElementById('access-code');
-    const kioskCode = kioskCodeInput.value.trim().toUpperCase();
+    const completionCode = completionCodeInput.value.trim().toUpperCase();
     const accessCode = accessCodeInput.value;
     const errorDiv = document.getElementById('login-error');
     
     // Save credentials to localStorage immediately when button is clicked
-    saveCredentials(kioskCode, accessCode);
+    saveCredentials(completionCode, accessCode);
     
     // Clear previous errors
     errorDiv.style.display = 'none';
     errorDiv.textContent = '';
-    kioskCodeInput.classList.remove('required-error');
+    completionCodeInput.classList.remove('required-error');
     accessCodeInput.classList.remove('required-error');
     
     // Validate required fields
     let hasError = false;
     
-    if (!kioskCode || kioskCode.length === 0) {
-        kioskCodeInput.classList.add('required-error');
+    if (!completionCode || completionCode.length === 0) {
+        completionCodeInput.classList.add('required-error');
         hasError = true;
     }
     
@@ -114,50 +114,50 @@ async function handleLogin(e) {
         errorDiv.textContent = 'Please fill in all required fields.';
         errorDiv.style.display = 'block';
         // Focus on first error field
-        if (!kioskCode || kioskCode.length === 0) {
-            kioskCodeInput.focus();
+        if (!completionCode || completionCode.length === 0) {
+            completionCodeInput.focus();
         } else {
             accessCodeInput.focus();
         }
         return;
     }
     
-    // Validate kiosk code format (should be 7 characters with uppercase letters, numbers, and special characters)
-    const kioskCodePattern = /^[A-Z0-9@#$%]{7}$/;
-    if (kioskCode.length !== 7 || !kioskCodePattern.test(kioskCode)) {
-        kioskCodeInput.classList.add('required-error');
-        errorDiv.textContent = 'Invalid Kiosk Code format. Please enter a 7-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
+    // Validate completion code format (should be 7 characters with uppercase letters, numbers, and special characters)
+    const completionCodePattern = /^[A-Z0-9@#$%]{7}$/;
+    if (completionCode.length !== 7 || !completionCodePattern.test(completionCode)) {
+        completionCodeInput.classList.add('required-error');
+        errorDiv.textContent = 'Invalid Completion Code format. Please enter a 7-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
         errorDiv.style.display = 'block';
-        kioskCodeInput.focus();
+        completionCodeInput.focus();
         return;
     }
     
-    currentKioskCode = kioskCode;
+    currentCompletionCode = completionCode;
     
     showView('loading');
     
     // Fetch candidate data
     try {
-        await fetchCandidateData(kioskCode);
+        await fetchCandidateData(completionCode);
     } catch (error) {
         console.error('Error fetching candidate data:', error);
         showView('login');
         
-        const kioskCodeInput = document.getElementById('kiosk-code');
+        const completionCodeInput = document.getElementById('completion-code');
         const accessCodeInput = document.getElementById('access-code');
         
         // Check for incorrect codes error
         if (error.message === 'INCORRECT_CODES') {
             errorDiv.textContent = 'Incorrect Codes. Please check and try again.';
-            // Highlight kiosk code and access code inputs
-            kioskCodeInput.classList.add('required-error');
+            // Highlight completion code and access code inputs
+            completionCodeInput.classList.add('required-error');
             accessCodeInput.classList.add('required-error');
             accessCodeInput.focus();
         } else if (error.message === 'NO_SURVEY_DATA') {
-            errorDiv.textContent = 'No survey data found for this Kiosk Code.';
-            // Highlight kiosk code input
-            kioskCodeInput.classList.add('required-error');
-            kioskCodeInput.focus();
+            errorDiv.textContent = 'No survey data found for this Completion Code.';
+            // Highlight completion code input
+            completionCodeInput.classList.add('required-error');
+            completionCodeInput.focus();
         } else {
             errorDiv.textContent = 'Error loading data. Please check and try again.';
         }
@@ -165,8 +165,8 @@ async function handleLogin(e) {
     }
 }
 
-// Fetch candidate data by kiosk code
-async function fetchCandidateData(kioskCode) {
+// Fetch candidate data by completion code
+async function fetchCandidateData(completionCode) {
     const accessCode = document.getElementById('access-code').value;
     
     const response = await fetch(API_URL, {
@@ -175,7 +175,7 @@ async function fetchCandidateData(kioskCode) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            kioskCode: kioskCode,
+            completionCode: completionCode,
             accessCode: accessCode
         })
     });
@@ -237,8 +237,8 @@ async function fetchCandidateData(kioskCode) {
 
 // Display candidate data
 function displayCandidateData(surveyData, jobMatches) {
-    // Display kiosk code
-    document.getElementById('display-kiosk-code').textContent = currentKioskCode;
+    // Display completion code
+    document.getElementById('display-code').textContent = currentCompletionCode;
     
     // Format value helper
     const formatValue = (value) => {

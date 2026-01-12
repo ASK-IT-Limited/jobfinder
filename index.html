@@ -86,7 +86,7 @@
                         <div class="form-group">
                             <label for="education" class="form-label">Education <span class="required-asterisk">*</span></label>
                             <select id="education" name="education" class="form-select" data-placeholder="Select education level" required>
-                                <option value="" selected>Select education level</option>
+                                <option value="" selected>Select education</option>
                                 <option value="High School">High School</option>
                                 <option value="Diploma">Diploma</option>
                                 <option value="Associate Degree">Associate Degree</option>
@@ -134,9 +134,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="experience-level" class="form-label">Experience Level <span class="required-asterisk">*</span></label>
+                            <label for="experience-level" class="form-label">Experience <span class="required-asterisk">*</span></label>
                             <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level" required>
-                                <option value="" selected>Select experience level</option>
+                                <option value="" selected>Select experience</option>
                                 <option value="0 - 2 years">0 - 2 years</option>
                                 <option value="3 - 4 years">3 - 4 years</option>
                                 <option value="5 - 8 years">5 - 8 years</option>
@@ -157,7 +157,7 @@
                         <h2 class="section-title">Preferences</h2>
                         
                         <div class="form-group">
-                            <label for="job-function" class="form-label">Category</label>
+                            <label for="job-function" class="form-label">Job Function</label>
                             <select id="job-function" name="jobFunction" class="form-select" multiple data-placeholder="Select job functions">
                                 <option value="Administration">Administration</option>
                                 <option value="Accounting">Accounting</option>
@@ -174,7 +174,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="salary-range" class="form-label">Salary Range</label>
+                            <label for="salary-range" class="form-label">Expected Salary</label>
                             <select id="salary-range" name="salaryRange" class="form-select" data-placeholder="Select salary range">
                                 <option value="" selected>Select salary range</option>
                                 <option value="Below HK$20,000">Below HK$20,000</option>
@@ -240,7 +240,7 @@
                             <button class="btn-edit-small" data-field="education">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Experience Level</span>
+                            <span class="review-label">Experience</span>
                             <span class="review-value" id="review-experience-level">—</span>
                             <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                         </div>
@@ -260,12 +260,12 @@
                         <div class="review-category">
                             <h3 class="category-title">Preferences</h3>
                             <div class="review-item">
-                                <span class="review-label">Category</span>
+                                <span class="review-label">Job Function</span>
                                 <span class="review-value" id="review-job-function">—</span>
                                 <button class="btn-edit-small" data-field="jobFunction">✏️</button>
                             </div>
                             <div class="review-item">
-                                <span class="review-label">Salary Range</span>
+                                <span class="review-label">Expected Salary</span>
                                 <span class="review-value" id="review-salary-range">—</span>
                                 <button class="btn-edit-small" data-field="salaryRange">✏️</button>
                             </div>
@@ -307,11 +307,11 @@
                     <div class="results-header">
                         <h2 class="results-title">Your Job Matches</h2>
                         <p class="results-subtitle">We found <span id="results-count">0</span> matching opportunities for you</p>
-                        <div class="kiosk-code">
-                            <span class="kiosk-code-label">Kiosk Code:</span>
-                            <span class="kiosk-code-value" id="kiosk-code">—</span>
+                        <div class="completion-code">
+                            <span class="completion-code-label">Completion Code:</span>
+                            <span class="completion-code-value" id="completion-code">—</span>
                         </div>
-                        <p class="kiosk-code-instruction">Present this code to our staff at the job fair booth to receive detailed information about your job matches and personalized recommendations.</p>
+                        <p class="completion-code-instruction">Present this code to our staff at the job fair booth to receive detailed information about your job matches and personalized recommendations.</p>
                     </div>
 
                     <div id="results-list" class="results-list">
