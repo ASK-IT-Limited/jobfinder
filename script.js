@@ -111,7 +111,7 @@ function formatJobDescriptionWithExpandable(text) {
     let locationValueStart = locationIndex + locationMarker.length;
     
     // Check for next section markers (Job Responsibilities or Job Requirements)
-    const responsibilitiesMarker = '<strong>Job Responsibilities: </strong>';
+    const responsibilitiesMarker = '<br><strong>Job Responsibilities: </strong>';
     const requirementsMarker = '<strong>Job Requirements: </strong>';
     
     const respIndex = formatted.indexOf(responsibilitiesMarker, locationValueStart);
