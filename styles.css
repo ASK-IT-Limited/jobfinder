@@ -530,11 +530,7 @@ body {
     margin-bottom: 32px;
 }
 
-.review-category {
-    margin-bottom: 32px;
-}
-
-.review-category:last-child {
+.review-content:last-child {
     margin-bottom: 0;
 }
 
@@ -585,10 +581,6 @@ body {
     display: flex;
     gap: 16px;
     align-items: center;
-}
-
-.icon-search {
-    margin-right: 8px;
 }
 
 /* Loading View */
@@ -705,6 +697,7 @@ body {
     background-color: var(--white);
     transition: all 0.2s;
     border-left: 4px solid var(--primary-navy);
+    position: relative;
 }
 
 .job-card:hover {
@@ -739,15 +732,84 @@ body {
     font-weight: 600;
 }
 
-.job-card-body {
-    margin-bottom: 20px;
-}
-
 .job-description {
     font-size: 15px;
     color: var(--gray-dark);
     line-height: 1.6;
     margin-bottom: 16px;
+}
+
+/* Expandable job description - visible part */
+.job-description-visible {
+    font-size: 15px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Full job description (when no expandable) */
+.job-description-full {
+    font-size: 15px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+}
+
+/* Expandable job description - expandable section */
+.job-description-expandable {
+    margin-top: 12px;
+}
+
+.job-expand-toggle {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.job-expand-toggle:hover {
+    opacity: 0.7;
+}
+
+.job-expand-toggle:focus {
+    outline: 2px solid var(--primary-navy);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.job-expand-toggle .toggle-icon {
+    font-size: 20px;
+    color: var(--primary-navy);
+    transition: transform 0.3s ease;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+.job-expand-content {
+    margin-top: 12px;
+    font-size: 15px;
+    color: var(--gray-dark);
+    line-height: 1.6;
+}
+
+.job-expand-content p {
+    margin: 0 0 8px 0;
+}
+
+.job-expand-content p:last-child {
+    margin-bottom: 0;
 }
 
 /* Collapsible sections for job responsibilities and requirements */
@@ -836,16 +898,6 @@ body {
     margin: 0;
 }
 
-.job-card-footer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.btn-view-job {
-    text-decoration: none;
-    display: inline-block;
-}
-
 .no-results {
     text-align: center;
     font-size: 16px;
@@ -871,20 +923,6 @@ body {
     background-color: var(--white);
     margin-top: 60px;
     text-align: center;
-}
-
-.footer-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 32px;
-}
-
-.footer-left {
-    flex: 1;
-    min-width: 250px;
 }
 
 .footer-tagline {

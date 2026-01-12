@@ -86,12 +86,99 @@ function escapeHtmlAllowBreaks(text) {
     return escaped;
 }
 
+// Parse job description and split at Location, making everything after expandable
+function formatJobDescriptionWithExpandable(text) {
+    if (!text) return '';
+    
+    // First, escape the HTML and format it
+    let formatted = escapeHtmlAllowBreaks(text);
+    
+    // Find the Location marker
+    const locationMarker = '<strong>Location: </strong>';
+    const locationIndex = formatted.indexOf(locationMarker);
+    
+    // If Location marker not found, return the formatted text as is (no expandable)
+    if (locationIndex === -1) {
+        return {
+            visible: formatted,
+            expandable: '',
+            hasExpandable: false
+        };
+    }
+    
+    // Find where Location section ends
+    // Location value starts after the marker
+    let locationValueStart = locationIndex + locationMarker.length;
+    
+    // Check for next section markers (Job Responsibilities or Job Requirements)
+    const responsibilitiesMarker = '<strong>Job Responsibilities: </strong>';
+    const requirementsMarker = '<strong>Job Requirements: </strong>';
+    
+    const respIndex = formatted.indexOf(responsibilitiesMarker, locationValueStart);
+    const reqIndex = formatted.indexOf(requirementsMarker, locationValueStart);
+    
+    // Find the earliest section marker or line break
+    let splitPoint = formatted.length;
+    let foundSectionMarker = false;
+    
+    // Check for section markers first
+    if (respIndex !== -1) {
+        splitPoint = respIndex;
+        foundSectionMarker = true;
+    }
+    if (reqIndex !== -1 && reqIndex < splitPoint) {
+        splitPoint = reqIndex;
+        foundSectionMarker = true;
+    }
+    
+    // If no section marker found, look for the next <br> tag after Location value
+    if (!foundSectionMarker) {
+        const brFormats = [
+            { pattern: '<br>', length: 4 },
+            { pattern: '<br/>', length: 5 },
+            { pattern: '<br />', length: 6 }
+        ];
+        
+        for (const brFormat of brFormats) {
+            const brIndex = formatted.indexOf(brFormat.pattern, locationValueStart);
+            if (brIndex !== -1 && brIndex < splitPoint) {
+                splitPoint = brIndex + brFormat.length;
+            }
+        }
+    }
+    
+    // Extract visible part (up to and including Location line)
+    const visiblePart = formatted.substring(0, splitPoint);
+    
+    // Extract hidden part (everything after Location line)
+    const hiddenPart = formatted.substring(splitPoint);
+    
+    // If there's no hidden content, return the formatted text as is (no expandable)
+    if (!hiddenPart || hiddenPart.trim() === '') {
+        return {
+            visible: formatted,
+            expandable: '',
+            hasExpandable: false
+        };
+    }
+    
+    // Process the hidden part to create collapsible sections for responsibilities and requirements
+    const processedHiddenPart = formatJobDescriptionWithCollapsible(hiddenPart);
+    
+    // Create the expandable section - return object with visible, expandable content, and placeholder for reason
+    return {
+        visible: visiblePart,
+        expandable: processedHiddenPart,
+        hasExpandable: true
+    };
+}
+
 // Parse job description and create collapsible sections for responsibilities and requirements
 function formatJobDescriptionWithCollapsible(text) {
     if (!text) return '';
     
     // First, escape the HTML and format it
-    let formatted = escapeHtmlAllowBreaks(text);
+    let formatted = text;
     
     // Find positions of responsibilities and requirements sections
     // The escapeHtmlAllowBreaks function formats these as: <br><strong>Job Responsibilities: </strong><br>
@@ -214,6 +301,38 @@ function initializeCollapsibleSections(container) {
     });
 }
 
+// Initialize expandable job description sections
+function initializeExpandableJobDescription(container) {
+    if (!container) return;
+    
+    const expandButtons = container.querySelectorAll('.job-expand-toggle');
+    expandButtons.forEach(button => {
+        // Remove existing listeners by cloning
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        
+        newButton.addEventListener('click', function() {
+            // Find the expandable content (it's in a sibling element)
+            const expandableSection = container.querySelector('.job-description-expandable');
+            const content = expandableSection ? expandableSection.querySelector('.job-expand-content') : null;
+            const icon = this.querySelector('.toggle-icon');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            
+            if (content) {
+                if (isExpanded) {
+                    content.style.display = 'none';
+                    this.setAttribute('aria-expanded', 'false');
+                    if (icon) icon.textContent = '▼';
+                } else {
+                    content.style.display = 'block';
+                    this.setAttribute('aria-expanded', 'true');
+                    if (icon) icon.textContent = '▲';
+                }
+            }
+        });
+    });
+}
+
 // Generic showView function - shared between profile.js and index.js
 // views: object containing view elements
 // viewName: name of the view to show
@@ -316,6 +435,46 @@ function displayJobs(jobs, options) {
         
         const scoreBadge = jobScore ? `<div class="job-score">Score: ${jobScore}/10</div>` : '';
         
+        // Format job description
+        const jobDescFormatted = formatJobDescriptionWithExpandable(jobDesc);
+        let jobDescriptionHtml = '';
+        
+        if (jobDescFormatted && typeof jobDescFormatted === 'object' && jobDescFormatted.hasExpandable) {
+            // Has expandable content
+            const reasonHtml = jobReason ? `<div class="job-reason">
+                <strong>Why this matches:</strong>
+                <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
+            </div>` : '';
+            
+            jobDescriptionHtml = `
+                <div class="job-description-visible">
+                    ${jobDescFormatted.visible}
+                </div>
+                <div class="job-description-expandable">
+                    <div class="job-expand-content" style="display: none;">
+                        ${jobDescFormatted.expandable}
+                        ${reasonHtml}
+                    </div>
+                </div>
+                <button class="job-expand-toggle" type="button" aria-expanded="false" aria-label="Expand job details">
+                    <span class="toggle-icon">▼</span>
+                </button>
+            `;
+        } else {
+            // No expandable content - show everything
+            const reasonHtml = jobReason ? `<div class="job-reason">
+                <strong>Why this matches:</strong>
+                <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
+            </div>` : '';
+            
+            jobDescriptionHtml = `
+                <div class="job-description-full">
+                    ${jobDescFormatted || 'No description available'}
+                    ${reasonHtml}
+                </div>
+            `;
+        }
+        
         jobCard.innerHTML = `
             <div class="job-card-header">
                 <div class="job-card-title">
@@ -324,17 +483,16 @@ function displayJobs(jobs, options) {
                 </div>
             </div>
             <div class="job-card-body">
-                <div class="job-description">${formatJobDescriptionWithCollapsible(jobDesc) || 'No description available'}</div>
-                ${jobReason ? `<div class="job-reason">
-                    <strong>Why this matches:</strong>
-                    <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
-                </div>` : ''}
+                <div class="job-description">${jobDescriptionHtml}</div>
             </div>
         `;
         
         jobsList.appendChild(jobCard);
         
-        // Initialize collapsible sections for this job card
+        // Initialize expandable job description
+        initializeExpandableJobDescription(jobCard);
+        
+        // Initialize collapsible sections for this job card (for responsibilities and requirements)
         initializeCollapsibleSections(jobCard);
     });
 }

@@ -500,8 +500,6 @@ function displayJobResults(jobs) {
     });
 }
 
-// Shared utility functions (escapeHtmlAllowBreaks) are now in helper.js
-
 // Update progress indicator
 function updateProgress(step) {
     const steps = document.querySelectorAll('.progress-step');
