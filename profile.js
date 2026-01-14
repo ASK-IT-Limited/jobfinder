@@ -133,11 +133,11 @@ async function handleLogin(e) {
         return;
     }
     
-    // Validate completion code format (should be 7 characters with uppercase letters, numbers, and special characters)
-    const completionCodePattern = /^[A-Z0-9@#$%]{7}$/;
-    if (completionCode.length !== 7 || !completionCodePattern.test(completionCode)) {
+    // Validate completion code format (should be 5 characters with uppercase letters, numbers, and special characters)
+    const completionCodePattern = /^[A-Z0-9@#$%]{5}$/;
+    if (completionCode.length !== 5 || !completionCodePattern.test(completionCode)) {
         completionCodeInput.classList.add('required-error');
-        errorDiv.textContent = 'Invalid Completion Code format. Please enter a 7-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
+        errorDiv.textContent = 'Invalid Completion Code format. Please enter a 5-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
         errorDiv.style.display = 'block';
         completionCodeInput.focus();
         return;
