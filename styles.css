@@ -16,6 +16,7 @@
     --accent-teal: #0E7490;
     --accent-teal-light: #0891B2;
     --success-green: #059669;
+    --error-red: #EF4444;
     --gray-dark: #1F2937;
     --gray-medium: #4B5563;
     --gray-light: #6B7280;
@@ -376,7 +377,7 @@ body {
 }
 
 .required-asterisk {
-    color: #EF4444;
+    color: var(--error-red);
     margin-left: 2px;
     font-weight: 600;
 }
@@ -449,15 +450,17 @@ body {
 
 .form-input.required-error,
 .form-select.required-error,
+.form-select[multiple].required-error,
 .form-textarea.required-error {
-    border-color: #EF4444 !important;
+    border-color: var(--error-red) !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 
 .form-input.required-error:focus,
 .form-select.required-error:focus,
+.form-select[multiple].required-error:focus,
 .form-textarea.required-error:focus {
-    border-color: #EF4444 !important;
+    border-color: var(--error-red) !important;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
 }
 

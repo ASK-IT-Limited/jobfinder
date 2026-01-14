@@ -185,6 +185,18 @@ function validateForm() {
                 const selectedNonEmpty = Array.from(field.selectedOptions)
                     .filter(option => option.value !== '');
                 isEmpty = selectedNonEmpty.length === 0;
+                
+                // Special validation for job function: max 3 items
+                if (field.id === 'job-function' && selectedNonEmpty.length > 3) {
+                    isInvalidFormat = true; // Mark as invalid to prevent class removal
+                    isValid = false;
+                    // Show error message
+                    const helperText = field.parentElement.querySelector('.form-helper');
+                    if (helperText) {
+                        helperText.textContent = 'Please select at most 3 job functions.';
+                        helperText.style.color = 'var(--error-red)';
+                    }
+                }
             } else {
                 isEmpty = field.value === '' || field.value === null;
             }
