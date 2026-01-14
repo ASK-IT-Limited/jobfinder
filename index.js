@@ -480,14 +480,10 @@ async function submitJobSearch() {
                 completionCode = result.body.completionCode;
             }
             
-            if (jobs.length > 0) {
-                jobResults = jobs;
-                displayJobResults(jobs);
-                showView('results');
-            } else {
-                showView('form');
-                alert('No jobs found. Please try adjusting your search criteria.');
-            }
+            // Always display results view, even if there are 0 matches
+            jobResults = jobs;
+            displayJobResults(jobs);
+            showView('results');
         } else {
             console.error('Error submitting job search:', response.status, response.statusText);
             showView('form');
@@ -507,7 +503,7 @@ function displayJobResults(jobs) {
         countElementId: 'results-count',
         completionCodeElementId: 'completion-code',
         completionCode: completionCode,
-        noResultsMessage: 'No matching jobs found. Please try adjusting your search criteria.',
+        noResultsMessage: 'No job matches found. Please try adjusting your search criteria.',
         propertyNames: {
             score: 'score',
             jobTitle: 'jobTitle',
