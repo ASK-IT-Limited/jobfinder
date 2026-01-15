@@ -428,8 +428,9 @@ function displayJobs(jobs, options) {
         const jobDesc = job[propertyNames.jobDesc] || job.JobDesc || job.jobDesc || null;
         const jobReason = job[propertyNames.reason] || job.Reason || job.reason || null;
         
-        const scoreBadge = jobScore ? `<div class="job-score">Score: ${jobScore}/10</div>` : '';
-        
+        // const scoreBadge = jobScore ? `<div class="job-score">Score: ${jobScore}/10</div>` : '';
+        const scoreBadge = '';
+
         // Format job description
         const jobDescFormatted = formatJobDescriptionWithExpandable(jobDesc);
         let jobDescriptionHtml = '';
