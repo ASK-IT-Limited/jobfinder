@@ -1,54 +1,32 @@
 /* Remove all padding and margins for chatbot page */
 html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-
-.header {
-    flex-shrink: 0;
 }
 
 .main-content {
     padding: 0 !important;
     margin: 0 !important;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-height: 0;
 }
 
 .main-content .container {
     padding: 0 !important;
     margin: 0 !important;
     max-width: 100% !important;
-    flex: 1;
-    display: flex;
-    overflow: hidden;
     position: relative;
-    min-height: 0;
 }
 
 .footer {
-    margin-top: 0 !important;
-    flex-shrink: 0;
+    margin-top: -40px !important;
 }
 
 iframe {
     width: 100%;
-    height: calc(100% + 50px);
+    height: 800px;
     border: none;
-    flex: 1;
     position: relative;
     top: -50px;
     clip-path: inset(60px 0 0 7px);
-    min-height: 0;
+    display: block;
+    filter: brightness(0.99) contrast(0.99);
 }
