@@ -16,17 +16,34 @@ html, body {
     position: relative;
 }
 
+.iframe-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+.iframe-overlay-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    z-index: 10;
+    pointer-events: auto;
+    background: transparent;
+}
+
 .footer {
-    margin-top: -40px !important;
+    margin-top: -60px !important;
 }
 
 iframe {
     width: 100%;
-    height: 800px;
+    height: calc(100vh - 140px);
     border: none;
     position: relative;
     top: -50px;
-    clip-path: inset(60px 0 0 7px);
+    clip-path: inset(65px 0 20px 7px);
     display: block;
     filter: brightness(0.99) contrast(0.99);
+    pointer-events: auto;
 }
