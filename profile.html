@@ -47,16 +47,16 @@
                     <form id="login-form" class="login-form" novalidate>
                         <div class="form-group">
                             <label for="completion-code" class="form-label">Completion Code <span class="required-asterisk">*</span></label>
-                            <input type="text" id="completion-code" name="completionCode" class="form-input" placeholder="e.g., A1B2C" required autocomplete="off" maxlength="5">
+                            <input type="text" id="completion-code" name="completionCode" class="form-input" placeholder="e.g., A1B2C" required autocomplete="off" maxlength="5" aria-label="Completion Code">
                         </div>
                         <div class="form-group">
                             <label for="access-code" class="form-label">Access Code <span class="required-asterisk">*</span></label>
-                            <input type="password" id="access-code" name="accessCode" class="form-input" placeholder="Enter access code" required>
+                            <input type="password" id="access-code" name="accessCode" class="form-input" placeholder="Enter access code" required aria-label="Access Code">
                         </div>
                         <div class="form-actions">
                             <button type="submit" class="btn-primary btn-large">View Profile</button>
                         </div>
-                        <div id="login-error" class="error-message" style="display: none;"></div>
+                        <div id="login-error" class="error-message" role="alert" aria-live="polite"></div>
                     </form>
                 </div>
             </div>

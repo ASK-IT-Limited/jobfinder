@@ -19,7 +19,9 @@
     margin-bottom: 0;
 }
 
+/* Error Message */
 .error-message {
+    display: none;
     background-color: #FEF2F2;
     border: 1px solid #FCA5A5;
     color: #DC2626;
@@ -31,9 +33,8 @@
 
 /* Results Header */
 .results-header-section {
-    margin: 0 auto;
     max-width: 800px;
-    margin-bottom: 32px;
+    margin: 0 auto 32px;
 }
 
 .results-header-actions {
@@ -75,13 +76,12 @@
 
 /* Info Section */
 .info-section {
-    margin: 0 auto;
     max-width: 800px;
+    margin: 0 auto 32px;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 32px;
-    margin-bottom: 32px;
     box-shadow: var(--shadow-sm);
 }
 
@@ -96,8 +96,8 @@
 
 /* Jobs Section */
 .jobs-section {
-    margin: 0 auto;
     max-width: 800px;
+    margin: 0 auto;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
