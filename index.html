@@ -13,8 +13,8 @@
             <div class="header-content">
                 <div class="logo">
                     <img src="askit_logo.png" alt="ASK IT" class="logo-image">
-                    <span class="logo-text">Job Compass</span>
-                    <span class="logo-limited">v3.1</span>
+                    <span class="logo-text" data-i18n="logo.text">Job Compass</span>
+                    <span class="logo-limited" data-i18n="logo.version">v3.5</span>
                 </div>
                 <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle menu">
                     <span></span>
@@ -22,11 +22,14 @@
                     <span></span>
                 </button>
                 <nav class="nav-links" id="nav-links">
-                    <a href="profile.html" class="nav-link">Your Profile</a>
+                    <a href="profile.html" class="nav-link" data-i18n="nav.yourProfile">Your Profile</a>
                     <span class="nav-link">|</span>
-                    <a href="https://askit.com.hk/" class="nav-link" target="_blank">Home</a>
-                    <a href="https://askit.com.hk/it-outsourcing/" class="nav-link" target="_blank">Our Services</a>
-                    <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank">Contact Us</a>
+                    <a href="https://askit.com.hk/it-outsourcing/" class="nav-link" target="_blank" data-i18n="nav.ourServices">Our Services</a>
+                    <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank" data-i18n="nav.contactUs">Contact Us</a>
+                    <div class="language-switcher" id="language-switcher">
+                        <button class="lang-btn" data-lang="en">EN</button>
+                        <button class="lang-btn" data-lang="zh">中文</button>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -36,25 +39,25 @@
     <main class="main-content">
         <div class="container">
             <div class="hero-section">
-                <h1 class="hero-title">Find Your Perfect Job</h1>
-                <p class="hero-subtitle">Answer a few quick questions and we will match you with tailored job opportunities.</p>
+                <h1 class="hero-title" data-i18n="hero.title">Find Your Perfect Job</h1>
+                <p class="hero-subtitle" data-i18n="hero.subtitle">Answer a few quick questions and we will match you with tailored job opportunities.</p>
             </div>
 
             <!-- Progress Indicator -->
             <div class="progress-indicator">
                 <div class="progress-step active" data-step="1">
                     <div class="step-circle">1</div>
-                    <span class="step-label">Quick Survey</span>
+                    <span class="step-label" data-i18n="step.quickSurvey">Quick Survey</span>
                 </div>
                 <div class="progress-line"></div>
                 <div class="progress-step" data-step="2">
                     <div class="step-circle">2</div>
-                    <span class="step-label">Review Answers</span>
+                    <span class="step-label" data-i18n="step.reviewAnswers">Review Answers</span>
                 </div>
                 <div class="progress-line"></div>
                 <div class="progress-step" data-step="3">
                     <div class="step-circle">3</div>
-                    <span class="step-label">Review Matches</span>
+                    <span class="step-label" data-i18n="step.reviewMatches">Review Matches</span>
                 </div>
             </div>
 
@@ -63,150 +66,149 @@
                 <form id="job-form" class="job-form" novalidate>
                     <!-- Information -->
                     <div class="form-section">
-                        <h2 class="section-title">Information</h2>
+                        <h2 class="section-title" data-i18n="form.information">Information</h2>
 
                         <div class="form-group">
-                            <label for="name" class="form-label">Name <span class="required-asterisk">*</span></label>
+                            <label for="name" class="form-label"><span data-i18n="form.name">Name</span> <span class="required-asterisk">*</span></label>
                             <input type="text" id="name" name="name" class="form-input" placeholder="Chris Wong" required aria-label="Name">
                         </div>
 
                         <div class="form-group">
-                            <label for="email" class="form-label">Email <span class="required-asterisk">*</span></label>
+                            <label for="email" class="form-label"><span data-i18n="form.email">Email</span> <span class="required-asterisk">*</span></label>
                             <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required aria-label="Email">
                         </div>
 
                         <div class="form-group">
-                            <label for="age-range" class="form-label">Age</label>
+                            <label for="age-range" class="form-label" data-i18n="form.age">Age</label>
                             <select id="age-range" name="ageRange" class="form-select" data-placeholder="Select age range">
-                                <option value="" selected>Select age range</option>
-                                <option value="18-24">18 - 24</option>
-                                <option value="25-34">25 - 34</option>
-                                <option value="35-44">35 - 44</option>
-                                <option value="45-54">45 - 54</option>
-                                <option value="55-64">55 - 64</option>
-                                <option value="65+">65+</option>
+                                <option value="" selected data-i18n-option="option.age.default">Select age range</option>
+                                <option value="18-24" data-i18n-option="option.age.18-24">18 - 24</option>
+                                <option value="25-34" data-i18n-option="option.age.25-34">25 - 34</option>
+                                <option value="35-44" data-i18n-option="option.age.35-44">35 - 44</option>
+                                <option value="45-54" data-i18n-option="option.age.45-54">45 - 54</option>
+                                <option value="55-64" data-i18n-option="option.age.55-64">55 - 64</option>
+                                <option value="65+" data-i18n-option="option.age.65+">65+</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="phone" class="form-label">Phone</label>
+                            <label for="phone" class="form-label" data-i18n="form.phone">Phone</label>
                             <input type="text" id="phone" name="phone" class="form-input" placeholder="+852 1234 5678" aria-label="Phone">
                         </div>
 
                         <div class="form-group">
-                            <label for="education" class="form-label">Education <span class="required-asterisk">*</span></label>
+                            <label for="education" class="form-label"><span data-i18n="form.education">Education</span> <span class="required-asterisk">*</span></label>
                             <select id="education" name="education" class="form-select" data-placeholder="Select education level" required>
-                                <option value="" selected disabled>Select education</option>
-                                <option value="High School">High School</option>
-                                <option value="Diploma">Diploma</option>
-                                <option value="Associate Degree">Associate Degree</option>
-                                <option value="Bachelor's Degree">Bachelor's Degree</option>
-                                <option value="Master's Degree">Master's Degree</option>
-                                <option value="PhD / Doctorate">PhD / Doctorate</option>
-                                <option value="Other">Other</option>
+                                <option value="" selected disabled data-i18n-option="option.education.default">Select education</option>
+                                <option value="High School" data-i18n-option="option.education.highSchool">High School</option>
+                                <option value="Diploma" data-i18n-option="option.education.diploma">Diploma</option>
+                                <option value="Associate Degree" data-i18n-option="option.education.associateDegree">Associate Degree</option>
+                                <option value="Bachelor's Degree" data-i18n-option="option.education.bachelorsDegree">Bachelor's Degree</option>
+                                <option value="Master's Degree" data-i18n-option="option.education.mastersDegree">Master's Degree</option>
+                                <option value="PhD / Doctorate" data-i18n-option="option.education.phd">PhD / Doctorate</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="availability" class="form-label">Availability <span class="required-asterisk">*</span></label>
+                            <label for="availability" class="form-label"><span data-i18n="form.availability">Availability</span> <span class="required-asterisk">*</span></label>
                             <select id="availability" name="availability" class="form-select" data-placeholder="Select availability" required>
-                                <option value="" selected disabled>Select availability</option>
-                                <option value="Immediate">Immediate</option>
-                                <option value="1 week notice">1 week notice</option>
-                                <option value="1 month notice">1 month notice</option>
-                                <option value="More than 1 month notice">More than 1 month notice</option>
+                                <option value="" selected disabled data-i18n-option="option.availability.default">Select availability</option>
+                                <option value="Immediate" data-i18n-option="option.availability.immediate">Immediate</option>
+                                <option value="1 week notice" data-i18n-option="option.availability.1week">1 week notice</option>
+                                <option value="1 month notice" data-i18n-option="option.availability.1month">1 month notice</option>
+                                <option value="More than 1 month notice" data-i18n-option="option.availability.moreThan1Month">More than 1 month notice</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label for="living-district" class="form-label">District <span class="required-asterisk">*</span></label>
+                            <label for="living-district" class="form-label"><span data-i18n="form.district">District</span> <span class="required-asterisk">*</span></label>
                             <select id="living-district" name="livingDistrict" class="form-select" data-placeholder="Select living district" required>
-                                <option value="" selected disabled>Select district</option>
-                                <option value="Central and Western">Central and Western</option>
-                                <option value="Eastern">Eastern</option>
-                                <option value="Southern">Southern</option>
-                                <option value="Wan Chai">Wan Chai</option>
-                                <option value="Kowloon City">Kowloon City</option>
-                                <option value="Yau Tsim Mong">Yau Tsim Mong</option>
-                                <option value="Sham Shui Po">Sham Shui Po</option>
-                                <option value="Wong Tai Sin">Wong Tai Sin</option>
-                                <option value="Kwun Tong">Kwun Tong</option>
-                                <option value="Tai Po">Tai Po</option>
-                                <option value="Yuen Long">Yuen Long</option>
-                                <option value="Tuen Mun">Tuen Mun</option>
-                                <option value="North">North</option>
-                                <option value="Sai Kung">Sai Kung</option>
-                                <option value="Sha Tin">Sha Tin</option>
-                                <option value="Tsuen Wan">Tsuen Wan</option>
-                                <option value="Kwai Tsing">Kwai Tsing</option>
-                                <option value="Islands">Islands</option>
+                                <option value="" selected disabled data-i18n-option="option.district.default">Select district</option>
+                                <option value="Central and Western" data-i18n-option="option.district.centralWestern">Central and Western</option>
+                                <option value="Eastern" data-i18n-option="option.district.eastern">Eastern</option>
+                                <option value="Southern" data-i18n-option="option.district.southern">Southern</option>
+                                <option value="Wan Chai" data-i18n-option="option.district.wanChai">Wan Chai</option>
+                                <option value="Kowloon City" data-i18n-option="option.district.kowloonCity">Kowloon City</option>
+                                <option value="Yau Tsim Mong" data-i18n-option="option.district.yauTsimMong">Yau Tsim Mong</option>
+                                <option value="Sham Shui Po" data-i18n-option="option.district.shamShuiPo">Sham Shui Po</option>
+                                <option value="Wong Tai Sin" data-i18n-option="option.district.wongTaiSin">Wong Tai Sin</option>
+                                <option value="Kwun Tong" data-i18n-option="option.district.kwunTong">Kwun Tong</option>
+                                <option value="Tai Po" data-i18n-option="option.district.taiPo">Tai Po</option>
+                                <option value="Yuen Long" data-i18n-option="option.district.yuenLong">Yuen Long</option>
+                                <option value="Tuen Mun" data-i18n-option="option.district.tuenMun">Tuen Mun</option>
+                                <option value="North" data-i18n-option="option.district.north">North</option>
+                                <option value="Sai Kung" data-i18n-option="option.district.saiKung">Sai Kung</option>
+                                <option value="Sha Tin" data-i18n-option="option.district.shaTin">Sha Tin</option>
+                                <option value="Tsuen Wan" data-i18n-option="option.district.tsuenWan">Tsuen Wan</option>
+                                <option value="Kwai Tsing" data-i18n-option="option.district.kwaiTsing">Kwai Tsing</option>
+                                <option value="Islands" data-i18n-option="option.district.islands">Islands</option>
                             </select>
-                            <p class="form-helper">Select your living district for better matches.</p>
+                            <p class="form-helper" data-i18n="form.districtHelper">Select your living district for better matches.</p>
                         </div>
 
                         <div class="form-group">
-                            <label for="experience-level" class="form-label">Experience <span class="required-asterisk">*</span></label>
+                            <label for="experience-level" class="form-label"><span data-i18n="form.experience">Experience</span> <span class="required-asterisk">*</span></label>
                             <select id="experience-level" name="experienceLevel" class="form-select" data-placeholder="Select experience level" required>
-                                <option value="" selected disabled>Select experience</option>
-                                <option value="No experience">No experience</option>
-                                <option value="1 - 2 years">1 - 2 years</option>
-                                <option value="3 - 4 years">3 - 4 years</option>
-                                <option value="5 - 8 years">5 - 8 years</option>
-                                <option value="9 - 10 years">9 - 10 years</option>
-                                <option value="Over 10 years">Over 10 years</option>
+                                <option value="" selected disabled data-i18n-option="option.experience.default">Select experience</option>
+                                <option value="No experience" data-i18n-option="option.experience.none">No experience</option>
+                                <option value="1 - 2 years" data-i18n-option="option.experience.1-2years">1 - 2 years</option>
+                                <option value="3 - 4 years" data-i18n-option="option.experience.3-4years">3 - 4 years</option>
+                                <option value="5 - 8 years" data-i18n-option="option.experience.5-8years">5 - 8 years</option>
+                                <option value="9 - 10 years" data-i18n-option="option.experience.9-10years">9 - 10 years</option>
+                                <option value="Over 10 years" data-i18n-option="option.experience.over10years">Over 10 years</option>
                             </select>
-                            <p class="form-helper">Choose your years of experience.</p>
+                            <p class="form-helper" data-i18n="form.experienceHelper">Choose your years of experience.</p>
                         </div>
 
                         <div class="form-group">
-                            <label for="remarks" class="form-label">Background</label>
-                            <textarea id="remarks" name="remarks" class="form-textarea" rows="4" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..." aria-label="Background"></textarea>
-                            <p class="form-helper">Help us understand your background to find better matches. For example, you may mention:</p>
-                            <p class="form-helper">1. Your work areas and specialisations<br>2. Your career goals and aspirations<br>3. Your personality in 3 adjectives<br>4. Your top 3 skills and strengths</p>
+                            <label for="remarks" class="form-label" data-i18n="form.background">Background</label>
+                            <textarea id="remarks" name="remarks" class="form-textarea" rows="4" data-i18n-placeholder="form.backgroundPlaceholder" placeholder="Briefly describe your goals, personalities, skillsets, experiences, or anything about yourself..." aria-label="Background"></textarea>
+                            <p class="form-helper" data-i18n="form.backgroundHelper1">Help us understand your background to find better matches. For example, you may mention:</p>
+                            <p class="form-helper"><span data-i18n="form.backgroundHelper2">1. Your work areas and specialisations</span><br><span data-i18n="form.backgroundHelper3">2. Your career goals and aspirations</span><br><span data-i18n="form.backgroundHelper4">3. Your personality in 3 adjectives</span><br><span data-i18n="form.backgroundHelper5">4. Your top 3 skills and strengths</span></p>
                         </div>
                     </div>
 
                     <!-- Preferences -->
                     <div class="form-section">
-                        <h2 class="section-title">Preferences</h2>
+                        <h2 class="section-title" data-i18n="form.preferences">Preferences</h2>
                         
                         <div class="form-group">
-                            <label for="job-function" class="form-label">Job Functions <span class="required-asterisk">*</span></label>
+                            <label for="job-function" class="form-label"><span data-i18n="form.jobFunctions">Job Functions</span> <span class="required-asterisk">*</span></label>
                             <select id="job-function" name="jobFunction" class="form-select" multiple required data-placeholder="Select job functions">
-                                <option value="Administration">Administration</option>
-                                <option value="Accounting">Accounting</option>
-                                <option value="Marketing">Marketing</option>
-                                <option value="Human Resources">Human Resources</option>
-                                <option value="Hospitality (F&B)">Hospitality (F&B)</option>
-                                <option value="Customer Service">Customer Service</option>
-                                <option value="Sales / Business Development">Sales / Business Development</option>
-                                <option value="Technical Trades">Technical Trades</option>
-                                <option value="Business Analysis">Business Analysis</option>
-                                <option value="Data Analytics">Data Analytics</option>
-                                <option value="Cybersecurity">Cybersecurity</option>
-                                <option value="IT Technical Support">IT Technical Support</option>
-                                <option value="Software Engineering">Software Engineering</option>
-                                <option value="Systems Engineering">Systems Engineering</option>
-                                <option value="Network Engineering">Network Engineering</option>
-                                <option value="Technology Management">Technology Management</option>
-                                <option value="Product Management">Product Management</option>
-                                <option value="Project Management">Project Management</option>
+                                <option value="Administration" data-i18n-option="option.jobFunction.administration">Administration</option>
+                                <option value="Accounting" data-i18n-option="option.jobFunction.accounting">Accounting</option>
+                                <option value="Marketing" data-i18n-option="option.jobFunction.marketing">Marketing</option>
+                                <option value="Human Resources" data-i18n-option="option.jobFunction.humanResources">Human Resources</option>
+                                <option value="Hospitality (F&B)" data-i18n-option="option.jobFunction.hospitality">Hospitality (F&B)</option>
+                                <option value="Customer Service" data-i18n-option="option.jobFunction.customerService">Customer Service</option>
+                                <option value="Sales / Business Development" data-i18n-option="option.jobFunction.sales">Sales / Business Development</option>
+                                <option value="Technical Trades" data-i18n-option="option.jobFunction.technicalTrades">Technical Trades</option>
+                                <option value="Business Analysis" data-i18n-option="option.jobFunction.businessAnalysis">Business Analysis</option>
+                                <option value="Data Analytics" data-i18n-option="option.jobFunction.dataAnalytics">Data Analytics</option>
+                                <option value="Cybersecurity" data-i18n-option="option.jobFunction.cybersecurity">Cybersecurity</option>
+                                <option value="IT Technical Support" data-i18n-option="option.jobFunction.itSupport">IT Technical Support</option>
+                                <option value="Software Engineering" data-i18n-option="option.jobFunction.softwareEngineering">Software Engineering</option>
+                                <option value="Systems Engineering" data-i18n-option="option.jobFunction.systemsEngineering">Systems Engineering</option>
+                                <option value="Network Engineering" data-i18n-option="option.jobFunction.networkEngineering">Network Engineering</option>
+                                <option value="Technology Management" data-i18n-option="option.jobFunction.technologyManagement">Technology Management</option>
+                                <option value="Product Management" data-i18n-option="option.jobFunction.productManagement">Product Management</option>
+                                <option value="Project Management" data-i18n-option="option.jobFunction.projectManagement">Project Management</option>
                             </select>
-                            <p class="form-helper">Select up to 3 job categories.</p>
+                            <p class="form-helper" data-i18n="form.jobFunctionHelper">Select up to 3 job categories.</p>
                         </div>
 
                         <div class="form-group">
-                            <label for="salary-range" class="form-label">Expected Salary</label>
+                            <label for="salary-range" class="form-label" data-i18n="form.expectedSalary">Expected Salary</label>
                             <select id="salary-range" name="salaryRange" class="form-select" data-placeholder="Select salary range">
-                                <option value="" selected>Select salary range</option>
-                                <option value="Below HK$20,000">Below HK$20,000</option>
-                                <option value="HK$20,001 - HK$30,000">HK$20,001 - HK$30,000</option>
-                                <option value="HK$30,001 - HK$50,000">HK$30,001 - HK$50,000</option>
-                                <option value="HK$50,001 - HK$80,000">HK$50,001 - HK$80,000</option>
-                                <option value="HK$80,001 - HK$100,000">HK$80,001 - HK$100,000</option>
-                                <option value="Above HK$100,000">Above HK$100,000</option>
+                                <option value="" selected data-i18n-option="option.salary.default">Select salary range</option>
+                                <option value="Below HK$20,000" data-i18n-option="option.salary.below20k">Below HK$20,000</option>
+                                <option value="HK$20,001 - HK$30,000" data-i18n-option="option.salary.20k-30k">HK$20,001 - HK$30,000</option>
+                                <option value="HK$30,001 - HK$50,000" data-i18n-option="option.salary.30k-50k">HK$30,001 - HK$50,000</option>
+                                <option value="HK$50,001 - HK$80,000" data-i18n-option="option.salary.50k-80k">HK$50,001 - HK$80,000</option>
+                                <option value="HK$80,001 - HK$100,000" data-i18n-option="option.salary.80k-100k">HK$80,001 - HK$100,000</option>
+                                <option value="Above HK$100,000" data-i18n-option="option.salary.above100k">Above HK$100,000</option>
                             </select>
-                            <p class="form-helper">Select monthly, pre-tax salary expectation.</p>
+                            <p class="form-helper" data-i18n="form.salaryHelper">Select monthly, pre-tax salary expectation.</p>
                         </div>
                     </div>
 
@@ -214,9 +216,9 @@
                     <div class="form-actions">
                         <a href="#" class="link-clear" id="clear-form">
                             <span class="icon-refresh">↻</span>
-                            Clear Session
+                            <span data-i18n="form.clearSession">Clear Session</span>
                         </a>
-                        <button type="submit" class="btn-primary btn-large">Next</button>
+                        <button type="submit" class="btn-primary btn-large" data-i18n="form.next">Next</button>
                     </div>
                 </form>
             </div>
@@ -225,68 +227,68 @@
             <div id="review-view" class="view">
                 <div class="review-section">
                     <div class="review-header">
-                        <h2 class="review-title">Your Answers</h2>
+                        <h2 class="review-title" data-i18n="review.title">Your Answers</h2>
                         <button class="btn-edit" id="edit-all">✏️</button>
                     </div>
 
                     <div class="review-content">
-                        <h3 class="category-title">Information</h3>
+                        <h3 class="category-title" data-i18n="review.category.information">Information</h3>
                         <div class="review-item">
-                            <span class="review-label">Name</span>
+                            <span class="review-label" data-i18n="form.name">Name</span>
                             <span class="review-value" id="review-name">—</span>
                             <button class="btn-edit-small" data-field="name">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Age</span>
+                            <span class="review-label" data-i18n="form.age">Age</span>
                             <span class="review-value" id="review-age-range">—</span>
                             <button class="btn-edit-small" data-field="ageRange">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Email</span>
+                            <span class="review-label" data-i18n="form.email">Email</span>
                             <span class="review-value" id="review-email">—</span>
                             <button class="btn-edit-small" data-field="email">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Phone</span>
+                            <span class="review-label" data-i18n="form.phone">Phone</span>
                             <span class="review-value" id="review-phone">—</span>
                             <button class="btn-edit-small" data-field="phone">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">District</span>
+                            <span class="review-label" data-i18n="form.district">District</span>
                             <span class="review-value" id="review-living-district">—</span>
                             <button class="btn-edit-small" data-field="livingDistrict">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Education</span>
+                            <span class="review-label" data-i18n="form.education">Education</span>
                             <span class="review-value" id="review-education">—</span>
                             <button class="btn-edit-small" data-field="education">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Experience</span>
+                            <span class="review-label" data-i18n="form.experience">Experience</span>
                             <span class="review-value" id="review-experience-level">—</span>
                             <button class="btn-edit-small" data-field="experienceLevel">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Availability</span>
+                            <span class="review-label" data-i18n="form.availability">Availability</span>
                             <span class="review-value" id="review-availability">—</span>
                             <button class="btn-edit-small" data-field="availability">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Background</span>
+                            <span class="review-label" data-i18n="form.background">Background</span>
                             <span class="review-value" id="review-remarks">—</span>
                             <button class="btn-edit-small" data-field="remarks">✏️</button>
                         </div>
                     </div>
 
                     <div class="review-content">
-                        <h3 class="category-title">Preferences</h3>
+                        <h3 class="category-title" data-i18n="review.category.preferences">Preferences</h3>
                         <div class="review-item">
-                            <span class="review-label">Job Functions</span>
+                            <span class="review-label" data-i18n="form.jobFunctions">Job Functions</span>
                             <span class="review-value" id="review-job-function">—</span>
                             <button class="btn-edit-small" data-field="jobFunction">✏️</button>
                         </div>
                         <div class="review-item">
-                            <span class="review-label">Expected Salary</span>
+                            <span class="review-label" data-i18n="form.expectedSalary">Expected Salary</span>
                             <span class="review-value" id="review-salary-range">—</span>
                             <button class="btn-edit-small" data-field="salaryRange">✏️</button>
                         </div>
@@ -296,11 +298,11 @@
                 <div class="review-actions">
                     <a href="#" class="link-clear" id="clear-session-review">
                         <span class="icon-refresh">↻</span>
-                        Clear Session
+                        <span data-i18n="form.clearSession">Clear Session</span>
                     </a>
                     <div class="review-actions-buttons">
-                        <button class="btn-secondary" id="back-to-survey">Back</button>
-                        <button class="btn-primary btn-large" id="find-jobs">Next</button>
+                        <button class="btn-secondary" id="back-to-survey" data-i18n="form.back">Back</button>
+                        <button class="btn-primary btn-large" id="find-jobs" data-i18n="form.next">Next</button>
                     </div>
                 </div>
             </div>
@@ -309,14 +311,14 @@
             <div id="loading-view" class="view">
                 <div class="loading-content">
                     <div class="spinner"></div>
-                    <p class="loading-text">Finding tailored roles for you...</p>
-                    <p class="footer-copyright">This may take up to 30 seconds</p>
-                    <p class="footer-copyright">Please do not refresh this page</p>
+                    <p class="loading-text" data-i18n="loading.finding">Finding tailored roles for you...</p>
+                    <p class="footer-copyright" data-i18n="loading.waitTime">This may take up to 30 seconds</p>
+                    <p class="footer-copyright" data-i18n="loading.noRefresh">Please do not refresh this page</p>
                 </div>
                 <div class="loading-actions">
                     <a href="#" class="link-clear" id="clear-session-loading">
                         <span class="icon-refresh">↻</span>
-                        Clear Session
+                        <span data-i18n="form.clearSession">Clear Session</span>
                     </a>
                 </div>
             </div>
@@ -325,12 +327,12 @@
             <div id="results-view" class="view">
                 <div class="results-section">
                     <div class="results-header">
-                        <h2 class="results-title">Your Job Matches</h2>
+                        <h2 class="results-title" data-i18n="results.title">Your Job Matches</h2>
                         <p class="results-subtitle">We found <span id="results-count">0</span> matching opportunities for you</p>
                         <div class="completion-code">
                             <span class="completion-code-value" id="completion-code">—</span>
                         </div>
-                        <p class="completion-code-instruction">Present this code to our staff at the job fair booth to receive detailed information about your job matches and personalised recommendations.</p>
+                        <p class="completion-code-instruction" data-i18n="results.completionCodeInstruction">Present this code to our staff at the job fair booth to receive detailed information about your job matches and personalised recommendations.</p>
                     </div>
 
                     <div id="results-list" class="results-list">
@@ -341,9 +343,9 @@
                 <div class="results-actions">
                     <a href="#" class="link-clear" id="clear-session-results">
                         <span class="icon-refresh">↻</span>
-                        Clear Session
+                        <span data-i18n="form.clearSession">Clear Session</span>
                     </a>
-                    <button class="btn-secondary" id="back-to-form">New Search</button>
+                    <button class="btn-secondary" id="back-to-form" data-i18n="form.newSearch">New Search</button>
                 </div>
             </div>
         </div>
@@ -352,11 +354,12 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p class="footer-tagline">18/F Park Avenue Tower, 5 Moreton Terrace, Causeway Bay, Hong Kong</p>
-            <p class="footer-copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
+            <p class="footer-tagline" data-i18n="footer.address">18/F Park Avenue Tower, 5 Moreton Terrace, Causeway Bay, Hong Kong</p>
+            <p class="footer-copyright" data-i18n="footer.copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
         </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
     <script src="index.js"></script>
     <script src="chatbot.js"></script>

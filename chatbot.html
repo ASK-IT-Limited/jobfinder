@@ -14,8 +14,8 @@
             <div class="header-content">
                 <div class="logo">
                     <img src="askit_logo.png" alt="ASK IT" class="logo-image">
-                    <span class="logo-text">Job Compass</span>
-                    <span class="logo-limited">v3.1</span>
+                    <span class="logo-text" data-i18n="logo.text">Job Compass</span>
+                    <span class="logo-limited" data-i18n="logo.version">v3.5</span>
                 </div>
                 <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle menu">
                     <span></span>
@@ -23,12 +23,15 @@
                     <span></span>
                 </button>
                 <nav class="nav-links" id="nav-links">
-                    <a href="index.html" class="nav-link">Find Jobs</a>
-                    <a href="profile.html" class="nav-link">Your Profile</a>
+                    <a href="index.html" class="nav-link" data-i18n="nav.findJobs">Find Jobs</a>
+                    <a href="profile.html" class="nav-link" data-i18n="nav.yourProfile">Your Profile</a>
                     <span class="nav-link">|</span>
-                    <a href="https://askit.com.hk/" class="nav-link" target="_blank">Home</a>
-                    <a href="https://askit.com.hk/it-outsourcing/" class="nav-link" target="_blank">Our Services</a>
-                    <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank">Contact Us</a>
+                    <a href="https://askit.com.hk/it-outsourcing/" class="nav-link" target="_blank" data-i18n="nav.ourServices">Our Services</a>
+                    <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank" data-i18n="nav.contactUs">Contact Us</a>
+                    <div class="language-switcher" id="language-switcher">
+                        <button class="lang-btn" data-lang="en">EN</button>
+                        <button class="lang-btn" data-lang="zh">中文</button>
+                    </div>
                 </nav>
             </div>
         </div>
@@ -49,11 +52,12 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p class="footer-tagline">18/F Park Avenue Tower, 5 Moreton Terrace, Causeway Bay, Hong Kong</p>
-            <p class="footer-copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
+            <p class="footer-tagline" data-i18n="footer.address">18/F Park Avenue Tower, 5 Moreton Terrace, Causeway Bay, Hong Kong</p>
+            <p class="footer-copyright" data-i18n="footer.copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
         </div>
     </footer>
 
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
