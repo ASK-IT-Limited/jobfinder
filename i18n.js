@@ -423,18 +423,7 @@ function translatePage() {
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
         const translation = t(key);
-        
-        // Handle different element types
-        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            if (element.type === 'text' || element.type === 'email' || element.type === 'password' || element.tagName === 'TEXTAREA') {
-                // Only update placeholder, not value
-                if (element.hasAttribute('data-i18n-placeholder')) {
-                    element.placeholder = translation;
-                }
-            }
-        } else {
-            element.textContent = translation;
-        }
+        element.textContent = translation;
     });
     
     // Translate option elements with data-i18n-option attribute
@@ -450,16 +439,6 @@ function translatePage() {
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
         const key = element.getAttribute('data-i18n-placeholder');
         element.placeholder = t(key);
-    });
-    
-    document.querySelectorAll('[data-i18n-title]').forEach(element => {
-        const key = element.getAttribute('data-i18n-title');
-        element.title = t(key);
-    });
-    
-    document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
-        const key = element.getAttribute('data-i18n-aria-label');
-        element.setAttribute('aria-label', t(key));
     });
     
     // Translate dynamic content (call this from your JS files)
