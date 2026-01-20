@@ -10,7 +10,6 @@ const TRANSLATIONS = {
         // Header & Navigation
         'nav.yourProfile': 'Your Profile',
         'nav.findJobs': 'Find Jobs',
-        'nav.home': 'Home',
         'nav.ourServices': 'Our Services',
         'nav.contactUs': 'Contact Us',
         
@@ -186,57 +185,56 @@ const TRANSLATIONS = {
         'error.submitError': 'Error submitting your job search. Please try again.',
         'error.networkError': 'Network error. Please check your connection and try again.',
         'error.jobFunctionLimit': 'Select at most 3 job categories.',
-        'error.rateLimit': 'Please wait {seconds} seconds before trying again.',
+        'error.rateLimit': 'Please wait for {seconds} seconds before retrying.',
         
         // Language Switcher
-        'lang.en': 'English',
+        'lang.en': 'EN',
         'lang.zh': '中文'
     },
     zh: {
         // Logo
-        'logo.text': '工作指南針',
+        'logo.text': '搵工易',
         'logo.version': 'v3.5',
         
         // Header & Navigation
-        'nav.yourProfile': '您的個人資料',
-        'nav.findJobs': '尋找工作',
-        'nav.home': '首頁',
+        'nav.yourProfile': '您的配對結果',
+        'nav.findJobs': '尋找工作機會',
         'nav.ourServices': '我們的服務',
         'nav.contactUs': '聯絡我們',
         
         // Main Page
-        'hero.title': '尋找您理想的工作',
-        'hero.subtitle': '回答幾個簡單問題，我們將為您匹配合適的工作機會。',
-        'step.quickSurvey': '快速問卷',
-        'step.reviewAnswers': '檢視答案',
-        'step.reviewMatches': '檢視匹配',
+        'hero.title': '想搵一份啱自己嘅工？',
+        'hero.subtitle': '回答以下幾個簡單嘅問題，我哋會為你配對合適嘅工作機會。',
+        'step.quickSurvey': '填寫問卷',
+        'step.reviewAnswers': '檢閱答案',
+        'step.reviewMatches': '檢閱配對結果',
         
         // Form Labels
         'form.information': '個人資料',
-        'form.preferences': '偏好設定',
+        'form.preferences': '職位偏好',
         'form.name': '姓名',
-        'form.email': '電郵',
+        'form.email': '電郵地址',
         'form.age': '年齡',
-        'form.phone': '電話',
+        'form.phone': '聯絡電話',
         'form.education': '學歷',
         'form.availability': '可到職時間',
-        'form.district': '地區',
+        'form.district': '居住地區',
         'form.experience': '工作經驗',
-        'form.background': '背景',
-        'form.jobFunctions': '職能',
+        'form.background': '個人背景',
+        'form.jobFunctions': '職能類別',
         'form.expectedSalary': '期望薪金',
         
         // Form Placeholders & Options
-        'form.backgroundPlaceholder': '簡要描述您的目標、個性、技能、經驗或任何關於您自己的資訊...',
-        'form.backgroundHelper1': '幫助我們了解您的背景以找到更好的匹配。例如，您可以提及：',
-        'form.backgroundHelper2': '1. 您的工作領域和專業',
-        'form.backgroundHelper3': '2. 您的職業目標和抱負',
-        'form.backgroundHelper4': '3. 用3個形容詞描述您的個性',
-        'form.backgroundHelper5': '4. 您的3大技能和優勢',
-        'form.districtHelper': '選擇您居住的地區以獲得更好的匹配。',
-        'form.experienceHelper': '選擇您的工作經驗年數。',
-        'form.jobFunctionHelper': '最多選擇3個職能類別。',
-        'form.salaryHelper': '選擇每月稅前薪金期望。',
+        'form.backgroundPlaceholder': '請簡要描述您的職業目標、個人特質、技能專長、工作經驗或其他相關資訊...',
+        'form.backgroundHelper1': '請協助我們了解您的背景，以便為您配對更合適的職位。例如，您可以提及：',
+        'form.backgroundHelper2': '1. 您的工作領域和專業範疇',
+        'form.backgroundHelper3': '2. 您的職業目標和發展方向',
+        'form.backgroundHelper4': '3. 以三個形容詞描述您的個人特質',
+        'form.backgroundHelper5': '4. 您的三大核心技能和優勢',
+        'form.districtHelper': '請選擇您的居住地區，以便為您配對更合適的職位。',
+        'form.experienceHelper': '請選擇您的工作經驗年資。',
+        'form.jobFunctionHelper': '請選擇最多 3 個職能類別。',
+        'form.salaryHelper': '請選擇您的每月稅前薪金期望。',
         
         // Dropdown Options - Age
         'option.age.default': '選擇年齡範圍',
@@ -258,13 +256,13 @@ const TRANSLATIONS = {
         
         // Dropdown Options - Availability
         'option.availability.default': '選擇可到職時間',
-        'option.availability.immediate': '即時',
-        'option.availability.1week': '1週通知',
-        'option.availability.1month': '1個月通知',
-        'option.availability.moreThan1Month': '超過1個月通知',
+        'option.availability.immediate': '可即時到職',
+        'option.availability.1week': '1 週通知期',
+        'option.availability.1month': '1 個月通知期',
+        'option.availability.moreThan1Month': '超過 1 個月通知期',
         
         // Dropdown Options - Districts
-        'option.district.default': '選擇地區',
+        'option.district.default': '選擇居住地區',
         'option.district.centralWestern': '中西區',
         'option.district.eastern': '東區',
         'option.district.southern': '南區',
@@ -286,33 +284,33 @@ const TRANSLATIONS = {
         
         // Dropdown Options - Experience
         'option.experience.default': '選擇工作經驗',
-        'option.experience.none': '無經驗',
-        'option.experience.1-2years': '1 - 2年',
-        'option.experience.3-4years': '3 - 4年',
-        'option.experience.5-8years': '5 - 8年',
-        'option.experience.9-10years': '9 - 10年',
-        'option.experience.over10years': '超過10年',
+        'option.experience.none': '無相關工作經驗',
+        'option.experience.1-2years': '1 - 2 年',
+        'option.experience.3-4years': '3 - 4 年',
+        'option.experience.5-8years': '5 - 8 年',
+        'option.experience.9-10years': '9 - 10 年',
+        'option.experience.over10years': '超過 10 年',
         
         // Dropdown Options - Job Functions
-        'option.jobFunction.default': '選擇職能',
-        'option.jobFunction.administration': '行政',
-        'option.jobFunction.accounting': '會計',
-        'option.jobFunction.marketing': '市場推廣',
-        'option.jobFunction.humanResources': '人力資源',
-        'option.jobFunction.hospitality': '餐飲服務',
-        'option.jobFunction.customerService': '客戶服務',
-        'option.jobFunction.sales': '銷售 / 業務發展',
+        'option.jobFunction.default': '請選擇職能類別',
+        'option.jobFunction.administration': '行政 (Admin)',
+        'option.jobFunction.accounting': '會計 (Accounting)',
+        'option.jobFunction.marketing': '市場推廣 (Marketing)',
+        'option.jobFunction.humanResources': '人力資源 (HR)',
+        'option.jobFunction.hospitality': '餐飲服務 (F&B)',
+        'option.jobFunction.customerService': '客戶服務 (CS)',
+        'option.jobFunction.sales': '銷售 / 業務發展 (Sales / BD)',
         'option.jobFunction.technicalTrades': '技術行業',
-        'option.jobFunction.businessAnalysis': '業務分析',
-        'option.jobFunction.dataAnalytics': '數據分析',
+        'option.jobFunction.businessAnalysis': '業務分析 (BA)',
+        'option.jobFunction.dataAnalytics': '數據分析 (DA)',
         'option.jobFunction.cybersecurity': '網絡安全',
-        'option.jobFunction.itSupport': 'IT技術支援',
+        'option.jobFunction.itSupport': 'IT 技術支援',
         'option.jobFunction.softwareEngineering': '軟件工程',
         'option.jobFunction.systemsEngineering': '系統工程',
         'option.jobFunction.networkEngineering': '網絡工程',
         'option.jobFunction.technologyManagement': '技術管理',
         'option.jobFunction.productManagement': '產品管理',
-        'option.jobFunction.projectManagement': '項目管理',
+        'option.jobFunction.projectManagement': '項目管理 (PM)',
         
         // Dropdown Options - Salary
         'option.salary.default': '選擇薪金範圍',
@@ -324,62 +322,62 @@ const TRANSLATIONS = {
         'option.salary.above100k': '高於HK$100,000',
         
         // Form Actions
-        'form.clearSession': '清除會話',
+        'form.clearSession': '清除資料',
         'form.next': '下一步',
         'form.back': '返回',
-        'form.newSearch': '新搜尋',
+        'form.newSearch': '重新搜尋',
         
         // Review Page
         'review.title': '您的答案',
         'review.category.information': '個人資料',
-        'review.category.preferences': '偏好設定',
+        'review.category.preferences': '職位偏好',
         
         // Loading
-        'loading.finding': '正在為您尋找合適的職位...',
-        'loading.loading': '正在載入候選人資料...',
-        'loading.waitTime': '這可能需要長達30秒',
-        'loading.noRefresh': '請勿刷新此頁面',
+        'loading.finding': '正在為您配對合適的職位...',
+        'loading.loading': '正在載入用戶資料...',
+        'loading.waitTime': '此過程可能需要長達 30 秒',
+        'loading.noRefresh': '請勿重新整理此頁面',
         
         // Results
-        'results.title': '您的工作匹配',
-        'results.subtitle': '我們為您找到了 {count} 個匹配機會',
+        'results.title': '您的配對結果',
+        'results.subtitle': '我們為您找到 {count} 個工作機會',
         'results.completionCode': '完成代碼',
-        'results.completionCodeInstruction': '請在招聘會攤位向我們的工作人員出示此代碼，以獲取您的工作匹配詳細資訊和個人化建議。',
-        'results.noMatches': '未找到匹配的工作。',
-        'results.noMatchesProfile': '未找到此候選人的工作匹配。',
+        'results.completionCodeInstruction': '請於招聘會攤位向我們的工作人員出示此代碼，以獲取您的職位配對詳細資訊及個人化建議。',
+        'results.noMatches': '未能找到合適的工作機會。',
+        'results.noMatchesProfile': '未能找到此用戶的配對結果。',
         
         // Profile Page
-        'profile.title': '您的個人資料',
-        'profile.subtitle': '查看您的個人資料和個人化工作匹配。',
+        'profile.title': '您的配對結果',
+        'profile.subtitle': '查看您的用戶資料及個人化職位配對結果。',
         'profile.completionCode': '完成代碼',
-        'profile.accessCode': '訪問代碼',
+        'profile.accessCode': '存取代碼',
         'profile.viewProfile': '查看個人資料',
-        'profile.jobMatches': '工作匹配',
-        'profile.foundMatches': '找到 {count} 個匹配工作',
+        'profile.jobMatches': '職位配對',
+        'profile.foundMatches': '找到 {count} 個配對職位',
         
         // Job Details
-        'job.whyMatches': '匹配原因：',
+        'job.whyMatches': '配對原因：',
         'job.responsibilities': '工作職責',
-        'job.requirements': '工作要求',
+        'job.requirements': '職位要求',
         
         // Footer
-        'footer.address': '香港銅鑼灣摩頓台5號百富中心18樓',
+        'footer.address': '香港銅鑼灣摩頓台 5 號百富中心 18 樓',
         'footer.copyright': '© 2026 ASK IT Limited | 職業介紹所牌照號碼：76414',
         
         // Error Messages
         'error.requiredFields': '請填寫所有必填欄位。',
-        'error.invalidFormat': '完成代碼格式無效。請輸入5個字符的代碼，包含大寫字母、數字和特殊字符（@、#、$、%）。',
-        'error.incorrectCodes': '代碼錯誤。請檢查後重試。',
-        'error.noSurveyData': '未找到此完成代碼的問卷資料。',
-        'error.loadError': '載入資料時出錯。請檢查後重試。',
-        'error.noJobs': '未找到工作。請嘗試調整您的搜尋條件。',
-        'error.submitError': '提交工作搜尋時出錯。請重試。',
-        'error.networkError': '網絡錯誤。請檢查您的連接後重試。',
-        'error.jobFunctionLimit': '最多選擇3個職能類別。',
-        'error.rateLimit': '請等待 {seconds} 秒後再試。',
+        'error.invalidFormat': '完成代碼格式無效。請輸入5個字符的代碼，包含大寫字母、數字及特殊字符（@、#、$、%）。',
+        'error.incorrectCodes': '代碼錯誤。請檢查後重新嘗試。',
+        'error.noSurveyData': '未能找到此完成代碼的問卷資料。',
+        'error.loadError': '載入資料時發生錯誤。請檢查後重新嘗試。',
+        'error.noJobs': '未能找到合適的職位。請嘗試調整您的搜尋條件。',
+        'error.submitError': '提交職位搜尋時發生錯誤。請重新嘗試。',
+        'error.networkError': '網絡連接錯誤。請檢查您的網絡連接後重新嘗試。',
+        'error.jobFunctionLimit': '請選擇最多 3 個職能類別。',
+        'error.rateLimit': '請稍候 {seconds} 秒後再試。',
         
         // Language Switcher
-        'lang.en': 'English',
+        'lang.en': 'EN',
         'lang.zh': '中文'
     }
 };
