@@ -5,8 +5,8 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 const STORAGE_KEY = 'jobFinderFormData';
 const MAX_JOB_FUNCTIONS = 3;
 const SCROLL_DELAY = 100;
-const JOB_FUNCTION_HELPER_TEXT = 'Select up to 3 job functions.';
-const JOB_FUNCTION_ERROR_TEXT = `Select at most ${MAX_JOB_FUNCTIONS} job functions.`;
+const JOB_FUNCTION_HELPER_TEXT = 'Select up to 3 job categories.';
+const JOB_FUNCTION_ERROR_TEXT = `Select at most ${MAX_JOB_FUNCTIONS} job categories.`;
 
 // State management
 const initialFormData = {
