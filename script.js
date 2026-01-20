@@ -41,31 +41,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Constants for HTML escaping
+const BR_PLACEHOLDER = '___BR_TAG_PLACEHOLDER___';
+const LABEL_PLACEHOLDERS = {
+    jobId: '___LABEL_JOB_ID___',
+    jobTitle: '___LABEL_JOB_TITLE___',
+    salaryRange: '___LABEL_SALARY_RANGE___',
+    location: '___LABEL_LOCATION___',
+    responsibilities: '___LABEL_RESPONSIBILITIES___',
+    requirements: '___LABEL_REQUIREMENTS___'
+};
+
+const LABEL_REPLACEMENTS = {
+    jobId: '<strong>Job ID: </strong>',
+    jobTitle: '<strong>Job Title: </strong>',
+    salaryRange: '<strong>Salary Range: </strong>',
+    location: '<strong>Location: </strong>',
+    responsibilities: '<br><strong>Job Responsibilities: </strong><br>',
+    requirements: '<br><strong>Job Requirements: </strong><br>'
+};
+
+const LABEL_PATTERNS = {
+    jobId: /Job ID:\s*/gi,
+    jobTitle: /Job Title:\s*/gi,
+    salaryRange: /Salary Range:\s*/gi,
+    location: /Location:\s*/gi,
+    responsibilities: /Job Responsibilities:\s*/gi,
+    requirements: /Job Requirements:\s*/gi
+};
+
+// Helper function to escape regex special characters
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Escape HTML but allow <br> tags to be rendered
 function escapeHtmlAllowBreaks(text) {
     if (!text) return '';
     
-    // Placeholders for preserving HTML tags
-    const brPlaceholder = '___BR_TAG_PLACEHOLDER___';
-    const labelPlaceholders = {
-        jobId: '___LABEL_JOB_ID___',
-        jobTitle: '___LABEL_JOB_TITLE___',
-        salaryRange: '___LABEL_SALARY_RANGE___',
-        location: '___LABEL_LOCATION___',
-        responsibilities: '___LABEL_RESPONSIBILITIES___',
-        requirements: '___LABEL_REQUIREMENTS___'
-    };
-    
     // Replace <br> tags with placeholder
-    let processed = text.replace(/<br\s*\/?>/gi, brPlaceholder);
+    let processed = text.replace(/<br\s*\/?>/gi, BR_PLACEHOLDER);
     
     // Replace field labels with placeholders before escaping
-    processed = processed.replace(/Job ID:\s*/gi, labelPlaceholders.jobId);
-    processed = processed.replace(/Job Title:\s*/gi, labelPlaceholders.jobTitle);
-    processed = processed.replace(/Salary Range:\s*/gi, labelPlaceholders.salaryRange);
-    processed = processed.replace(/Location:\s*/gi, labelPlaceholders.location);
-    processed = processed.replace(/Job Responsibilities:\s*/gi, labelPlaceholders.responsibilities);
-    processed = processed.replace(/Job Requirements:\s*/gi, labelPlaceholders.requirements);
+    Object.keys(LABEL_PATTERNS).forEach(key => {
+        processed = processed.replace(LABEL_PATTERNS[key], LABEL_PLACEHOLDERS[key]);
+    });
     
     // Escape all HTML
     const div = document.createElement('div');
@@ -73,29 +93,31 @@ function escapeHtmlAllowBreaks(text) {
     let escaped = div.innerHTML;
     
     // Replace label placeholders back with formatted HTML
-    escaped = escaped.replace(new RegExp(labelPlaceholders.jobId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Job ID: </strong>');
-    escaped = escaped.replace(new RegExp(labelPlaceholders.jobTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Job Title: </strong>');
-    escaped = escaped.replace(new RegExp(labelPlaceholders.salaryRange.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Salary Range: </strong>');
-    escaped = escaped.replace(new RegExp(labelPlaceholders.location.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<strong>Location: </strong>');
-    escaped = escaped.replace(new RegExp(labelPlaceholders.responsibilities.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br><strong>Job Responsibilities: </strong><br>');
-    escaped = escaped.replace(new RegExp(labelPlaceholders.requirements.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br><strong>Job Requirements: </strong><br>');
+    Object.keys(LABEL_REPLACEMENTS).forEach(key => {
+        const regex = new RegExp(escapeRegex(LABEL_PLACEHOLDERS[key]), 'g');
+        escaped = escaped.replace(regex, LABEL_REPLACEMENTS[key]);
+    });
     
     // Replace <br> placeholder back with actual <br> tags
-    escaped = escaped.replace(new RegExp(brPlaceholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
+    escaped = escaped.replace(new RegExp(escapeRegex(BR_PLACEHOLDER), 'g'), '<br>');
     
     return escaped;
 }
+
+// Constants for job description markers
+const LOCATION_MARKER = '<strong>Location: </strong>';
+const RESPONSIBILITIES_MARKER = '<br><strong>Job Responsibilities: </strong>';
+const REQUIREMENTS_MARKER = '<br><strong>Job Requirements: </strong>';
 
 // Parse job description and split at Location, making everything after expandable
 function formatJobDescriptionWithExpandable(text) {
     if (!text) return '';
     
     // First, escape the HTML and format it
-    let formatted = escapeHtmlAllowBreaks(text);
+    const formatted = escapeHtmlAllowBreaks(text);
     
     // Find the Location marker
-    const locationMarker = '<strong>Location: </strong>';
-    const locationIndex = formatted.indexOf(locationMarker);
+    const locationIndex = formatted.indexOf(LOCATION_MARKER);
     
     // If Location marker not found, return the formatted text as is (no expandable)
     if (locationIndex === -1) {
@@ -107,45 +129,11 @@ function formatJobDescriptionWithExpandable(text) {
     }
     
     // Find where Location section ends
-    // Location value starts after the marker
-    let locationValueStart = locationIndex + locationMarker.length;
+    const locationValueStart = locationIndex + LOCATION_MARKER.length;
+    const splitPoint = findSplitPoint(formatted, locationValueStart);
     
-    // Check for next section markers (Job Responsibilities or Job Requirements)
-    const responsibilitiesMarker = '<br><strong>Job Responsibilities: </strong>';
-    const requirementsMarker = '<br><strong>Job Requirements: </strong>';
-    
-    const respIndex = formatted.indexOf(responsibilitiesMarker, locationValueStart);
-    const reqIndex = formatted.indexOf(requirementsMarker, locationValueStart);
-    
-    // Find the earliest section marker or line break
-    let splitPoint = formatted.length;
-    let foundSectionMarker = false;
-    
-    // Check for section markers first
-    if (respIndex !== -1) {
-        splitPoint = respIndex;
-        foundSectionMarker = true;
-    } else if (reqIndex !== -1) {
-        splitPoint = reqIndex;
-        foundSectionMarker = true;
-    }
-    if (respIndex !== -1 && reqIndex !== -1 && reqIndex < splitPoint) {
-        splitPoint = reqIndex;
-        foundSectionMarker = true;
-    }
-    
-    // If no section marker found, look for the next <br> tag after Location value
-    if (!foundSectionMarker) {
-        const brIndex = formatted.indexOf('<br>', locationValueStart);
-        if (brIndex !== -1 && brIndex < splitPoint) {
-            splitPoint = brIndex + 4;
-        }
-    }
-    
-    // Extract visible part (up to and including Location line)
+    // Extract visible and hidden parts
     const visiblePart = formatted.substring(0, splitPoint);
-    
-    // Extract hidden part (everything after Location line)
     const hiddenPart = formatted.substring(splitPoint);
     
     // If there's no hidden content, return the formatted text as is (no expandable)
@@ -168,20 +156,38 @@ function formatJobDescriptionWithExpandable(text) {
     };
 }
 
+// Helper function to find split point for expandable content
+function findSplitPoint(formatted, startIndex) {
+    const respIndex = formatted.indexOf(RESPONSIBILITIES_MARKER, startIndex);
+    const reqIndex = formatted.indexOf(REQUIREMENTS_MARKER, startIndex);
+    
+    // Find the earliest section marker
+    let splitPoint = formatted.length;
+    
+    if (respIndex !== -1 && reqIndex !== -1) {
+        splitPoint = Math.min(respIndex, reqIndex);
+    } else if (respIndex !== -1) {
+        splitPoint = respIndex;
+    } else if (reqIndex !== -1) {
+        splitPoint = reqIndex;
+    } else {
+        // If no section marker found, look for the next <br> tag
+        const brIndex = formatted.indexOf('<br>', startIndex);
+        if (brIndex !== -1) {
+            splitPoint = brIndex + 4;
+        }
+    }
+    
+    return splitPoint;
+}
+
 // Parse job description and create collapsible sections for responsibilities and requirements
 function formatJobDescriptionWithCollapsible(text) {
     if (!text) return '';
     
-    // First, escape the HTML and format it
-    let formatted = text;
-    
-    // Find positions of responsibilities and requirements sections
-    // The escapeHtmlAllowBreaks function formats these as: <br><strong>Job Responsibilities: </strong><br>
-    const responsibilitiesMarker = '<br><strong>Job Responsibilities: </strong>';
-    const requirementsMarker = '<br><strong>Job Requirements: </strong>';
-    
-    const respIndex = formatted.indexOf(responsibilitiesMarker);
-    const reqIndex = formatted.indexOf(requirementsMarker);
+    const formatted = text;
+    const respIndex = formatted.indexOf(RESPONSIBILITIES_MARKER);
+    const reqIndex = formatted.indexOf(REQUIREMENTS_MARKER);
     
     // If neither section exists, return the formatted text as is
     if (respIndex === -1 && reqIndex === -1) {
@@ -193,69 +199,31 @@ function formatJobDescriptionWithCollapsible(text) {
     
     // Process responsibilities section
     if (respIndex !== -1) {
-        // Add content before responsibilities
         if (respIndex > lastIndex) {
             result += formatted.substring(lastIndex, respIndex);
         }
         
-        // Find where responsibilities section ends (either at requirements or end of text)
-        let respEnd = formatted.length;
-        if (reqIndex !== -1 && reqIndex > respIndex) {
-            respEnd = reqIndex;
-        }
-        
-        // Extract responsibilities content (skip the marker)
-        const respStart = respIndex + responsibilitiesMarker.length;
+        const respEnd = (reqIndex !== -1 && reqIndex > respIndex) ? reqIndex : formatted.length;
+        const respStart = respIndex + RESPONSIBILITIES_MARKER.length;
         const responsibilitiesContent = formatted.substring(respStart, respEnd).trim();
-        
-        // Remove leading <br> tags from content
         const cleanRespContent = responsibilitiesContent.replace(/^(<br\s*\/?>)+/i, '');
         
-        // Create collapsible responsibilities section
-        result += `
-            <div class="job-section-collapsible">
-                <button class="job-section-toggle" type="button" aria-expanded="false">
-                    <strong>Job Responsibilities</strong>
-                    <span class="toggle-icon">▼</span>
-                </button>
-                <div class="job-section-content" style="display: none;">
-                    ${cleanRespContent}
-                </div>
-            </div>
-        `;
-        
+        result += createCollapsibleSection('Job Responsibilities', cleanRespContent);
         lastIndex = respEnd;
     }
     
     // Process requirements section
     if (reqIndex !== -1) {
-        // Add content between responsibilities and requirements (if any)
         if (reqIndex > lastIndex) {
             result += formatted.substring(lastIndex, reqIndex);
         }
         
-        // Extract requirements content (skip the marker)
-        const reqStart = reqIndex + requirementsMarker.length;
-        const reqEnd = formatted.length;
-        const requirementsContent = formatted.substring(reqStart, reqEnd).trim();
-        
-        // Remove leading <br> tags from content
+        const reqStart = reqIndex + REQUIREMENTS_MARKER.length;
+        const requirementsContent = formatted.substring(reqStart).trim();
         const cleanReqContent = requirementsContent.replace(/^(<br\s*\/?>)+/i, '');
         
-        // Create collapsible requirements section
-        result += `
-            <div class="job-section-collapsible">
-                <button class="job-section-toggle" type="button" aria-expanded="false">
-                    <strong>Job Requirements</strong>
-                    <span class="toggle-icon">▼</span>
-                </button>
-                <div class="job-section-content" style="display: none;">
-                    ${cleanReqContent}
-                </div>
-            </div>
-        `;
-        
-        lastIndex = reqEnd;
+        result += createCollapsibleSection('Job Requirements', cleanReqContent);
+        lastIndex = formatted.length;
     }
     
     // Add any remaining content after requirements
@@ -266,31 +234,59 @@ function formatJobDescriptionWithCollapsible(text) {
     return result;
 }
 
+// Helper function to create collapsible section HTML
+function createCollapsibleSection(title, content) {
+    return `
+        <div class="job-section-collapsible">
+            <button class="job-section-toggle" type="button" aria-expanded="false">
+                <strong>${title}</strong>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="job-section-content" style="display: none;">
+                ${content}
+            </div>
+        </div>
+    `;
+}
+
+// Constants for toggle icons
+const TOGGLE_ICON_COLLAPSED = '▼';
+const TOGGLE_ICON_EXPANDED = '▲';
+
+// Helper function to toggle collapsible content
+function toggleCollapsibleContent(button, content, icon) {
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    
+    if (isExpanded) {
+        content.style.display = 'none';
+        button.setAttribute('aria-expanded', 'false');
+        if (icon) icon.textContent = TOGGLE_ICON_COLLAPSED;
+    } else {
+        content.style.display = 'block';
+        button.setAttribute('aria-expanded', 'true');
+        if (icon) icon.textContent = TOGGLE_ICON_EXPANDED;
+    }
+}
+
+// Helper function to initialize toggle buttons (removes existing listeners by cloning)
+function initializeToggleButton(button, handler) {
+    const newButton = button.cloneNode(true);
+    button.parentNode.replaceChild(newButton, button);
+    newButton.addEventListener('click', handler);
+}
+
 // Initialize collapsible sections after they're added to the DOM
 function initializeCollapsibleSections(container) {
     if (!container) return;
     
     const toggleButtons = container.querySelectorAll('.job-section-toggle');
     toggleButtons.forEach(button => {
-        // Remove existing listeners by cloning
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-        
-        newButton.addEventListener('click', function() {
+        initializeToggleButton(button, function() {
             const content = this.nextElementSibling;
             const icon = this.querySelector('.toggle-icon');
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
             
             if (content && content.classList.contains('job-section-content')) {
-                if (isExpanded) {
-                    content.style.display = 'none';
-                    this.setAttribute('aria-expanded', 'false');
-                    if (icon) icon.textContent = '▼';
-                } else {
-                    content.style.display = 'block';
-                    this.setAttribute('aria-expanded', 'true');
-                    if (icon) icon.textContent = '▲';
-                }
+                toggleCollapsibleContent(this, content, icon);
             }
         });
     });
@@ -302,27 +298,13 @@ function initializeExpandableJobDescription(container) {
     
     const expandButtons = container.querySelectorAll('.job-expand-toggle');
     expandButtons.forEach(button => {
-        // Remove existing listeners by cloning
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
-        
-        newButton.addEventListener('click', function() {
-            // Find the expandable content (it's in a sibling element)
+        initializeToggleButton(button, function() {
             const expandableSection = container.querySelector('.job-description-expandable');
-            const content = expandableSection ? expandableSection.querySelector('.job-expand-content') : null;
+            const content = expandableSection?.querySelector('.job-expand-content');
             const icon = this.querySelector('.toggle-icon');
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
             
             if (content) {
-                if (isExpanded) {
-                    content.style.display = 'none';
-                    this.setAttribute('aria-expanded', 'false');
-                    if (icon) icon.textContent = '▼';
-                } else {
-                    content.style.display = 'block';
-                    this.setAttribute('aria-expanded', 'true');
-                    if (icon) icon.textContent = '▲';
-                }
+                toggleCollapsibleContent(this, content, icon);
             }
         });
     });
@@ -352,6 +334,119 @@ function showViewGeneric(views, viewName, onViewChange) {
     if (onViewChange && typeof onViewChange === 'function') {
         onViewChange(viewName);
     }
+}
+
+// Constants
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Validate email format
+function isValidEmail(email) {
+    return EMAIL_REGEX.test(email);
+}
+
+// Format select value for display (gets option text from select element)
+function formatSelectValue(value, selectId) {
+    if (!value || value === '') return '—';
+    
+    // Handle backward compatibility with old array format
+    const singleValue = Array.isArray(value) ? value[0] : value;
+    if (!singleValue) return '—';
+    
+    const select = document.querySelector(`#${selectId}`);
+    if (!select) return singleValue;
+    
+    const option = select.querySelector(`option[value="${singleValue}"]`);
+    return option ? option.textContent : singleValue;
+}
+
+// Generic API response parser - handles different response structures
+function parseApiResponse(data, options = {}) {
+    const {
+        dataPath = 'data',           // Path to data array (e.g., 'data', 'body.data')
+        codePath = 'completionCode', // Path to completion code (e.g., 'completionCode', 'body.completionCode')
+        bodyPath = 'body'            // Path to body object (e.g., 'body')
+    } = options;
+    
+    // Parse body if it exists and is a string
+    let parsedData = data;
+    if (data[bodyPath]) {
+        if (typeof data[bodyPath] === 'string') {
+            try {
+                parsedData = { ...data, [bodyPath]: JSON.parse(data[bodyPath]) };
+            } catch (e) {
+                console.error('Error parsing body string:', e);
+                throw new Error('Invalid response format: body is not valid JSON');
+            }
+        }
+    }
+    
+    // Extract data array
+    let resultData = null;
+    const dataPaths = Array.isArray(dataPath) ? dataPath : [dataPath];
+    for (const path of dataPaths) {
+        const value = getNestedValue(parsedData, path);
+        if (Array.isArray(value)) {
+            resultData = value;
+            break;
+        }
+    }
+    
+    // Extract completion code
+    let resultCode = null;
+    const codePaths = Array.isArray(codePath) ? codePath : [codePath];
+    for (const path of codePaths) {
+        const value = getNestedValue(parsedData, path);
+        if (value) {
+            resultCode = value;
+            break;
+        }
+    }
+    
+    return { data: resultData, completionCode: resultCode, parsedData };
+}
+
+// Helper function to get nested object values by dot notation path
+function getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+// Helper function to create reason HTML
+function createReasonHtml(jobReason) {
+    if (!jobReason) return '';
+    
+    return `<div class="job-reason">
+        <strong>Why this matches:</strong>
+        <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
+    </div>`;
+}
+
+// Helper function to create job description HTML
+function createJobDescriptionHtml(jobDescFormatted, reasonHtml) {
+    if (jobDescFormatted && typeof jobDescFormatted === 'object' && jobDescFormatted.hasExpandable) {
+        // Has expandable content
+        return `
+            <div class="job-description-visible">
+                ${jobDescFormatted.visible}
+            </div>
+            <div class="job-description-expandable">
+                <div class="job-expand-content" style="display: none;">
+                    ${jobDescFormatted.expandable}
+                    ${reasonHtml}
+                </div>
+            </div>
+            <button class="job-expand-toggle" type="button" aria-expanded="false" aria-label="Expand job details">
+                <span class="toggle-icon">${TOGGLE_ICON_COLLAPSED}</span>
+            </button>
+        `;
+    }
+    
+    // No expandable content - show everything
+    return `
+        <div class="job-description-full">
+            ${jobDescFormatted || 'No description available'}
+            ${reasonHtml}
+        </div>
+    `;
 }
 
 // Generic displayJobs function - shared between profile.js and index.js
@@ -433,43 +528,8 @@ function displayJobs(jobs, options) {
 
         // Format job description
         const jobDescFormatted = formatJobDescriptionWithExpandable(jobDesc);
-        let jobDescriptionHtml = '';
-        
-        if (jobDescFormatted && typeof jobDescFormatted === 'object' && jobDescFormatted.hasExpandable) {
-            // Has expandable content
-            const reasonHtml = jobReason ? `<div class="job-reason">
-                <strong>Why this matches:</strong>
-                <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
-            </div>` : '';
-            
-            jobDescriptionHtml = `
-                <div class="job-description-visible">
-                    ${jobDescFormatted.visible}
-                </div>
-                <div class="job-description-expandable">
-                    <div class="job-expand-content" style="display: none;">
-                        ${jobDescFormatted.expandable}
-                        ${reasonHtml}
-                    </div>
-                </div>
-                <button class="job-expand-toggle" type="button" aria-expanded="false" aria-label="Expand job details">
-                    <span class="toggle-icon">▼</span>
-                </button>
-            `;
-        } else {
-            // No expandable content - show everything
-            const reasonHtml = jobReason ? `<div class="job-reason">
-                <strong>Why this matches:</strong>
-                <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
-            </div>` : '';
-            
-            jobDescriptionHtml = `
-                <div class="job-description-full">
-                    ${jobDescFormatted || 'No description available'}
-                    ${reasonHtml}
-                </div>
-            `;
-        }
+        const reasonHtml = createReasonHtml(jobReason);
+        const jobDescriptionHtml = createJobDescriptionHtml(jobDescFormatted, reasonHtml);
         
         jobCard.innerHTML = `
             <div class="job-card-header">

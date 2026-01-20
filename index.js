@@ -5,7 +5,6 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 const STORAGE_KEY = 'jobFinderFormData';
 const MAX_JOB_FUNCTIONS = 3;
 const SCROLL_DELAY = 100;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // State management
 const initialFormData = {
@@ -157,11 +156,6 @@ function handleFormSubmit(e) {
     updateProgress(2);
     
     return false;
-}
-
-// Validate email format
-function isValidEmail(email) {
-    return EMAIL_REGEX.test(email);
 }
 
 // Validate form
@@ -354,22 +348,8 @@ function populateForm() {
     });
 }
 
-// Populate review page
+// Populate review page (using shared formatSelectValue function from script.js)
 function populateReviewPage() {
-    const formatSelectValue = (value, selectId) => {
-        if (!value || value === '') return '—';
-        
-        // Handle backward compatibility with old array format
-        const singleValue = Array.isArray(value) ? value[0] : value;
-        if (!singleValue) return '—';
-        
-        const select = document.querySelector(`#${selectId}`);
-        if (!select) return singleValue;
-        
-        const option = select.querySelector(`option[value="${singleValue}"]`);
-        return option ? option.textContent : singleValue;
-    };
-
     document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
     document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
     document.getElementById('review-job-function').textContent = formatValue(formData.jobFunction);
@@ -495,23 +475,17 @@ async function submitJobSearchRequest(requestBody) {
     }
 }
 
-// Parse job search API response
+// Parse job search API response (using shared function from script.js)
 function parseJobSearchResponse(result) {
-    // Extract jobs from response - check multiple possible structures
-    let jobs = null;
-    if (result.data && Array.isArray(result.data)) {
-        jobs = result.data;
-    } else if (result.body?.data && Array.isArray(result.body.data)) {
-        jobs = result.body.data;
-    } else {
-        console.error('Unexpected response format:', result);
-        return { jobs: null, completionCode: null };
-    }
+    const parsed = parseApiResponse(result, {
+        dataPath: ['data', 'body.data'],
+        codePath: ['completionCode', 'body.completionCode']
+    });
     
-    // Extract completion code - check multiple possible structures
-    const code = result.completionCode || result.body?.completionCode || null;
-    
-    return { jobs, completionCode: code };
+    return { 
+        jobs: parsed.data, 
+        completionCode: parsed.completionCode 
+    };
 }
 
 // Display job results (using shared function from script.js)

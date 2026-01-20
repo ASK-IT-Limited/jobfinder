@@ -302,25 +302,21 @@ function showError(message) {
     errorDiv.style.display = 'block';
 }
 
-// Parse API response body
+// Parse API response body (using shared function from script.js)
 function parseResponseBody(data) {
-    if (data.body) {
-        // If body is a string, parse it
-        if (typeof data.body === 'string') {
-            try {
-                return JSON.parse(data.body);
-            } catch (e) {
-                console.error('Error parsing body string:', e);
-                throw new Error('Invalid response format: body is not valid JSON');
-            }
-        }
-        // Body is already an object
-        return data.body;
+    // Use generic parser with profile-specific paths
+    const result = parseApiResponse(data, {
+        dataPath: ['body.survey', 'body.matches', 'survey', 'matches'],
+        bodyPath: 'body'
+    });
+    
+    // Return body object for profile page
+    if (result.parsedData.body) {
+        return result.parsedData.body;
     }
     
-    if (data.survey || data.matches) {
-        // Response might be directly the body object
-        return data;
+    if (result.parsedData.survey || result.parsedData.matches) {
+        return result.parsedData;
     }
     
     console.error('Unexpected response structure:', data);
