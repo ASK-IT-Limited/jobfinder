@@ -177,7 +177,7 @@ const TRANSLATIONS = {
         
         // Error Messages
         'error.requiredFields': 'Please fill in all required fields.',
-        'error.invalidFormat': 'Invalid Completion Code format. Please enter a 5-character code with uppercase letters, numbers, and special characters (@, #, $, %).',
+        'error.invalidFormat': 'Invalid Completion Code format. Please enter a 5-character code with uppercase letters and numbers.',
         'error.incorrectCodes': 'Incorrect Codes. Please check and try again.',
         'error.noSurveyData': 'No survey data found for this Completion Code.',
         'error.loadError': 'Error loading data. Please check and try again.',
@@ -185,7 +185,7 @@ const TRANSLATIONS = {
         'error.submitError': 'Error submitting your job search. Please try again.',
         'error.networkError': 'Network error. Please check your connection and try again.',
         'error.jobFunctionLimit': 'Select at most 3 job categories.',
-        'error.rateLimit': 'Please wait for {seconds} seconds before retrying.',
+        'error.rateLimit': 'Please wait {seconds} seconds before retrying.',
         
         // Language Switcher
         'lang.en': 'EN',
@@ -366,7 +366,7 @@ const TRANSLATIONS = {
         
         // Error Messages
         'error.requiredFields': '請填寫所有必填欄位。',
-        'error.invalidFormat': '完成代碼格式無效。請輸入5個字符的代碼，包含大寫字母、數字及特殊字符（@、#、$、%）。',
+        'error.invalidFormat': '完成代碼格式無效。請輸入5個字符的代碼，包含大寫字母及數字。',
         'error.incorrectCodes': '代碼錯誤。請檢查後重新嘗試。',
         'error.noSurveyData': '未能找到此完成代碼的問卷資料。',
         'error.loadError': '載入資料時發生錯誤。請檢查後重新嘗試。',
