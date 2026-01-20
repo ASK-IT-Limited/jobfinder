@@ -187,7 +187,7 @@ const TRANSLATIONS = {
         'error.submitError': 'Error submitting your job search. Please try again.',
         'error.networkError': 'Network error. Please check your connection and try again.',
         'error.jobFunctionLimit': 'Select at most 3 job categories.',
-        'error.rateLimit': 'Please wait {seconds} seconds before retrying.',
+        'error.rateLimit': 'Please retry after {seconds} seconds.',
         
         // Language Switcher
         'lang.en': 'EN',
