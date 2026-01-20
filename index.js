@@ -442,7 +442,8 @@ async function submitJobSearch() {
         experienceLevel: formData.experienceLevel || '',
         remarks: formData.remarks || '',
         jobFunction: getArrayValue(formData.jobFunction),
-        salaryRange: formData.salaryRange || ''
+        salaryRange: formData.salaryRange || '',
+        lang: window.i18n ? window.i18n.currentLang() : 'en'
     };
     
     await submitJobSearchRequest(requestBody);
