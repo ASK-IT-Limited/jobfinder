@@ -432,12 +432,6 @@ function translatePage() {
                     element.placeholder = translation;
                 }
             }
-        } else if (element.tagName === 'OPTION') {
-            // For options, update text content but keep value
-            if (element.hasAttribute('data-i18n-value')) {
-                // This option's value should be translated
-                element.textContent = translation;
-            }
         } else {
             element.textContent = translation;
         }
