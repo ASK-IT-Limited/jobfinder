@@ -1,8 +1,14 @@
 // Configuration
 const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f27dec901814802b7ab56f193b31790/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n3JBo3Jl9GCO4p3jhknnqM721MTm8DGhMxCqEzRfDo0';
 
+// Constants
+const STORAGE_KEY = 'jobFinderFormData';
+const MAX_JOB_FUNCTIONS = 3;
+const SCROLL_DELAY = 100;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // State management
-let formData = {
+const initialFormData = {
     experienceLevel: '',
     salaryRange: '',
     jobFunction: [],
@@ -15,6 +21,8 @@ let formData = {
     availability: '',
     livingDistrict: ''
 };
+
+let formData = { ...initialFormData };
 
 // View management
 let views = {};
@@ -43,14 +51,14 @@ function initializeEventListeners() {
     form.addEventListener('submit', handleFormSubmit);
 
     // Clear form buttons - consolidate handlers
-    const clearSessionButtons = [
+    const clearSessionButtonIds = [
         'clear-form',
         'clear-session-review',
         'clear-session-loading',
         'clear-session-results'
     ];
     
-    clearSessionButtons.forEach(buttonId => {
+    clearSessionButtonIds.forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
             button.addEventListener('click', (e) => {
@@ -93,7 +101,7 @@ function initializeEventListeners() {
                     fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     fieldElement.focus();
                 }
-            }, 100);
+            }, SCROLL_DELAY);
         });
     });
 
@@ -153,8 +161,7 @@ function handleFormSubmit(e) {
 
 // Validate email format
 function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+    return EMAIL_REGEX.test(email);
 }
 
 // Validate form
@@ -187,13 +194,13 @@ function validateForm() {
                 isEmpty = selectedNonEmpty.length === 0;
                 
                 // Special validation for job function: max 3 items
-                if (field.id === 'job-function' && selectedNonEmpty.length > 3) {
+                if (field.id === 'job-function' && selectedNonEmpty.length > MAX_JOB_FUNCTIONS) {
                     isInvalidFormat = true; // Mark as invalid to prevent class removal
                     isValid = false;
                     // Show error message
                     const helperText = field.parentElement.querySelector('.form-helper');
                     if (helperText) {
-                        helperText.textContent = 'Please select at most 3 job functions.';
+                        helperText.textContent = `Please select at most ${MAX_JOB_FUNCTIONS} job functions.`;
                         helperText.style.color = 'var(--error-red)';
                     }
                 }
@@ -260,19 +267,19 @@ function collectFormData() {
 // Save form data to localStorage
 function saveFormData() {
     collectFormData();
-    localStorage.setItem('jobFinderFormData', JSON.stringify(formData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
 // Load form data from localStorage
 function loadFormData() {
-    const saved = localStorage.getItem('jobFinderFormData');
-    if (saved) {
-        try {
-            formData = JSON.parse(saved);
-            populateForm();
-        } catch (e) {
-            console.error('Error loading form data:', e);
-        }
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    
+    try {
+        formData = JSON.parse(saved);
+        populateForm();
+    } catch (e) {
+        console.error('Error loading form data:', e);
     }
 }
 
@@ -443,6 +450,12 @@ async function submitJobSearch() {
         salaryRange: formData.salaryRange || ''
     };
     
+    await submitJobSearchRequest(requestBody);
+}
+
+// Submit job search request to API
+async function submitJobSearchRequest(requestBody) {
+    
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -452,48 +465,53 @@ async function submitJobSearch() {
             body: JSON.stringify(requestBody)
         });
         
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Job search submitted successfully:', result);
-            
-            // Extract jobs from response - check multiple possible structures
-            let jobs = [];
-            if (result.data && Array.isArray(result.data)) {
-                // Response has data at top level
-                jobs = result.data;
-            } else if (result.body && result.body.data && Array.isArray(result.body.data)) {
-                // Response has data nested in body
-                jobs = result.body.data;
-            } else {
-                console.error('Unexpected response format:', result);
-                showView('form');
-                alert('No jobs found. Please try adjusting your search criteria.');
-                return;
-            }
-            
-            // Extract completion code - check multiple possible structures
-            if (result.completionCode) {
-                // Completion code at top level
-                completionCode = result.completionCode;
-            } else if (result.body && result.body.completionCode) {
-                // Completion code nested in body
-                completionCode = result.body.completionCode;
-            }
-            
-            // Always display results view, even if there are 0 matches
-            jobResults = jobs;
-            displayJobResults(jobs);
-            showView('results');
-        } else {
-            console.error('Error submitting job search:', response.status, response.statusText);
-            showView('form');
-            alert('Error submitting your job search. Please try again.');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        console.log('Job search submitted successfully:', result);
+        
+        // Extract jobs and completion code from response
+        const { jobs, completionCode: code } = parseJobSearchResponse(result);
+        
+        if (jobs === null) {
+            showView('form');
+            alert('No jobs found. Please try adjusting your search criteria.');
+            return;
+        }
+        
+        completionCode = code || '';
+        jobResults = jobs;
+        displayJobResults(jobs);
+        showView('results');
     } catch (error) {
-        console.error('Network error submitting job search:', error);
+        console.error('Error submitting job search:', error);
         showView('form');
-        alert('Network error. Please check your connection and try again.');
+        const errorMessage = error.message.includes('HTTP error') 
+            ? 'Error submitting your job search. Please try again.'
+            : 'Network error. Please check your connection and try again.';
+        alert(errorMessage);
     }
+}
+
+// Parse job search API response
+function parseJobSearchResponse(result) {
+    // Extract jobs from response - check multiple possible structures
+    let jobs = null;
+    if (result.data && Array.isArray(result.data)) {
+        jobs = result.data;
+    } else if (result.body?.data && Array.isArray(result.body.data)) {
+        jobs = result.body.data;
+    } else {
+        console.error('Unexpected response format:', result);
+        return { jobs: null, completionCode: null };
+    }
+    
+    // Extract completion code - check multiple possible structures
+    const code = result.completionCode || result.body?.completionCode || null;
+    
+    return { jobs, completionCode: code };
 }
 
 // Display job results (using shared function from script.js)
@@ -528,19 +546,7 @@ function updateProgress(step) {
 
 // Clear form
 function clearForm() {
-    formData = {
-        experienceLevel: '',
-        salaryRange: '',
-        jobFunction: [],
-        remarks: '',
-        name: '',
-        email: '',
-        ageRange: '',
-        education: '',
-        phone: '',
-        availability: '',
-        livingDistrict: ''
-    };
+    formData = { ...initialFormData };
     
     const form = document.getElementById('job-form');
     form.reset();
@@ -559,7 +565,7 @@ function clearForm() {
         updateSelectColor(select);
     });
     
-    localStorage.removeItem('jobFinderFormData');
+    localStorage.removeItem(STORAGE_KEY);
     updateProgress(1);
 }
 
