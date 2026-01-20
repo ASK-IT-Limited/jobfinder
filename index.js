@@ -5,6 +5,8 @@ const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.ap
 const STORAGE_KEY = 'jobFinderFormData';
 const MAX_JOB_FUNCTIONS = 3;
 const SCROLL_DELAY = 100;
+const JOB_FUNCTION_HELPER_TEXT = 'Select up to 3 job functions.';
+const JOB_FUNCTION_ERROR_TEXT = `Select at most ${MAX_JOB_FUNCTIONS} job functions.`;
 
 // State management
 const initialFormData = {
@@ -118,10 +120,25 @@ function initializeEventListeners() {
         }
     };
     
+    // Helper function to validate job function selection count
+    const validateJobFunction = (select) => {
+        if (select.id === 'job-function' && select.hasAttribute('multiple')) {
+            const selectedCount = Array.from(select.selectedOptions)
+                .filter(option => option.value !== '').length;
+            
+            if (selectedCount > MAX_JOB_FUNCTIONS) {
+                setJobFunctionError(select, true);
+            } else {
+                setJobFunctionError(select, false);
+            }
+        }
+    };
+    
     formInputs.forEach(input => {
         input.addEventListener('change', () => {
             saveFormData();
             validateEmailInput(input);
+            validateJobFunction(input);
         });
         input.addEventListener('input', () => {
             saveFormData();
@@ -188,14 +205,13 @@ function validateForm() {
                 isEmpty = selectedNonEmpty.length === 0;
                 
                 // Special validation for job function: max 3 items
-                if (field.id === 'job-function' && selectedNonEmpty.length > MAX_JOB_FUNCTIONS) {
-                    isInvalidFormat = true; // Mark as invalid to prevent class removal
-                    isValid = false;
-                    // Show error message
-                    const helperText = field.parentElement.querySelector('.form-helper');
-                    if (helperText) {
-                        helperText.textContent = `Please select at most ${MAX_JOB_FUNCTIONS} job functions.`;
-                        helperText.style.color = 'var(--error-red)';
+                if (field.id === 'job-function') {
+                    if (selectedNonEmpty.length > MAX_JOB_FUNCTIONS) {
+                        isInvalidFormat = true;
+                        isValid = false;
+                        setJobFunctionError(field, true);
+                    } else {
+                        setJobFunctionError(field, false);
                     }
                 }
             } else {
@@ -216,12 +232,36 @@ function validateForm() {
     return isValid;
 }
 
+// Helper function to set/clear job function error state and helper text
+function setJobFunctionError(select, hasError) {
+    if (hasError) {
+        select.classList.add('required-error');
+        const helperText = select.parentElement.querySelector('.form-helper');
+        if (helperText) {
+            helperText.textContent = JOB_FUNCTION_ERROR_TEXT;
+            helperText.style.color = 'var(--error-red)';
+        }
+    } else {
+        select.classList.remove('required-error');
+        const helperText = select.parentElement.querySelector('.form-helper');
+        if (helperText && helperText.style.color === 'var(--error-red)') {
+            helperText.textContent = JOB_FUNCTION_HELPER_TEXT;
+            helperText.style.color = '';
+        }
+    }
+}
+
 // Clear validation errors
 function clearValidationErrors() {
     const form = document.getElementById('job-form');
     const errorFields = form.querySelectorAll('.required-error');
     errorFields.forEach(field => {
         field.classList.remove('required-error');
+        
+        // Reset helper text for job-function field if it was showing an error
+        if (field.id === 'job-function') {
+            setJobFunctionError(field, false);
+        }
     });
 }
 
