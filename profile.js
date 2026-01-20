@@ -108,6 +108,11 @@ async function handleLogin(e) {
         return;
     }
     
+    // Check rate limit and record action if allowed
+    if (!withRateLimit(RATE_LIMIT_KEYS.VIEW_PROFILE)) {
+        return;
+    }
+    
     const completionCode = completionCodeInput.value.trim().toUpperCase();
     const accessCode = accessCodeInput.value;
     

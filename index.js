@@ -87,7 +87,7 @@ function initializeEventListeners() {
     });
 
     document.getElementById('find-jobs').addEventListener('click', () => {
-        submitJobSearch();
+        withRateLimit(RATE_LIMIT_KEYS.FIND_JOB_MATCHES, submitJobSearch);
     });
 
     // Edit individual fields

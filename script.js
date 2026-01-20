@@ -552,3 +552,125 @@ function displayJobs(jobs, options) {
         initializeCollapsibleSections(jobCard);
     });
 }
+
+// Rate limiting functionality
+const RATE_LIMIT_KEYS = {
+    FIND_JOB_MATCHES: 'rateLimitFindJobMatches',
+    VIEW_PROFILE: 'rateLimitViewProfile'
+};
+
+// Rate limit durations in milliseconds for each action
+const RATE_LIMIT_DURATIONS = {
+    [RATE_LIMIT_KEYS.FIND_JOB_MATCHES]: 60 * 1000, // 1 minute
+    [RATE_LIMIT_KEYS.VIEW_PROFILE]: 30 * 1000 // 30 seconds
+};
+
+const DEFAULT_RATE_LIMIT_DURATION = 60 * 1000; // Default: 1 minute
+const POPUP_AUTO_HIDE_DELAY = 3000; // 3 seconds
+const POPUP_ANIMATION_DELAY = 10; // milliseconds
+const POPUP_FADE_OUT_DELAY = 300; // milliseconds
+const POPUP_ID = 'rate-limit-popup';
+const CLOSE_BUTTON_SELECTOR = '.rate-limit-close';
+
+// Get rate limit duration for a specific key
+function getRateLimitDuration(key) {
+    return RATE_LIMIT_DURATIONS[key] || DEFAULT_RATE_LIMIT_DURATION;
+}
+
+// Check if action is rate limited
+function checkRateLimit(key) {
+    const lastActionTime = localStorage.getItem(key);
+    
+    if (!lastActionTime) {
+        return { allowed: true };
+    }
+    
+    const rateLimitDuration = getRateLimitDuration(key);
+    const timeSinceLastAction = Date.now() - parseInt(lastActionTime, 10);
+    
+    if (timeSinceLastAction < rateLimitDuration) {
+        const remainingSeconds = Math.ceil((rateLimitDuration - timeSinceLastAction) / 1000);
+        return { allowed: false, remainingSeconds };
+    }
+    
+    return { allowed: true };
+}
+
+// Record action timestamp
+function recordAction(key) {
+    localStorage.setItem(key, Date.now().toString());
+}
+
+// Format remaining seconds message
+function formatRemainingTimeMessage(remainingSeconds) {
+    return `Please wait ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''} before trying again.`;
+}
+
+// Create popup HTML content
+function createPopupHTML(remainingSeconds) {
+    return `
+        <div class="rate-limit-popup-content">
+            <p class="rate-limit-message">${formatRemainingTimeMessage(remainingSeconds)}</p>
+            <button class="rate-limit-close" aria-label="Close">×</button>
+        </div>
+    `;
+}
+
+// Get or create popup element
+function getOrCreatePopup() {
+    let popup = document.getElementById(POPUP_ID);
+    if (popup) {
+        popup.remove();
+    }
+    
+    popup = document.createElement('div');
+    popup.id = POPUP_ID;
+    popup.className = 'rate-limit-popup';
+    document.body.appendChild(popup);
+    
+    return popup;
+}
+
+// Show rate limit popup message
+function showRateLimitPopup(remainingSeconds) {
+    const popup = getOrCreatePopup();
+    popup.innerHTML = createPopupHTML(remainingSeconds);
+    
+    // Setup close button handler
+    const closeBtn = popup.querySelector(CLOSE_BUTTON_SELECTOR);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideRateLimitPopup);
+    }
+    
+    // Show popup with animation
+    setTimeout(() => popup.classList.add('show'), POPUP_ANIMATION_DELAY);
+    
+    // Auto-hide after delay
+    setTimeout(hideRateLimitPopup, POPUP_AUTO_HIDE_DELAY);
+}
+
+// Hide rate limit popup
+function hideRateLimitPopup() {
+    const popup = document.getElementById(POPUP_ID);
+    if (!popup) return;
+    
+    popup.classList.remove('show');
+    setTimeout(() => popup.remove(), POPUP_FADE_OUT_DELAY);
+}
+
+// Wrapper function to enforce rate limiting on an action
+// Returns true if action should proceed, false if rate limited
+function withRateLimit(key, callback) {
+    const rateLimitCheck = checkRateLimit(key);
+    
+    if (!rateLimitCheck.allowed) {
+        showRateLimitPopup(rateLimitCheck.remainingSeconds);
+        return false;
+    }
+    
+    recordAction(key);
+    if (typeof callback === 'function') {
+        callback();
+    }
+    return true;
+}
