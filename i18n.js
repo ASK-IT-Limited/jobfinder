@@ -14,11 +14,11 @@ const TRANSLATIONS = {
         'nav.contactUs': 'Contact Us',
         
         // Main Page
-        'hero.title': 'Find Your Perfect Job',
-        'hero.subtitle': 'Answer a few quick questions and we will match you with tailored job opportunities.',
-        'step.quickSurvey': 'Quick Survey',
-        'step.reviewAnswers': 'Review Answers',
-        'step.reviewMatches': 'Review Matches',
+        'hero.title': 'Looking for a job?',
+        'hero.subtitle': 'Answer a few quick questions here and we will match you with tailored job opportunities.',
+        'step.quickSurvey': 'Survey Filling',
+        'step.reviewAnswers': 'Answers Checking',
+        'step.reviewMatches': 'Matches Review',
         
         // Form Labels
         'form.information': 'Information',
