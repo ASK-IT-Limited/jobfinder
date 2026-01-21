@@ -14,31 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const navLinks = document.getElementById('nav-links');
     
-    if (hamburgerBtn && navLinks) {
-        hamburgerBtn.addEventListener('click', () => {
-            hamburgerBtn.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
-                hamburgerBtn.classList.remove('active');
-                navLinks.classList.remove('active');
-            }
-        });
-        
-        // Close menu when clicking on a nav link
-        const navLinkElements = navLinks.querySelectorAll('.nav-link');
-        navLinkElements.forEach(link => {
-            if (link.tagName === 'A') {
-                link.addEventListener('click', () => {
-                    hamburgerBtn.classList.remove('active');
-                    navLinks.classList.remove('active');
-                });
-            }
-        });
-    }
+    if (!hamburgerBtn || !navLinks) return;
+    
+    const closeMenu = () => {
+        hamburgerBtn.classList.remove('active');
+        navLinks.classList.remove('active');
+    };
+    
+    hamburgerBtn.addEventListener('click', () => {
+        hamburgerBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+    
+    // Close menu when clicking outside or on a nav link
+    document.addEventListener('click', (e) => {
+        if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
+            closeMenu();
+        } else if (e.target.closest('.nav-link[href]')) {
+            closeMenu();
+        }
+    });
 });
 
 // Constants for HTML escaping
@@ -208,7 +203,8 @@ function formatJobDescriptionWithCollapsible(text) {
         const responsibilitiesContent = formatted.substring(respStart, respEnd).trim();
         const cleanRespContent = responsibilitiesContent.replace(/^(<br\s*\/?>)+/i, '');
         
-        result += createCollapsibleSection('Job Responsibilities', cleanRespContent);
+        const respTitle = window.i18n ? window.i18n.t('job.responsibilities') : 'Job Responsibilities';
+        result += createCollapsibleSection(respTitle, cleanRespContent);
         lastIndex = respEnd;
     }
     
@@ -222,7 +218,8 @@ function formatJobDescriptionWithCollapsible(text) {
         const requirementsContent = formatted.substring(reqStart).trim();
         const cleanReqContent = requirementsContent.replace(/^(<br\s*\/?>)+/i, '');
         
-        result += createCollapsibleSection('Job Requirements', cleanReqContent);
+        const reqTitle = window.i18n ? window.i18n.t('job.requirements') : 'Job Requirements';
+        result += createCollapsibleSection(reqTitle, cleanReqContent);
         lastIndex = formatted.length;
     }
     
@@ -236,10 +233,11 @@ function formatJobDescriptionWithCollapsible(text) {
 
 // Helper function to create collapsible section HTML
 function createCollapsibleSection(title, content) {
+    const translatedTitle = window.i18n ? window.i18n.t(title) : title;
     return `
         <div class="job-section-collapsible">
             <button class="job-section-toggle" type="button" aria-expanded="false">
-                <strong>${title}</strong>
+                <strong>${translatedTitle}</strong>
                 <span class="toggle-icon">▼</span>
             </button>
             <div class="job-section-content" style="display: none;">
@@ -256,22 +254,17 @@ const TOGGLE_ICON_EXPANDED = '▲';
 // Helper function to toggle collapsible content
 function toggleCollapsibleContent(button, content, icon) {
     const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    const willBeExpanded = !isExpanded;
     
-    if (isExpanded) {
-        content.style.display = 'none';
-        button.setAttribute('aria-expanded', 'false');
-        if (icon) icon.textContent = TOGGLE_ICON_COLLAPSED;
-    } else {
-        content.style.display = 'block';
-        button.setAttribute('aria-expanded', 'true');
-        if (icon) icon.textContent = TOGGLE_ICON_EXPANDED;
-    }
+    content.style.display = willBeExpanded ? 'block' : 'none';
+    button.setAttribute('aria-expanded', willBeExpanded.toString());
+    if (icon) icon.textContent = willBeExpanded ? TOGGLE_ICON_EXPANDED : TOGGLE_ICON_COLLAPSED;
 }
 
 // Helper function to initialize toggle buttons (removes existing listeners by cloning)
 function initializeToggleButton(button, handler) {
     const newButton = button.cloneNode(true);
-    button.parentNode.replaceChild(newButton, button);
+    button.replaceWith(newButton);
     newButton.addEventListener('click', handler);
 }
 
@@ -279,13 +272,12 @@ function initializeToggleButton(button, handler) {
 function initializeCollapsibleSections(container) {
     if (!container) return;
     
-    const toggleButtons = container.querySelectorAll('.job-section-toggle');
-    toggleButtons.forEach(button => {
+    container.querySelectorAll('.job-section-toggle').forEach(button => {
         initializeToggleButton(button, function() {
             const content = this.nextElementSibling;
             const icon = this.querySelector('.toggle-icon');
             
-            if (content && content.classList.contains('job-section-content')) {
+            if (content?.classList.contains('job-section-content')) {
                 toggleCollapsibleContent(this, content, icon);
             }
         });
@@ -296,11 +288,9 @@ function initializeCollapsibleSections(container) {
 function initializeExpandableJobDescription(container) {
     if (!container) return;
     
-    const expandButtons = container.querySelectorAll('.job-expand-toggle');
-    expandButtons.forEach(button => {
+    container.querySelectorAll('.job-expand-toggle').forEach(button => {
         initializeToggleButton(button, function() {
-            const expandableSection = container.querySelector('.job-description-expandable');
-            const content = expandableSection?.querySelector('.job-expand-content');
+            const content = container.querySelector('.job-description-expandable')?.querySelector('.job-expand-content');
             const icon = this.querySelector('.toggle-icon');
             
             if (content) {
@@ -344,19 +334,52 @@ function isValidEmail(email) {
     return EMAIL_REGEX.test(email);
 }
 
-// Format select value for display (gets option text from select element)
+// Format select value for display (translates option value using i18n system)
 function formatSelectValue(value, selectId) {
     if (!value || value === '') return '—';
     
-    // Handle backward compatibility with old array format
-    const singleValue = Array.isArray(value) ? value[0] : value;
-    if (!singleValue) return '—';
+    // Handle arrays (multi-select) - join multiple selected items
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '—';
+        
+        const select = document.querySelector(`#${selectId}`);
+        if (!select) return value.join(', ');
+        
+        // Translate each value and join with commas
+        const translatedValues = value.map(singleValue => {
+            if (!singleValue) return '';
+            
+            const option = select.querySelector(`option[value="${singleValue}"]`);
+            if (!option) return singleValue;
+            
+            // Use i18n translation if available
+            const i18nKey = option.getAttribute('data-i18n-option');
+            if (i18nKey && window.i18n) {
+                return window.i18n.t(i18nKey);
+            }
+            
+            // Fallback to textContent if no i18n key
+            return option.textContent || singleValue;
+        }).filter(v => v !== ''); // Remove empty values
+        
+        return translatedValues.length > 0 ? translatedValues.join(', ') : '—';
+    }
     
+    // Handle single value
     const select = document.querySelector(`#${selectId}`);
-    if (!select) return singleValue;
+    if (!select) return value;
     
-    const option = select.querySelector(`option[value="${singleValue}"]`);
-    return option ? option.textContent : singleValue;
+    const option = select.querySelector(`option[value="${value}"]`);
+    if (!option) return value;
+    
+    // Use i18n translation if available, otherwise fallback to option textContent
+    const i18nKey = option.getAttribute('data-i18n-option');
+    if (i18nKey && window.i18n) {
+        return window.i18n.t(i18nKey);
+    }
+    
+    // Fallback to textContent if no i18n key
+    return option.textContent || value;
 }
 
 // Generic API response parser - handles different response structures
@@ -414,8 +437,9 @@ function getNestedValue(obj, path) {
 function createReasonHtml(jobReason) {
     if (!jobReason) return '';
     
+    const whyMatchesText = window.i18n ? window.i18n.t('job.whyMatches') : 'Why this matches:';
     return `<div class="job-reason">
-        <strong>Why this matches:</strong>
+        <strong>${whyMatchesText}</strong>
         <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
     </div>`;
 }
@@ -486,6 +510,12 @@ function displayJobs(jobs, options) {
         if (countElement) {
             countElement.textContent = jobs.length;
         }
+        // Also update the subtitle if it contains the count
+        const subtitleElement = document.querySelector('.results-subtitle');
+        if (subtitleElement && window.i18n) {
+            const translatedText = window.i18n.t('results.subtitle', { count: jobs.length });
+            subtitleElement.innerHTML = translatedText.replace('{count}', `<span id="${countElementId}">${jobs.length}</span>`);
+        }
     }
     
     // Update completion code if element and value provided
@@ -503,8 +533,7 @@ function displayJobs(jobs, options) {
         return;
     }
     
-    // Sort by score (highest first)
-    // Handle both camelCase and PascalCase property names
+    // Sort by score (highest first) - handle both camelCase and PascalCase property names
     const scoreProp = propertyNames.score;
     const sortedJobs = [...jobs].sort((a, b) => {
         const scoreA = a[scoreProp] || a.Score || a.score || 0;
@@ -522,9 +551,6 @@ function displayJobs(jobs, options) {
         const jobID = job[propertyNames.jobID] || job.JobID || job.jobID || null;
         const jobDesc = job[propertyNames.jobDesc] || job.JobDesc || job.jobDesc || null;
         const jobReason = job[propertyNames.reason] || job.Reason || job.reason || null;
-        
-        // const scoreBadge = jobScore ? `<div class="job-score">Score: ${jobScore}/10</div>` : '';
-        const scoreBadge = '';
 
         // Format job description
         const jobDescFormatted = formatJobDescriptionWithExpandable(jobDesc);
@@ -535,7 +561,6 @@ function displayJobs(jobs, options) {
             <div class="job-card-header">
                 <div class="job-card-title">
                     <h3 class="job-title">${jobTitle || (jobID ? `#${jobID}` : 'N/A')}</h3>
-                    ${scoreBadge}
                 </div>
             </div>
             <div class="job-card-body">
@@ -603,7 +628,14 @@ function recordAction(key) {
 
 // Format remaining seconds message
 function formatRemainingTimeMessage(remainingSeconds) {
-    return `Please wait ${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''} before trying again.`;
+    if (window.i18n) {
+        const lang = window.i18n.currentLang();
+        if (lang === 'zh') {
+            return window.i18n.t('error.rateLimit', { seconds: remainingSeconds });
+        }
+    }
+    const plural = remainingSeconds !== 1 ? 's' : '';
+    return `Please wait ${remainingSeconds} second${plural} before trying again.`;
 }
 
 // Create popup HTML content

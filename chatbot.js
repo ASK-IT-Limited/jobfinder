@@ -27,7 +27,7 @@
     chatButton.setAttribute('aria-label', 'Open AI Chatbot');
     chatButton.innerHTML = `
         ${chatIconSVG}
-        <span class="chat-button-text">Chat with Chloe (AI)</span>
+        <span class="chat-button-text">Chloe (AI)</span>
     `;
     
     // Chat button styles

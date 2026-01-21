@@ -14,6 +14,19 @@ const ERROR_MESSAGES = {
     LOAD_ERROR: 'Error loading data. Please check and try again.'
 };
 
+// Helper function to get translated error message
+function getTranslatedError(key) {
+    const errorKeyMap = {
+        'REQUIRED_FIELDS': 'error.requiredFields',
+        'INVALID_FORMAT': 'error.invalidFormat',
+        'INCORRECT_CODES': 'error.incorrectCodes',
+        'NO_SURVEY_DATA': 'error.noSurveyData',
+        'LOAD_ERROR': 'error.loadError'
+    };
+    const i18nKey = errorKeyMap[key];
+    return window.i18n && i18nKey ? window.i18n.t(i18nKey) : ERROR_MESSAGES[key];
+}
+
 // State
 let views = {};
 let currentCompletionCode = '';
@@ -108,11 +121,6 @@ async function handleLogin(e) {
         return;
     }
     
-    // Check rate limit and record action if allowed
-    if (!withRateLimit(RATE_LIMIT_KEYS.VIEW_PROFILE)) {
-        return;
-    }
-    
     const completionCode = completionCodeInput.value.trim().toUpperCase();
     const accessCode = accessCodeInput.value;
     
@@ -129,6 +137,11 @@ async function handleLogin(e) {
     
     // Validate completion code format
     if (!validateCompletionCodeFormat(completionCode)) {
+        return;
+    }
+    
+    // Check rate limit and record action if allowed (only after validation passes)
+    if (!withRateLimit(RATE_LIMIT_KEYS.VIEW_PROFILE)) {
         return;
     }
     
@@ -197,24 +210,33 @@ async function fetchCandidateData(completionCode) {
 // Display candidate data
 function displayCandidateData(surveyData, jobMatches) {
     // Display completion code
-    document.getElementById('display-code').textContent = currentCompletionCode;
+    const displayCodeElement = document.getElementById('display-code');
+    if (displayCodeElement) displayCodeElement.textContent = currentCompletionCode;
     
-    // Display survey answers from the first item in the response array
-    document.getElementById('info-name').textContent = formatValue(surveyData.Name);
-    document.getElementById('info-email').textContent = formatValue(surveyData.Email);
-    document.getElementById('info-age-range').textContent = formatValue(surveyData.AgeRange);
-    document.getElementById('info-education').textContent = formatValue(surveyData.Education);
-    document.getElementById('info-phone').textContent = formatValue(surveyData.Phone);
-    document.getElementById('info-availability').textContent = formatValue(surveyData.Availability);
-    document.getElementById('info-living-district').textContent = formatValue(surveyData.LivingDistrict);
-    document.getElementById('info-remarks').textContent = formatValue(surveyData.Remarks || surveyData.Skills);
-    document.getElementById('info-job-function').textContent = formatValue(surveyData.JobFunction);
-    document.getElementById('info-experience-level').textContent = formatValue(surveyData.ExperienceLevel);
-    document.getElementById('info-salary-range').textContent = formatValue(surveyData.SalaryRange);
+    // Display survey answers
+    const infoFields = {
+        'info-name': surveyData.Name,
+        'info-email': surveyData.Email,
+        'info-age-range': surveyData.AgeRange,
+        'info-education': surveyData.Education,
+        'info-phone': surveyData.Phone,
+        'info-availability': surveyData.Availability,
+        'info-living-district': surveyData.LivingDistrict,
+        'info-remarks': surveyData.Remarks || surveyData.Skills,
+        'info-job-function': surveyData.JobFunction,
+        'info-experience-level': surveyData.ExperienceLevel,
+        'info-salary-range': surveyData.SalaryRange
+    };
     
-    // Display job matches (remaining items from the response array)
+    Object.entries(infoFields).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = formatValue(value);
+    });
+    
+    // Display job matches
     const jobs = jobMatches || [];
-    document.getElementById('results-count').textContent = jobs.length;
+    const countElement = document.getElementById('results-count');
+    if (countElement) countElement.textContent = jobs.length;
     
     displayJobMatches(jobs);
 }
@@ -223,7 +245,8 @@ function displayCandidateData(surveyData, jobMatches) {
 function displayJobMatches(jobs) {
     displayJobs(jobs, {
         listElementId: 'jobs-list',
-        noResultsMessage: 'No job matches found for this candidate.',
+        countElementId: 'results-count',
+        noResultsMessage: window.i18n ? window.i18n.t('results.noMatchesProfile') : 'No job matches found for this candidate.',
         propertyNames: {
             score: 'Score',
             jobTitle: 'JobTitle',
@@ -232,6 +255,18 @@ function displayJobMatches(jobs) {
             reason: 'Reason'
         }
     });
+    
+    // Update profile subtitle with translated text and count
+    updateProfileSubtitle(jobs.length);
+}
+
+// Update profile subtitle with translated text
+function updateProfileSubtitle(count) {
+    const subtitleElement = document.querySelector('.results-subtitle');
+    if (subtitleElement && window.i18n) {
+        const translatedText = window.i18n.t('profile.foundMatches', { count: count });
+        subtitleElement.innerHTML = translatedText.replace('{count}', `<span id="results-count">${count}</span>`);
+    }
 }
 
 // Helper Functions
@@ -248,22 +283,21 @@ function clearErrors() {
 
 // Validate required fields
 function validateRequiredFields(completionCode, accessCode) {
-    let hasError = false;
+    const errors = [];
     
     if (!completionCode || completionCode.length === 0) {
         completionCodeInput?.classList.add('required-error');
-        hasError = true;
+        errors.push(completionCodeInput);
     }
     
     if (!accessCode || accessCode.length === 0) {
         accessCodeInput?.classList.add('required-error');
-        hasError = true;
+        errors.push(accessCodeInput);
     }
     
-    if (hasError) {
-        showError(ERROR_MESSAGES.REQUIRED_FIELDS);
-        // Focus on first error field
-        (completionCode ? accessCodeInput : completionCodeInput)?.focus();
+    if (errors.length > 0) {
+        showError(getTranslatedError('REQUIRED_FIELDS'));
+        errors[0]?.focus();
         return false;
     }
     
@@ -274,7 +308,7 @@ function validateRequiredFields(completionCode, accessCode) {
 function validateCompletionCodeFormat(completionCode) {
     if (completionCode.length !== COMPLETION_CODE_LENGTH || !COMPLETION_CODE_PATTERN.test(completionCode)) {
         completionCodeInput?.classList.add('required-error');
-        showError(ERROR_MESSAGES.INVALID_FORMAT);
+        showError(getTranslatedError('INVALID_FORMAT'));
         completionCodeInput?.focus();
         return false;
     }
@@ -286,16 +320,16 @@ function handleLoginError(error) {
     if (!errorDiv) return;
     
     if (error.message === 'INCORRECT_CODES') {
-        showError(ERROR_MESSAGES.INCORRECT_CODES);
+        showError(getTranslatedError('INCORRECT_CODES'));
         completionCodeInput?.classList.add('required-error');
         accessCodeInput?.classList.add('required-error');
         accessCodeInput?.focus();
     } else if (error.message === 'NO_SURVEY_DATA') {
-        showError(ERROR_MESSAGES.NO_SURVEY_DATA);
+        showError(getTranslatedError('NO_SURVEY_DATA'));
         completionCodeInput?.classList.add('required-error');
         completionCodeInput?.focus();
     } else {
-        showError(ERROR_MESSAGES.LOAD_ERROR);
+        showError(getTranslatedError('LOAD_ERROR'));
     }
 }
 
@@ -309,13 +343,11 @@ function showError(message) {
 
 // Parse API response body (using shared function from script.js)
 function parseResponseBody(data) {
-    // Use generic parser with profile-specific paths
     const result = parseApiResponse(data, {
         dataPath: ['body.survey', 'body.matches', 'survey', 'matches'],
         bodyPath: 'body'
     });
     
-    // Return body object for profile page
     if (result.parsedData.body) {
         return result.parsedData.body;
     }
