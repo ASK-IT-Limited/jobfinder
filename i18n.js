@@ -16,9 +16,9 @@ const TRANSLATIONS = {
         // Main Page
         'hero.title': 'Looking for a job?',
         'hero.subtitle': 'Answer a few quick questions here and we will match you with tailored job opportunities.',
-        'step.quickSurvey': 'Survey Filling',
-        'step.reviewAnswers': 'Answers Checking',
-        'step.reviewMatches': 'Matches Review',
+        'step.quickSurvey': 'Quick Survey',
+        'step.reviewAnswers': 'Confirmation',
+        'step.reviewMatches': 'Job Matches',
         
         // Form Labels
         'form.information': 'Information',
@@ -140,7 +140,7 @@ const TRANSLATIONS = {
         'form.newSearch': 'New Search',
         
         // Review Page
-        'review.title': 'Your Answers',
+        'review.title': 'Your Responses',
         'review.category.information': 'Information',
         'review.category.preferences': 'Preferences',
         'review.consent': 'By clicking next, you consent ASK IT to use your data for job matching. If you do not agree, do not proceed.',
@@ -211,7 +211,7 @@ const TRANSLATIONS = {
         'hero.subtitle': '回答以下幾個簡單嘅問題，我哋會為你配對合適嘅工作機會。',
         'step.quickSurvey': '填寫問卷',
         'step.reviewAnswers': '確認回答',
-        'step.reviewMatches': '查看配對結果',
+        'step.reviewMatches': '查看結果',
         
         // Form Labels
         'form.information': '個人資料',
