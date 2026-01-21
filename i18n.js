@@ -92,6 +92,7 @@ const TRANSLATIONS = {
         'option.district.tsuenWan': 'Tsuen Wan',
         'option.district.kwaiTsing': 'Kwai Tsing',
         'option.district.islands': 'Islands',
+        'option.district.anyLocation': 'Open to any work location',
         
         // Dropdown Options - Experience
         'option.experience.default': 'Select experience',
@@ -284,6 +285,7 @@ const TRANSLATIONS = {
         'option.district.tsuenWan': '荃灣',
         'option.district.kwaiTsing': '葵青',
         'option.district.islands': '離島',
+        'option.district.anyLocation': '任何工作地點均可',
         
         // Dropdown Options - Experience
         'option.experience.default': '選擇工作經驗',
