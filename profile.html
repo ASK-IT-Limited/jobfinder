@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Compass - AI-Powered Job Matches</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="askit_logo.png" alt="ASK IT" class="logo-image">
+                    <span class="logo-text" data-i18n="logo.text">Job Compass</span>
+                    <span class="logo-version" data-i18n="logo.version">v3.5</span>
+                </div>
+                <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <nav class="nav-links" id="nav-links">
+                    <a href="index.html" class="nav-link" data-i18n="nav.findJobs">Find Jobs</a>
+                    <span class="nav-link">|</span>
+                    <a href="https://askit.com.hk/it-outsourcing/" class="nav-link" target="_blank" data-i18n="nav.ourServices">Our Services</a>
+                    <a href="https://askit.com.hk/contact-us/" class="nav-link" target="_blank" data-i18n="nav.contactUs">Contact Us</a>
+                    <div class="language-switcher" id="language-switcher">
+                        <button class="lang-btn" data-lang="en" data-i18n="lang.en">EN</button>
+                        <button class="lang-btn" data-lang="zh" data-i18n="lang.zh">中文</button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="hero-section">
+                <h1 class="hero-title" data-i18n="profile.title">Your Profile</h1>
+                <p class="hero-subtitle" data-i18n="profile.subtitle">View your profile and personalised job matches.</p>
+            </div>
+
+            <!-- Login View -->
+            <div id="login-view" class="view active">
+                <div class="login-section">
+                    <form id="login-form" class="login-form" novalidate>
+                        <div class="form-group">
+                            <label for="completion-code" class="form-label"><span data-i18n="profile.completionCode">Completion Code</span> <span class="required-asterisk">*</span></label>
+                            <input type="text" id="completion-code" name="completionCode" class="form-input" data-i18n-placeholder="profile.completionCodePlaceholder" placeholder="e.g., A1B2C" required autocomplete="off" maxlength="5" aria-label="Completion Code">
+                        </div>
+                        <div class="form-group">
+                            <label for="access-code" class="form-label"><span data-i18n="profile.accessCode">Access Code</span> <span class="required-asterisk">*</span></label>
+                            <input type="password" id="access-code" name="accessCode" class="form-input" data-i18n-placeholder="profile.accessCodePlaceholder" placeholder="Enter access code" required aria-label="Access Code">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary btn-large" data-i18n="profile.viewProfile">View Profile</button>
+                        </div>
+                        <div id="login-error" class="error-message" role="alert" aria-live="polite"></div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Results View -->
+            <div id="results-view" class="view">
+                <div class="results-header-section">
+                    <div class="results-header-actions">
+                        <button class="btn-secondary" id="back-to-login" data-i18n="form.back">Back</button>
+                        <div class="code-display">
+                            <span class="code-label" data-i18n="profile.completionCode">Completion Code:</span>
+                            <span class="code-value" id="display-code">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Survey Answers Section -->
+                <div class="info-section">
+                    <h2 class="section-title" data-i18n="form.information">Information</h2>
+                    <div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.name">Name</span>
+                            <span class="review-value" id="info-name">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.age">Age</span>
+                            <span class="review-value" id="info-age-range">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.email">Email</span>
+                            <span class="review-value" id="info-email">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.phone">Phone</span>
+                            <span class="review-value" id="info-phone">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.district">District</span>
+                            <span class="review-value" id="info-living-district">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.education">Education</span>
+                            <span class="review-value" id="info-education">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.experience">Experience</span>
+                            <span class="review-value" id="info-experience-level">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.availability">Availability</span>
+                            <span class="review-value" id="info-availability">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.background">Background</span>
+                            <span class="review-value" id="info-remarks">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.jobFunctions">Job Functions</span>
+                            <span class="review-value" id="info-job-function">—</span>
+                        </div>
+                        <div class="review-item">
+                            <span class="review-label" data-i18n="form.expectedSalary">Expected Salary</span>
+                            <span class="review-value" id="info-salary-range">—</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Matches Section -->
+                <div class="jobs-section">
+                    <h2 class="section-title" data-i18n="profile.jobMatches">Job Matches</h2>
+                    <p class="results-subtitle">Found <span id="results-count">0</span> matching job(s)</p>
+                    <div id="jobs-list" class="jobs-list">
+                        <!-- Job cards will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading View -->
+            <div id="loading-view" class="view">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <p class="loading-text" data-i18n="loading.loading">Loading candidate profile...</p>
+                    <p class="footer-copyright" data-i18n="loading.waitTime">This may take up to 30 seconds</p>
+                    <p class="footer-copyright" data-i18n="loading.noRefresh">Please do not refresh this page</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-tagline" data-i18n="footer.address">18/F Park Avenue Tower, 5 Moreton Terrace, Causeway Bay, Hong Kong</p>
+            <p class="footer-copyright" data-i18n="footer.copyright">© 2026 ASK IT Limited | EA License No.: 76414</p>
+        </div>
+    </footer>
+
+    <script src="i18n.js"></script>
+    <script src="script.js"></script>
+    <script src="profile.js"></script>
+    <script src="chatbot.js"></script>
+</body>
+</html>

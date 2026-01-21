@@ -1,379 +1,310 @@
-// State management
-let formData = {
-    location: '',
-    workArrangement: '',
-    jobType: '',
-    experienceLevel: '',
-    salaryRange: '',
-    jobFunction: '',
-    companySize: '',
-    skills: '',
-    name: '',
-    email: '',
-    ageRange: '',
-    education: ''
-};
+// Shared utility functions
 
-// View management
-let views = {};
-let jobResults = [];
-let kioskCode = '';
-
-// Generate unique 5-character Kiosk Code with timestamp component
-// Format: H + 4 random letters (H = hour indicator, 0-9 for hours 0-9, A-N for hours 10-23)
-// This provides 24 * 26^4 = 10,967,424 unique combinations per hour
-function generateKioskCode() {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const now = new Date();
-    
-    // Get hour (0-23) and convert to single character
-    // 0-9 for hours 0-9, A-N for hours 10-23
-    const hour = now.getHours();
-    let hourChar;
-    if (hour < 10) {
-        hourChar = hour.toString();
-    } else {
-        hourChar = String.fromCharCode(65 + (hour - 10)); // A-N for hours 10-23
+// Format value for display (handles arrays, empty values, etc.)
+function formatValue(value) {
+    if (!value || value === '') return '—';
+    if (Array.isArray(value)) {
+        return value.length > 0 ? value.join(', ') : '—';
     }
-    
-    // Generate 4 random letters
-    let randomPart = '';
-    for (let i = 0; i < 4; i++) {
-        randomPart += letters.charAt(Math.floor(Math.random() * letters.length));
-    }
-    
-    // Format: H + 4 random letters (e.g., "AXYZ" for hour 10 with random XYZ)
-    return hourChar + randomPart;
+    return value;
 }
 
-// Initialize
+// Hamburger menu toggle
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize views after DOM is loaded
-    views = {
-        form: document.getElementById('form-view'),
-        review: document.getElementById('review-view'),
-        loading: document.getElementById('loading-view'),
-        results: document.getElementById('results-view')
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navLinks = document.getElementById('nav-links');
+    
+    if (!hamburgerBtn || !navLinks) return;
+    
+    const closeMenu = () => {
+        hamburgerBtn.classList.remove('active');
+        navLinks.classList.remove('active');
     };
     
-    initializeEventListeners();
-    loadFormData();
-    initializeSelects();
+    hamburgerBtn.addEventListener('click', () => {
+        hamburgerBtn.classList.toggle('active');
+        navLinks.classList.toggle('active');
+    });
+    
+    // Close menu when clicking outside or on a nav link
+    document.addEventListener('click', (e) => {
+        if (!hamburgerBtn.contains(e.target) && !navLinks.contains(e.target)) {
+            closeMenu();
+        } else if (e.target.closest('.nav-link[href]')) {
+            closeMenu();
+        }
+    });
 });
 
-// Event Listeners
-function initializeEventListeners() {
-    // Form submission
-    const form = document.getElementById('job-form');
-    form.addEventListener('submit', handleFormSubmit);
+// Constants for HTML escaping
+const BR_PLACEHOLDER = '___BR_TAG_PLACEHOLDER___';
+const LABEL_PLACEHOLDERS = {
+    jobId: '___LABEL_JOB_ID___',
+    jobTitle: '___LABEL_JOB_TITLE___',
+    salaryRange: '___LABEL_SALARY_RANGE___',
+    location: '___LABEL_LOCATION___',
+    responsibilities: '___LABEL_RESPONSIBILITIES___',
+    requirements: '___LABEL_REQUIREMENTS___'
+};
 
-    // Clear form buttons
-    document.getElementById('clear-form').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-    });
+const LABEL_REPLACEMENTS = {
+    jobId: '<strong>Job ID: </strong>',
+    jobTitle: '<strong>Job Title: </strong>',
+    salaryRange: '<strong>Salary Range: </strong>',
+    location: '<strong>Location: </strong>',
+    responsibilities: '<br><strong>Job Responsibilities: </strong><br>',
+    requirements: '<br><strong>Job Requirements: </strong><br>'
+};
 
-    document.getElementById('clear-session-review').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
-    });
+const LABEL_PATTERNS = {
+    jobId: /Job ID:\s*/gi,
+    jobTitle: /Job Title:\s*/gi,
+    salaryRange: /Salary Range:\s*/gi,
+    location: /Location:\s*/gi,
+    responsibilities: /Job Responsibilities:\s*/gi,
+    requirements: /Job Requirements:\s*/gi
+};
 
-    document.getElementById('clear-session-loading').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
-    });
-
-    document.getElementById('clear-session-results').addEventListener('click', (e) => {
-        e.preventDefault();
-        clearForm();
-        showView('form');
-    });
-
-    document.getElementById('back-to-form').addEventListener('click', () => {
-        showView('form');
-    });
-
-    // Review page buttons
-    document.getElementById('back-to-survey').addEventListener('click', () => {
-        showView('form');
-    });
-
-    document.getElementById('edit-all').addEventListener('click', () => {
-        showView('form');
-    });
-
-    document.getElementById('find-jobs').addEventListener('click', () => {
-        submitJobSearch();
-    });
-
-    // Edit individual fields
-    document.querySelectorAll('.btn-edit-small').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const field = e.target.closest('.btn-edit-small').dataset.field;
-            showView('form');
-            // Scroll to the field
-            setTimeout(() => {
-                const fieldElement = getFieldElement(field);
-                if (fieldElement) {
-                    fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    fieldElement.focus();
-                }
-            }, 100);
-        });
-    });
-
-    // Save form data on input change
-    const formInputs = form.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('change', () => {
-            saveFormData();
-            // Validate email format on change
-            if (input.type === 'email' && input.value.trim()) {
-                if (isValidEmail(input.value.trim())) {
-                    input.classList.remove('required-error');
-                } else {
-                    input.classList.add('required-error');
-                }
-            } else {
-                // Remove error state when user starts typing/selecting
-                input.classList.remove('required-error');
-            }
-        });
-        input.addEventListener('input', () => {
-            saveFormData();
-            // Validate email format on input (real-time validation)
-            if (input.type === 'email' && input.value.trim()) {
-                if (isValidEmail(input.value.trim())) {
-                    input.classList.remove('required-error');
-                } else {
-                    input.classList.add('required-error');
-                }
-            } else {
-                // Remove error state when user starts typing/selecting
-                input.classList.remove('required-error');
-            }
-        });
-    });
-
+// Helper function to escape regex special characters
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Form submission handler
-function handleFormSubmit(e) {
-    e.preventDefault();
-    e.stopPropagation();
+// Escape HTML but allow <br> tags to be rendered
+function escapeHtmlAllowBreaks(text) {
+    if (!text) return '';
     
-    // Remove previous error states
-    clearValidationErrors();
+    // Replace <br> tags with placeholder
+    let processed = text.replace(/<br\s*\/?>/gi, BR_PLACEHOLDER);
     
-    // Validate required fields
-    if (!validateForm()) {
-        // Scroll to first invalid field
-        const firstInvalid = document.querySelector('.form-input.required-error, .form-select.required-error');
-        if (firstInvalid) {
-            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            firstInvalid.focus();
-        }
-        return false;
+    // Replace field labels with placeholders before escaping
+    Object.keys(LABEL_PATTERNS).forEach(key => {
+        processed = processed.replace(LABEL_PATTERNS[key], LABEL_PLACEHOLDERS[key]);
+    });
+    
+    // Escape all HTML
+    const div = document.createElement('div');
+    div.textContent = processed;
+    let escaped = div.innerHTML;
+    
+    // Replace label placeholders back with formatted HTML
+    Object.keys(LABEL_REPLACEMENTS).forEach(key => {
+        const regex = new RegExp(escapeRegex(LABEL_PLACEHOLDERS[key]), 'g');
+        escaped = escaped.replace(regex, LABEL_REPLACEMENTS[key]);
+    });
+    
+    // Replace <br> placeholder back with actual <br> tags
+    escaped = escaped.replace(new RegExp(escapeRegex(BR_PLACEHOLDER), 'g'), '<br>');
+    
+    return escaped;
+}
+
+// Constants for job description markers
+const LOCATION_MARKER = '<strong>Location: </strong>';
+const RESPONSIBILITIES_MARKER = '<br><strong>Job Responsibilities: </strong>';
+const REQUIREMENTS_MARKER = '<br><strong>Job Requirements: </strong>';
+
+// Parse job description and split at Location, making everything after expandable
+function formatJobDescriptionWithExpandable(text) {
+    if (!text) return '';
+    
+    // First, escape the HTML and format it
+    const formatted = escapeHtmlAllowBreaks(text);
+    
+    // Find the Location marker
+    const locationIndex = formatted.indexOf(LOCATION_MARKER);
+    
+    // If Location marker not found, return the formatted text as is (no expandable)
+    if (locationIndex === -1) {
+        return {
+            visible: formatted,
+            expandable: '',
+            hasExpandable: false
+        };
     }
     
-    collectFormData();
-    populateReviewPage();
-    showView('review');
-    updateProgress(2);
+    // Find where Location section ends
+    const locationValueStart = locationIndex + LOCATION_MARKER.length;
+    const splitPoint = findSplitPoint(formatted, locationValueStart);
     
-    return false;
+    // Extract visible and hidden parts
+    const visiblePart = formatted.substring(0, splitPoint);
+    const hiddenPart = formatted.substring(splitPoint);
+    
+    // If there's no hidden content, return the formatted text as is (no expandable)
+    if (!hiddenPart || hiddenPart.trim() === '') {
+        return {
+            visible: formatted,
+            expandable: '',
+            hasExpandable: false
+        };
+    }
+    
+    // Process the hidden part to create collapsible sections for responsibilities and requirements
+    const processedHiddenPart = formatJobDescriptionWithCollapsible(hiddenPart);
+    
+    // Create the expandable section - return object with visible, expandable content, and placeholder for reason
+    return {
+        visible: visiblePart,
+        expandable: processedHiddenPart,
+        hasExpandable: true
+    };
 }
 
-// Validate email format
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+// Helper function to find split point for expandable content
+function findSplitPoint(formatted, startIndex) {
+    const respIndex = formatted.indexOf(RESPONSIBILITIES_MARKER, startIndex);
+    const reqIndex = formatted.indexOf(REQUIREMENTS_MARKER, startIndex);
+    
+    // Find the earliest section marker
+    let splitPoint = formatted.length;
+    
+    if (respIndex !== -1 && reqIndex !== -1) {
+        splitPoint = Math.min(respIndex, reqIndex);
+    } else if (respIndex !== -1) {
+        splitPoint = respIndex;
+    } else if (reqIndex !== -1) {
+        splitPoint = reqIndex;
+    } else {
+        // If no section marker found, look for the next <br> tag
+        const brIndex = formatted.indexOf('<br>', startIndex);
+        if (brIndex !== -1) {
+            splitPoint = brIndex + 4;
+        }
+    }
+    
+    return splitPoint;
 }
 
-// Validate form
-function validateForm() {
-    let isValid = true;
-    const form = document.getElementById('job-form');
+// Parse job description and create collapsible sections for responsibilities and requirements
+function formatJobDescriptionWithCollapsible(text) {
+    if (!text) return '';
     
-    // Get all required fields
-    const requiredFields = form.querySelectorAll('[required]');
+    const formatted = text;
+    const respIndex = formatted.indexOf(RESPONSIBILITIES_MARKER);
+    const reqIndex = formatted.indexOf(REQUIREMENTS_MARKER);
     
-    requiredFields.forEach(field => {
-        let isEmpty = false;
-        let isInvalidFormat = false;
+    // If neither section exists, return the formatted text as is
+    if (respIndex === -1 && reqIndex === -1) {
+        return formatted;
+    }
+    
+    let result = '';
+    let lastIndex = 0;
+    
+    // Process responsibilities section
+    if (respIndex !== -1) {
+        if (respIndex > lastIndex) {
+            result += formatted.substring(lastIndex, respIndex);
+        }
         
-        if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
-            // For text inputs, check if value is empty after trimming
-            isEmpty = !field.value || field.value.trim() === '';
+        const respEnd = (reqIndex !== -1 && reqIndex > respIndex) ? reqIndex : formatted.length;
+        const respStart = respIndex + RESPONSIBILITIES_MARKER.length;
+        const responsibilitiesContent = formatted.substring(respStart, respEnd).trim();
+        const cleanRespContent = responsibilitiesContent.replace(/^(<br\s*\/?>)+/i, '');
+        
+        const respTitle = window.i18n ? window.i18n.t('job.responsibilities') : 'Job Responsibilities';
+        result += createCollapsibleSection(respTitle, cleanRespContent);
+        lastIndex = respEnd;
+    }
+    
+    // Process requirements section
+    if (reqIndex !== -1) {
+        if (reqIndex > lastIndex) {
+            result += formatted.substring(lastIndex, reqIndex);
+        }
+        
+        const reqStart = reqIndex + REQUIREMENTS_MARKER.length;
+        const requirementsContent = formatted.substring(reqStart).trim();
+        const cleanReqContent = requirementsContent.replace(/^(<br\s*\/?>)+/i, '');
+        
+        const reqTitle = window.i18n ? window.i18n.t('job.requirements') : 'Job Requirements';
+        result += createCollapsibleSection(reqTitle, cleanReqContent);
+        lastIndex = formatted.length;
+    }
+    
+    // Add any remaining content after requirements
+    if (lastIndex < formatted.length) {
+        result += formatted.substring(lastIndex);
+    }
+    
+    return result;
+}
+
+// Helper function to create collapsible section HTML
+function createCollapsibleSection(title, content) {
+    const translatedTitle = window.i18n ? window.i18n.t(title) : title;
+    return `
+        <div class="job-section-collapsible">
+            <button class="job-section-toggle" type="button" aria-expanded="false">
+                <strong>${translatedTitle}</strong>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="job-section-content" style="display: none;">
+                ${content}
+            </div>
+        </div>
+    `;
+}
+
+// Constants for toggle icons
+const TOGGLE_ICON_COLLAPSED = '▼';
+const TOGGLE_ICON_EXPANDED = '▲';
+
+// Helper function to toggle collapsible content
+function toggleCollapsibleContent(button, content, icon) {
+    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+    const willBeExpanded = !isExpanded;
+    
+    content.style.display = willBeExpanded ? 'block' : 'none';
+    button.setAttribute('aria-expanded', willBeExpanded.toString());
+    if (icon) icon.textContent = willBeExpanded ? TOGGLE_ICON_EXPANDED : TOGGLE_ICON_COLLAPSED;
+}
+
+// Helper function to initialize toggle buttons (removes existing listeners by cloning)
+function initializeToggleButton(button, handler) {
+    const newButton = button.cloneNode(true);
+    button.replaceWith(newButton);
+    newButton.addEventListener('click', handler);
+}
+
+// Initialize collapsible sections after they're added to the DOM
+function initializeCollapsibleSections(container) {
+    if (!container) return;
+    
+    container.querySelectorAll('.job-section-toggle').forEach(button => {
+        initializeToggleButton(button, function() {
+            const content = this.nextElementSibling;
+            const icon = this.querySelector('.toggle-icon');
             
-            // For email inputs, also validate format
-            if (field.type === 'email' && !isEmpty) {
-                isInvalidFormat = !isValidEmail(field.value.trim());
+            if (content?.classList.contains('job-section-content')) {
+                toggleCollapsibleContent(this, content, icon);
             }
-        } else if (field.tagName === 'SELECT') {
-            // For selects, check if value is empty
-            if (field.hasAttribute('multiple')) {
-                // For multiple selects, check if any non-empty options are selected
-                // "No Preference" (empty value) alone doesn't count as a valid selection
-                const selectedNonEmpty = Array.from(field.selectedOptions)
-                    .filter(option => option.value !== '');
-                isEmpty = selectedNonEmpty.length === 0;
-            } else {
-                isEmpty = field.value === '' || field.value === null;
-            }
-        } else {
-            isEmpty = field.value === '' || field.value === null;
-        }
-        
-        if (isEmpty || isInvalidFormat) {
-            field.classList.add('required-error');
-            isValid = false;
-            console.log('Field is invalid:', field.id || field.name, isEmpty ? 'empty' : 'invalid format', field);
-        } else {
-            field.classList.remove('required-error');
-        }
-    });
-    
-    return isValid;
-}
-
-// Clear validation errors
-function clearValidationErrors() {
-    const form = document.getElementById('job-form');
-    const errorFields = form.querySelectorAll('.required-error');
-    errorFields.forEach(field => {
-        field.classList.remove('required-error');
+        });
     });
 }
 
-// Collect form data
-function collectFormData() {
-    const form = document.getElementById('job-form');
+// Initialize expandable job description sections
+function initializeExpandableJobDescription(container) {
+    if (!container) return;
     
-    // Helper function to get selected values from multiple select
-    const getSelectedValues = (selectElement) => {
-        if (selectElement.hasAttribute('multiple')) {
-            // Filter out empty values (like "No Preference") and return array
-            const values = Array.from(selectElement.selectedOptions)
-                .map(option => option.value)
-                .filter(val => val !== '');
-            return values.length > 0 ? values : [];
-        }
-        return selectElement.value || '';
-    };
-    
-    formData = {
-        location: form.querySelector('#location').value.trim(),
-        workArrangement: getSelectedValues(form.querySelector('#work-arrangement')),
-        jobType: getSelectedValues(form.querySelector('#job-type')),
-        experienceLevel: getSelectedValues(form.querySelector('#experience-level')),
-        salaryRange: getSelectedValues(form.querySelector('#salary-range')),
-        jobFunction: getSelectedValues(form.querySelector('#job-function')),
-        companySize: getSelectedValues(form.querySelector('#company-size')),
-        skills: form.querySelector('#skills').value.trim(),
-        name: form.querySelector('#name').value.trim(),
-        email: form.querySelector('#email').value.trim(),
-        ageRange: form.querySelector('#age-range').value,
-        education: form.querySelector('#education').value
-    };
-}
-
-// Save form data to localStorage
-function saveFormData() {
-    collectFormData();
-    localStorage.setItem('jobFinderFormData', JSON.stringify(formData));
-}
-
-// Load form data from localStorage
-function loadFormData() {
-    const saved = localStorage.getItem('jobFinderFormData');
-    if (saved) {
-        try {
-            formData = JSON.parse(saved);
-            populateForm();
-        } catch (e) {
-            console.error('Error loading form data:', e);
-        }
-    }
-}
-
-// Populate form with saved data
-function populateForm() {
-    const form = document.getElementById('job-form');
-    if (formData.location) form.querySelector('#location').value = formData.location;
-    
-    // Helper function to set multiple select values
-    const setSelectValues = (selectElement, values) => {
-        if (!values || (Array.isArray(values) && values.length === 0)) return;
-        
-        const valuesArray = Array.isArray(values) ? values : [values];
-        Array.from(selectElement.options).forEach(option => {
-            option.selected = valuesArray.includes(option.value);
+    container.querySelectorAll('.job-expand-toggle').forEach(button => {
+        initializeToggleButton(button, function() {
+            const content = container.querySelector('.job-description-expandable')?.querySelector('.job-expand-content');
+            const icon = this.querySelector('.toggle-icon');
+            
+            if (content) {
+                toggleCollapsibleContent(this, content, icon);
+            }
         });
-        selectElement.style.color = 'var(--gray-dark)';
-    };
-    
-    setSelectValues(form.querySelector('#work-arrangement'), formData.workArrangement);
-    setSelectValues(form.querySelector('#job-type'), formData.jobType);
-    setSelectValues(form.querySelector('#experience-level'), formData.experienceLevel);
-    setSelectValues(form.querySelector('#salary-range'), formData.salaryRange);
-    setSelectValues(form.querySelector('#job-function'), formData.jobFunction);
-    setSelectValues(form.querySelector('#company-size'), formData.companySize);
-    
-    if (formData.skills) form.querySelector('#skills').value = formData.skills;
-    if (formData.name) form.querySelector('#name').value = formData.name;
-    if (formData.email) form.querySelector('#email').value = formData.email;
-    if (formData.ageRange) {
-        form.querySelector('#age-range').value = formData.ageRange;
-        form.querySelector('#age-range').style.color = 'var(--gray-dark)';
-    }
-    if (formData.education) {
-        form.querySelector('#education').value = formData.education;
-        form.querySelector('#education').style.color = 'var(--gray-dark)';
-    }
+    });
 }
 
-// Populate review page
-function populateReviewPage() {
-    // Format values for display
-    const formatValue = (value) => {
-        if (!value || value === '') return '—';
-        return value;
-    };
-
-    const formatSelectValue = (value, selectId) => {
-        if (!value || value === '' || (Array.isArray(value) && value.length === 0)) return '—';
-        
-        const select = document.querySelector(`#${selectId}`);
-        if (!select) return Array.isArray(value) ? value.join(', ') : value;
-        
-        const valuesArray = Array.isArray(value) ? value : [value];
-        const displayTexts = valuesArray.map(val => {
-            const option = select.querySelector(`option[value="${val}"]`);
-            return option ? option.textContent : val;
-        });
-        
-        return displayTexts.join(', ');
-    };
-
-    document.getElementById('review-location').textContent = formatValue(formData.location);
-    document.getElementById('review-work-arrangement').textContent = formatSelectValue(formData.workArrangement, 'work-arrangement');
-    document.getElementById('review-job-type').textContent = formatSelectValue(formData.jobType, 'job-type');
-    document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
-    document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
-    document.getElementById('review-job-function').textContent = formatSelectValue(formData.jobFunction, 'job-function');
-    document.getElementById('review-company-size').textContent = formatSelectValue(formData.companySize, 'company-size');
-    document.getElementById('review-skills').textContent = formatValue(formData.skills);
-    document.getElementById('review-name').textContent = formatValue(formData.name);
-    document.getElementById('review-email').textContent = formatValue(formData.email);
-    document.getElementById('review-age-range').textContent = formatSelectValue(formData.ageRange, 'age-range');
-    document.getElementById('review-education').textContent = formatSelectValue(formData.education, 'education');
-}
-
-// Show specific view
-function showView(viewName) {
+// Generic showView function - shared between profile.js and index.js
+// views: object containing view elements
+// viewName: name of the view to show
+// onViewChange: optional callback function called after view is changed
+function showViewGeneric(views, viewName, onViewChange) {
     if (!views[viewName]) {
         console.error('View not found:', viewName);
         return;
@@ -389,290 +320,389 @@ function showView(viewName) {
     // Scroll to top when switching views
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Show "Clear Session & Start Over" link when leaving loading view
-    const clearSessionLink = document.getElementById('clear-session-loading');
-    if (clearSessionLink && viewName !== 'loading') {
-        clearSessionLink.style.display = '';
-    }
-    
-    if (viewName === 'form') {
-        updateProgress(1);
-    } else if (viewName === 'review') {
-        updateProgress(2);
+    // Call optional callback if provided
+    if (onViewChange && typeof onViewChange === 'function') {
+        onViewChange(viewName);
     }
 }
 
-// Show loading view
-function showLoading() {
-    showView('loading');
-    updateProgress(2);
-    // Hide "Clear Session & Start Over" link during loading
-    const clearSessionLink = document.getElementById('clear-session-loading');
-    if (clearSessionLink) {
-        clearSessionLink.style.display = 'none';
-    }
+// Constants
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Validate email format
+function isValidEmail(email) {
+    return EMAIL_REGEX.test(email);
 }
 
-// Submit job search to API
-async function submitJobSearch() {
-    // Collect latest form data
-    collectFormData();
+// Format select value for display (translates option value using i18n system)
+function formatSelectValue(value, selectId) {
+    if (!value || value === '') return '—';
     
-    // Generate unique Kiosk Code
-    kioskCode = generateKioskCode();
-    
-    // Show loading view
-    showLoading();
-    
-    // Prepare request body
-    const requestBody = {
-        name: formData.name || '',
-        email: formData.email || '',
-        ageRange: formData.ageRange || '',
-        education: formData.education || '',
-        skills: formData.skills || '',
-        jobType: Array.isArray(formData.jobType) ? formData.jobType : (formData.jobType ? [formData.jobType] : []),
-        workArrangement: Array.isArray(formData.workArrangement) ? formData.workArrangement : (formData.workArrangement ? [formData.workArrangement] : []),
-        jobFunction: Array.isArray(formData.jobFunction) ? formData.jobFunction : (formData.jobFunction ? [formData.jobFunction] : []),
-        experienceLevel: Array.isArray(formData.experienceLevel) ? formData.experienceLevel : (formData.experienceLevel ? [formData.experienceLevel] : []),
-        salaryRange: Array.isArray(formData.salaryRange) ? formData.salaryRange : (formData.salaryRange ? [formData.salaryRange] : []),
-        companySize: Array.isArray(formData.companySize) ? formData.companySize : (formData.companySize ? [formData.companySize] : []),
-        location: formData.location || '',
-        kioskCode: kioskCode
-    };
-    
-    const apiUrl = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f27dec901814802b7ab56f193b31790/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n3JBo3Jl9GCO4p3jhknnqM721MTm8DGhMxCqEzRfDo0';
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
+    // Handle arrays (multi-select) - join multiple selected items
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '—';
         
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Job search submitted successfully:', result);
+        const select = document.querySelector(`#${selectId}`);
+        if (!select) return value.join(', ');
+        
+        // Translate each value and join with commas
+        const translatedValues = value.map(singleValue => {
+            if (!singleValue) return '';
             
-            // Extract jobs from response - handle both formats
-            let jobs = [];
-            if (Array.isArray(result)) {
-                // Response is directly an array
-                jobs = result;
-            } else if (result.body && Array.isArray(result.body)) {
-                // Response has a body property with array
-                jobs = result.body;
-            } else {
-                console.error('Unexpected response format:', result);
-                showView('form');
-                alert('No jobs found. Please try adjusting your search criteria.');
-                return;
+            const option = select.querySelector(`option[value="${singleValue}"]`);
+            if (!option) return singleValue;
+            
+            // Use i18n translation if available
+            const i18nKey = option.getAttribute('data-i18n-option');
+            if (i18nKey && window.i18n) {
+                return window.i18n.t(i18nKey);
             }
             
-            if (jobs.length > 0) {
-                jobResults = jobs;
-                displayJobResults(jobResults);
-                showView('results');
-            } else {
-                showView('form');
-                alert('No jobs found. Please try adjusting your search criteria.');
-            }
-        } else {
-            console.error('Error submitting job search:', response.status, response.statusText);
-            showView('form');
-            alert('Error submitting your job search. Please try again.');
-        }
-    } catch (error) {
-        console.error('Network error submitting job search:', error);
-        showView('form');
-        alert('Network error. Please check your connection and try again.');
+            // Fallback to textContent if no i18n key
+            return option.textContent || singleValue;
+        }).filter(v => v !== ''); // Remove empty values
+        
+        return translatedValues.length > 0 ? translatedValues.join(', ') : '—';
     }
+    
+    // Handle single value
+    const select = document.querySelector(`#${selectId}`);
+    if (!select) return value;
+    
+    const option = select.querySelector(`option[value="${value}"]`);
+    if (!option) return value;
+    
+    // Use i18n translation if available, otherwise fallback to option textContent
+    const i18nKey = option.getAttribute('data-i18n-option');
+    if (i18nKey && window.i18n) {
+        return window.i18n.t(i18nKey);
+    }
+    
+    // Fallback to textContent if no i18n key
+    return option.textContent || value;
 }
 
-// Display job results
-function displayJobResults(jobs) {
-    const resultsList = document.getElementById('results-list');
-    const resultsCount = document.getElementById('results-count');
-    const kioskCodeElement = document.getElementById('kiosk-code');
+// Generic API response parser - handles different response structures
+function parseApiResponse(data, options = {}) {
+    const {
+        dataPath = 'data',           // Path to data array (e.g., 'data', 'body.data')
+        codePath = 'completionCode', // Path to completion code (e.g., 'completionCode', 'body.completionCode')
+        bodyPath = 'body'            // Path to body object (e.g., 'body')
+    } = options;
     
-    resultsCount.textContent = jobs.length;
-    if (kioskCodeElement && kioskCode) {
-        kioskCodeElement.textContent = kioskCode;
+    // Parse body if it exists and is a string
+    let parsedData = data;
+    if (data[bodyPath]) {
+        if (typeof data[bodyPath] === 'string') {
+            try {
+                parsedData = { ...data, [bodyPath]: JSON.parse(data[bodyPath]) };
+            } catch (e) {
+                console.error('Error parsing body string:', e);
+                throw new Error('Invalid response format: body is not valid JSON');
+            }
+        }
     }
-    resultsList.innerHTML = '';
     
-    if (jobs.length === 0) {
-        resultsList.innerHTML = '<p class="no-results">No matching jobs found. Please try adjusting your search criteria.</p>';
+    // Extract data array
+    let resultData = null;
+    const dataPaths = Array.isArray(dataPath) ? dataPath : [dataPath];
+    for (const path of dataPaths) {
+        const value = getNestedValue(parsedData, path);
+        if (Array.isArray(value)) {
+            resultData = value;
+            break;
+        }
+    }
+    
+    // Extract completion code
+    let resultCode = null;
+    const codePaths = Array.isArray(codePath) ? codePath : [codePath];
+    for (const path of codePaths) {
+        const value = getNestedValue(parsedData, path);
+        if (value) {
+            resultCode = value;
+            break;
+        }
+    }
+    
+    return { data: resultData, completionCode: resultCode, parsedData };
+}
+
+// Helper function to get nested object values by dot notation path
+function getNestedValue(obj, path) {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+// Helper function to create reason HTML
+function createReasonHtml(jobReason) {
+    if (!jobReason) return '';
+    
+    const whyMatchesText = window.i18n ? window.i18n.t('job.whyMatches') : 'Why this matches:';
+    return `<div class="job-reason">
+        <strong>${whyMatchesText}</strong>
+        <p>${escapeHtmlAllowBreaks(jobReason) || 'No reason available'}</p>
+    </div>`;
+}
+
+// Helper function to create job description HTML
+function createJobDescriptionHtml(jobDescFormatted, reasonHtml) {
+    if (jobDescFormatted && typeof jobDescFormatted === 'object' && jobDescFormatted.hasExpandable) {
+        // Has expandable content
+        return `
+            <div class="job-description-visible">
+                ${jobDescFormatted.visible}
+            </div>
+            <div class="job-description-expandable">
+                <div class="job-expand-content" style="display: none;">
+                    ${jobDescFormatted.expandable}
+                    ${reasonHtml}
+                </div>
+            </div>
+            <button class="job-expand-toggle" type="button" aria-expanded="false" aria-label="Expand job details">
+                <span class="toggle-icon">${TOGGLE_ICON_COLLAPSED}</span>
+            </button>
+        `;
+    }
+    
+    // No expandable content - show everything
+    return `
+        <div class="job-description-full">
+            ${jobDescFormatted || 'No description available'}
+            ${reasonHtml}
+        </div>
+    `;
+}
+
+// Generic displayJobs function - shared between profile.js and index.js
+// jobs: array of job objects
+// options: configuration object with:
+//   - listElementId: ID of the container element for job cards
+//   - countElementId: optional ID of element to display job count
+//   - completionCodeElementId: optional ID of element to display completion code
+//   - completionCode: optional completion code value to display
+//   - noResultsMessage: optional custom message when no jobs found
+//   - propertyNames: object mapping property names (defaults to camelCase, can override for PascalCase)
+function displayJobs(jobs, options) {
+    const {
+        listElementId,
+        countElementId,
+        completionCodeElementId,
+        completionCode,
+        noResultsMessage = 'No matching jobs found.',
+        propertyNames = {
+            score: 'score',
+            jobTitle: 'jobTitle',
+            jobID: 'jobID',
+            jobDesc: 'jobDesc',
+            reason: 'reason'
+        }
+    } = options;
+    
+    const jobsList = document.getElementById(listElementId);
+    if (!jobsList) {
+        console.error(`Element with ID "${listElementId}" not found`);
         return;
     }
     
-    // Sort by score (highest first)
-    const sortedJobs = [...jobs].sort((a, b) => (b.score || 0) - (a.score || 0));
+    // Update count if element provided
+    if (countElementId) {
+        const countElement = document.getElementById(countElementId);
+        if (countElement) {
+            countElement.textContent = jobs.length;
+        }
+        // Also update the subtitle if it contains the count
+        const subtitleElement = document.querySelector('.results-subtitle');
+        if (subtitleElement && window.i18n) {
+            const translatedText = window.i18n.t('results.subtitle', { count: jobs.length });
+            subtitleElement.innerHTML = translatedText.replace('{count}', `<span id="${countElementId}">${jobs.length}</span>`);
+        }
+    }
     
-    sortedJobs.forEach((job, index) => {
+    // Update completion code if element and value provided
+    if (completionCodeElementId && completionCode) {
+        const completionCodeElement = document.getElementById(completionCodeElementId);
+        if (completionCodeElement) {
+            completionCodeElement.textContent = completionCode;
+        }
+    }
+    
+    jobsList.innerHTML = '';
+    
+    if (jobs.length === 0) {
+        jobsList.innerHTML = `<p class="no-results">${noResultsMessage}</p>`;
+        return;
+    }
+    
+    // Sort by score (highest first) - handle both camelCase and PascalCase property names
+    const scoreProp = propertyNames.score;
+    const sortedJobs = [...jobs].sort((a, b) => {
+        const scoreA = a[scoreProp] || a.Score || a.score || 0;
+        const scoreB = b[scoreProp] || b.Score || b.score || 0;
+        return scoreB - scoreA;
+    });
+    
+    sortedJobs.forEach((job) => {
         const jobCard = document.createElement('div');
         jobCard.className = 'job-card';
         
-        const scoreBadge = job.score ? `<div class="job-score">Score: ${job.score}/10</div>` : '';
+        // Handle both camelCase and PascalCase property names
+        const jobScore = job[propertyNames.score] || job.Score || job.score || 0;
+        const jobTitle = job[propertyNames.jobTitle] || job.JobTitle || job.jobTitle || null;
+        const jobID = job[propertyNames.jobID] || job.JobID || job.jobID || null;
+        const jobDesc = job[propertyNames.jobDesc] || job.JobDesc || job.jobDesc || null;
+        const jobReason = job[propertyNames.reason] || job.Reason || job.reason || null;
+
+        // Format job description
+        const jobDescFormatted = formatJobDescriptionWithExpandable(jobDesc);
+        const reasonHtml = createReasonHtml(jobReason);
+        const jobDescriptionHtml = createJobDescriptionHtml(jobDescFormatted, reasonHtml);
         
         jobCard.innerHTML = `
             <div class="job-card-header">
                 <div class="job-card-title">
-                    <h3 class="job-title">${job.jobTitle}</h3>
-                    ${scoreBadge}
+                    <h3 class="job-title">${jobTitle || (jobID ? `#${jobID}` : 'N/A')}</h3>
                 </div>
             </div>
             <div class="job-card-body">
-                <p class="job-description">${escapeHtmlAllowBreaks(job.jobDesc || 'No description available')}</p>
-                ${job.reason ? `<div class="job-reason">
-                    <strong>Why this matches:</strong>
-                    <p>${escapeHtmlAllowBreaks(job.reason)}</p>
-                </div>` : ''}
-            </div>
-            <div class="job-card-footer">
-                <a href="${job.jobUrl || '#'}" target="_blank" class="btn-primary btn-view-job">View Job Details</a>
+                <div class="job-description">${jobDescriptionHtml}</div>
             </div>
         `;
         
-        resultsList.appendChild(jobCard);
-    });
-}
-
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// Escape HTML but allow <br> tags to be rendered
-function escapeHtmlAllowBreaks(text) {
-    if (!text) return '';
-    // Use a placeholder for <br> tags to preserve them
-    const placeholder = '___BR_TAG_PLACEHOLDER___';
-    // Replace <br> and <br/> with placeholder
-    let processed = text.replace(/<br\s*\/?>/gi, placeholder);
-    // Escape all HTML
-    const div = document.createElement('div');
-    div.textContent = processed;
-    let escaped = div.innerHTML;
-    // Replace placeholder back with actual <br> tags
-    escaped = escaped.replace(new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), '<br>');
-    return escaped;
-}
-
-// Update progress indicator
-function updateProgress(step) {
-    const steps = document.querySelectorAll('.progress-step');
-    steps.forEach((stepEl, index) => {
-        if (index + 1 <= step) {
-            stepEl.classList.add('active');
-        } else {
-            stepEl.classList.remove('active');
-        }
-    });
-}
-
-// Clear form
-function clearForm() {
-    formData = {
-        location: '',
-        workArrangement: '',
-        jobType: '',
-        experienceLevel: '',
-        salaryRange: '',
-        jobFunction: '',
-        companySize: '',
-        skills: '',
-        name: '',
-        email: '',
-        ageRange: '',
-        education: ''
-    };
-    
-    const form = document.getElementById('job-form');
-    form.reset();
-    
-    // Reset select styling to placeholder
-    const selects = form.querySelectorAll('.form-select');
-    selects.forEach(select => {
-        if (select.hasAttribute('multiple')) {
-            // For multiple selects, deselect all
-            Array.from(select.options).forEach(option => {
-                option.selected = false;
-            });
-        } else {
-            select.selectedIndex = 0;
-        }
-        // Set color based on whether it has a value
-        if (select.value === '' || select.value === null) {
-            select.style.color = 'var(--gray-medium)';
-        } else {
-            select.style.color = 'var(--gray-dark)';
-        }
-    });
-    
-    localStorage.removeItem('jobFinderFormData');
-    updateProgress(1);
-}
-
-// Get field element by name
-function getFieldElement(fieldName) {
-    const fieldMap = {
-        'location': '#location',
-        'workArrangement': '#work-arrangement',
-        'jobType': '#job-type',
-        'experienceLevel': '#experience-level',
-        'salaryRange': '#salary-range',
-        'jobFunction': '#job-function',
-        'companySize': '#company-size',
-        'skills': '#skills',
-        'name': '#name',
-        'email': '#email',
-        'ageRange': '#age-range',
-        'education': '#education'
-    };
-    
-    const selector = fieldMap[fieldName];
-    if (selector) {
-        return document.querySelector(selector);
-    }
-    return null;
-}
-
-// Initialize selects to handle placeholder behavior
-function initializeSelects() {
-    const selects = document.querySelectorAll('.form-select');
-    selects.forEach(select => {
-        // Set initial color based on whether a value is selected
-        updateSelectColor(select);
+        jobsList.appendChild(jobCard);
         
-        // Add change listener to update styling when a value is selected
-        select.addEventListener('change', function() {
-            updateSelectColor(this);
-        });
+        // Initialize expandable job description
+        initializeExpandableJobDescription(jobCard);
+        
+        // Initialize collapsible sections for this job card (for responsibilities and requirements)
+        initializeCollapsibleSections(jobCard);
     });
 }
 
-// Update select color based on whether it has a value
-function updateSelectColor(select) {
-    let hasValue = false;
-    
-    if (select.hasAttribute('multiple')) {
-        hasValue = select.selectedOptions.length > 0 && 
-                   !(select.selectedOptions.length === 1 && select.selectedOptions[0].value === '');
-    } else {
-        hasValue = select.value !== '' && select.value !== null;
-    }
-    
-    if (!hasValue) {
-        select.style.color = 'var(--gray-medium)';
-        select.setCustomValidity(select.hasAttribute('required') ? 'Please select an option' : '');
-    } else {
-        select.style.color = 'var(--gray-dark)';
-        select.setCustomValidity('');
-    }
+// Rate limiting functionality
+const RATE_LIMIT_KEYS = {
+    FIND_JOB_MATCHES: 'rateLimitFindJobMatches',
+    VIEW_PROFILE: 'rateLimitViewProfile'
+};
+
+// Rate limit durations in milliseconds for each action
+const RATE_LIMIT_DURATIONS = {
+    [RATE_LIMIT_KEYS.FIND_JOB_MATCHES]: 60 * 1000, // 1 minute
+    [RATE_LIMIT_KEYS.VIEW_PROFILE]: 30 * 1000 // 30 seconds
+};
+
+const DEFAULT_RATE_LIMIT_DURATION = 60 * 1000; // Default: 1 minute
+const POPUP_AUTO_HIDE_DELAY = 3000; // 3 seconds
+const POPUP_ANIMATION_DELAY = 10; // milliseconds
+const POPUP_FADE_OUT_DELAY = 300; // milliseconds
+const POPUP_ID = 'rate-limit-popup';
+const CLOSE_BUTTON_SELECTOR = '.rate-limit-close';
+
+// Get rate limit duration for a specific key
+function getRateLimitDuration(key) {
+    return RATE_LIMIT_DURATIONS[key] || DEFAULT_RATE_LIMIT_DURATION;
 }
 
+// Check if action is rate limited
+function checkRateLimit(key) {
+    const lastActionTime = localStorage.getItem(key);
+    
+    if (!lastActionTime) {
+        return { allowed: true };
+    }
+    
+    const rateLimitDuration = getRateLimitDuration(key);
+    const timeSinceLastAction = Date.now() - parseInt(lastActionTime, 10);
+    
+    if (timeSinceLastAction < rateLimitDuration) {
+        const remainingSeconds = Math.ceil((rateLimitDuration - timeSinceLastAction) / 1000);
+        return { allowed: false, remainingSeconds };
+    }
+    
+    return { allowed: true };
+}
+
+// Record action timestamp
+function recordAction(key) {
+    localStorage.setItem(key, Date.now().toString());
+}
+
+// Format remaining seconds message
+function formatRemainingTimeMessage(remainingSeconds) {
+    if (window.i18n) {
+        const lang = window.i18n.currentLang();
+        if (lang === 'zh') {
+            return window.i18n.t('error.rateLimit', { seconds: remainingSeconds });
+        }
+    }
+    const plural = remainingSeconds !== 1 ? 's' : '';
+    return `Please wait ${remainingSeconds} second${plural} before trying again.`;
+}
+
+// Create popup HTML content
+function createPopupHTML(remainingSeconds) {
+    return `
+        <div class="rate-limit-popup-content">
+            <p class="rate-limit-message">${formatRemainingTimeMessage(remainingSeconds)}</p>
+            <button class="rate-limit-close" aria-label="Close">×</button>
+        </div>
+    `;
+}
+
+// Get or create popup element
+function getOrCreatePopup() {
+    let popup = document.getElementById(POPUP_ID);
+    if (popup) {
+        popup.remove();
+    }
+    
+    popup = document.createElement('div');
+    popup.id = POPUP_ID;
+    popup.className = 'rate-limit-popup';
+    document.body.appendChild(popup);
+    
+    return popup;
+}
+
+// Show rate limit popup message
+function showRateLimitPopup(remainingSeconds) {
+    const popup = getOrCreatePopup();
+    popup.innerHTML = createPopupHTML(remainingSeconds);
+    
+    // Setup close button handler
+    const closeBtn = popup.querySelector(CLOSE_BUTTON_SELECTOR);
+    if (closeBtn) {
+        closeBtn.addEventListener('click', hideRateLimitPopup);
+    }
+    
+    // Show popup with animation
+    setTimeout(() => popup.classList.add('show'), POPUP_ANIMATION_DELAY);
+    
+    // Auto-hide after delay
+    setTimeout(hideRateLimitPopup, POPUP_AUTO_HIDE_DELAY);
+}
+
+// Hide rate limit popup
+function hideRateLimitPopup() {
+    const popup = document.getElementById(POPUP_ID);
+    if (!popup) return;
+    
+    popup.classList.remove('show');
+    setTimeout(() => popup.remove(), POPUP_FADE_OUT_DELAY);
+}
+
+// Wrapper function to enforce rate limiting on an action
+// Returns true if action should proceed, false if rate limited
+function withRateLimit(key, callback) {
+    const rateLimitCheck = checkRateLimit(key);
+    
+    if (!rateLimitCheck.allowed) {
+        showRateLimitPopup(rateLimitCheck.remainingSeconds);
+        return false;
+    }
+    
+    recordAction(key);
+    if (typeof callback === 'function') {
+        callback();
+    }
+    return true;
+}

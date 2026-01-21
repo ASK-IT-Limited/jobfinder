@@ -1,5 +1,3 @@
-/* Staff Portal Specific Styles */
-
 /* Login Section */
 .login-section {
     max-width: 500px;
@@ -8,7 +6,7 @@
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 40px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
 }
 
 .login-form {
@@ -17,11 +15,10 @@
     gap: 24px;
 }
 
-.login-form .form-group {
-    margin-bottom: 0;
-}
 
+/* Error Message */
 .error-message {
+    display: none;
     background-color: #FEF2F2;
     border: 1px solid #FCA5A5;
     color: #DC2626;
@@ -33,7 +30,8 @@
 
 /* Results Header */
 .results-header-section {
-    margin-bottom: 32px;
+    max-width: 800px;
+    margin: 0 auto 32px;
 }
 
 .results-header-actions {
@@ -46,40 +44,41 @@
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 20px 32px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
 }
 
-.kiosk-display {
+.code-display {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.kiosk-label {
+.code-label {
     font-size: 14px;
     color: var(--gray-medium);
     font-weight: 500;
 }
 
-.kiosk-value {
+.code-value {
     font-weight: 700;
     font-size: 18px;
-    color: var(--primary-blue);
+    color: var(--primary-navy);
     letter-spacing: 2px;
     font-family: 'Courier New', monospace;
     padding: 8px 16px;
     background-color: var(--gray-lightest);
-    border: 2px solid var(--primary-blue);
+    border: 2px solid var(--primary-navy);
     border-radius: var(--border-radius);
 }
 
 /* Info Section */
 .info-section {
+    max-width: 800px;
+    margin: 0 auto 32px;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
     padding: 32px;
-    margin-bottom: 32px;
     box-shadow: var(--shadow-sm);
 }
 
@@ -92,39 +91,10 @@
     border-bottom: 2px solid var(--gray-lighter);
 }
 
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-    background-color: var(--gray-lightest);
-    border-radius: var(--border-radius);
-    border-left: 4px solid var(--primary-blue);
-}
-
-.info-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--gray-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.info-value {
-    font-size: 15px;
-    color: var(--gray-dark);
-    line-height: 1.5;
-    word-wrap: break-word;
-}
-
 /* Jobs Section */
 .jobs-section {
+    max-width: 800px;
+    margin: 0 auto;
     background-color: var(--white);
     border: 1px solid var(--gray-lighter);
     border-radius: var(--border-radius-large);
@@ -159,22 +129,8 @@
         padding: 24px;
     }
 
-    .results-header-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .results-header-actions .btn-secondary {
-        width: 100%;
-    }
-
-    .kiosk-display {
-        justify-content: center;
-        width: 100%;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
+    .code-label {
+        display: none;
     }
 
     .info-section,
