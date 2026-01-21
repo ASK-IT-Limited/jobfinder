@@ -1,0 +1,48 @@
+/* Chatbot page specific styles */
+/* Override main content padding/margin for full-width iframe */
+.main-content {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Container for iframe wrapper - removes default padding */
+.main-content .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    position: relative;
+}
+
+/* Wrapper to contain iframe and overlay */
+.iframe-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+/* Overlay to block pointer events in clipped top area (65px) */
+.iframe-overlay-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    z-index: 10;
+    pointer-events: auto;
+    background: transparent;
+}
+
+/* Adjust footer margin to account for iframe positioning */
+.footer {
+    margin-top: -60px !important;
+}
+
+/* Iframe styling with clipping and filters */
+iframe {
+    width: 100%;
+    height: calc(100vh - 140px); /* Viewport height minus header/footer space */
+    border: none;
+    position: relative;
+    top: -50px; /* Shift up to account for clipping */
+    clip-path: inset(65px 0 20px 7px); /* Clip: top 65px, bottom 20px, left 7px */
+    filter: brightness(0.99) contrast(0.99);
+}

@@ -1,6 +1,32 @@
 // Configuration
 const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a253fc5340ef46d0b59a23a1b63cf471/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=HhMIpVO3FAEDS_UVqomxpWWUBLe-qTel2Yh7wgLI-eY';
 
+// Constants
+const STORAGE_KEY = 'staffPortalCredentials';
+const COMPLETION_CODE_LENGTH = 5;
+const COMPLETION_CODE_PATTERN = /^[A-Z0-9@#$%]{5}$/;
+const ALLOWED_CHARS = /[A-Z0-9@#$%]/g;
+const ERROR_MESSAGES = {
+    REQUIRED_FIELDS: 'Please fill in all required fields.',
+    INVALID_FORMAT: 'Invalid Completion Code format. Please enter a 5-character code with uppercase letters, numbers, and special characters (@, #, $, %).',
+    INCORRECT_CODES: 'Incorrect Codes. Please check and try again.',
+    NO_SURVEY_DATA: 'No survey data found for this Completion Code.',
+    LOAD_ERROR: 'Error loading data. Please check and try again.'
+};
+
+// Helper function to get translated error message
+function getTranslatedError(key) {
+    const errorKeyMap = {
+        'REQUIRED_FIELDS': 'error.requiredFields',
+        'INVALID_FORMAT': 'error.invalidFormat',
+        'INCORRECT_CODES': 'error.incorrectCodes',
+        'NO_SURVEY_DATA': 'error.noSurveyData',
+        'LOAD_ERROR': 'error.loadError'
+    };
+    const i18nKey = errorKeyMap[key];
+    return window.i18n && i18nKey ? window.i18n.t(i18nKey) : ERROR_MESSAGES[key];
+}
+
 // State
 let views = {};
 let currentCompletionCode = '';
@@ -30,29 +56,29 @@ document.addEventListener('DOMContentLoaded', () => {
 // Save credentials to localStorage
 function saveCredentials(completionCode, accessCode) {
     const credentials = {
-        completionCode: completionCode,
-        accessCode: accessCode
+        completionCode,
+        accessCode
     };
-    localStorage.setItem('staffPortalCredentials', JSON.stringify(credentials));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(credentials));
 }
 
 // Load saved credentials from localStorage
 function loadSavedCredentials() {
-    const saved = localStorage.getItem('staffPortalCredentials');
-    if (saved) {
-        try {
-            const credentials = JSON.parse(saved);
-            
-            if (credentials.completionCode && completionCodeInput) {
-                completionCodeInput.value = credentials.completionCode;
-            }
-            
-            if (credentials.accessCode && accessCodeInput) {
-                accessCodeInput.value = credentials.accessCode;
-            }
-        } catch (e) {
-            console.error('Error loading saved credentials:', e);
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    
+    try {
+        const credentials = JSON.parse(saved);
+        
+        if (credentials.completionCode && completionCodeInput) {
+            completionCodeInput.value = credentials.completionCode;
         }
+        
+        if (credentials.accessCode && accessCodeInput) {
+            accessCodeInput.value = credentials.accessCode;
+        }
+    } catch (e) {
+        console.error('Error loading saved credentials:', e);
     }
 }
 
@@ -64,10 +90,9 @@ function initializeEventListeners() {
     // Auto-uppercase and filter completion code input as user types
     if (completionCodeInput) {
         completionCodeInput.addEventListener('input', (e) => {
-        // Only allow uppercase letters, numbers, and special characters @, #, $, %
-        const allowedChars = /[A-Z0-9@#$%]/g;
-        let filteredValue = e.target.value.toUpperCase().match(allowedChars);
-        e.target.value = filteredValue ? filteredValue.join('') : '';
+            // Only allow uppercase letters, numbers, and special characters @, #, $, %
+            const filteredValue = e.target.value.toUpperCase().match(ALLOWED_CHARS);
+            e.target.value = filteredValue ? filteredValue.join('') : '';
             // Clear error state when user types
             e.target.classList.remove('required-error');
         });
@@ -103,43 +128,20 @@ async function handleLogin(e) {
     saveCredentials(completionCode, accessCode);
     
     // Clear previous errors
-    errorDiv.style.display = 'none';
-    errorDiv.textContent = '';
-    completionCodeInput.classList.remove('required-error');
-    accessCodeInput.classList.remove('required-error');
+    clearErrors();
     
     // Validate required fields
-    let hasError = false;
-    
-    if (!completionCode || completionCode.length === 0) {
-        completionCodeInput.classList.add('required-error');
-        hasError = true;
-    }
-    
-    if (!accessCode || accessCode.length === 0) {
-        accessCodeInput.classList.add('required-error');
-        hasError = true;
-    }
-    
-    if (hasError) {
-        errorDiv.textContent = 'Please fill in all required fields.';
-        errorDiv.style.display = 'block';
-        // Focus on first error field
-        if (!completionCode || completionCode.length === 0) {
-            completionCodeInput.focus();
-        } else {
-            accessCodeInput.focus();
-        }
+    if (!validateRequiredFields(completionCode, accessCode)) {
         return;
     }
     
-    // Validate completion code format (should be 5 characters with uppercase letters, numbers, and special characters)
-    const completionCodePattern = /^[A-Z0-9@#$%]{5}$/;
-    if (completionCode.length !== 5 || !completionCodePattern.test(completionCode)) {
-        completionCodeInput.classList.add('required-error');
-        errorDiv.textContent = 'Invalid Completion Code format. Please enter a 5-character code with uppercase letters, numbers, and special characters (@, #, $, %).';
-        errorDiv.style.display = 'block';
-        completionCodeInput.focus();
+    // Validate completion code format
+    if (!validateCompletionCodeFormat(completionCode)) {
+        return;
+    }
+    
+    // Check rate limit and record action if allowed (only after validation passes)
+    if (!withRateLimit(RATE_LIMIT_KEYS.VIEW_PROFILE)) {
         return;
     }
     
@@ -154,22 +156,8 @@ async function handleLogin(e) {
         console.error('Error fetching candidate data:', error);
         showView('login');
         
-        // Check for incorrect codes error
-        if (error.message === 'INCORRECT_CODES') {
-            errorDiv.textContent = 'Incorrect Codes. Please check and try again.';
-            // Highlight completion code and access code inputs
-            completionCodeInput.classList.add('required-error');
-            accessCodeInput.classList.add('required-error');
-            accessCodeInput.focus();
-        } else if (error.message === 'NO_SURVEY_DATA') {
-            errorDiv.textContent = 'No survey data found for this Completion Code.';
-            // Highlight completion code input
-            completionCodeInput.classList.add('required-error');
-            completionCodeInput.focus();
-        } else {
-            errorDiv.textContent = 'Error loading data. Please check and try again.';
-        }
-        errorDiv.style.display = 'block';
+        // Handle specific error types
+        handleLoginError(error);
     }
 }
 
@@ -183,49 +171,25 @@ async function fetchCandidateData(completionCode) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            completionCode: completionCode,
-            accessCode: accessCode
+            completionCode,
+            accessCode
         })
     });
     
-    const data = await response.json();
-    
-    // Log the response for debugging
-    console.log('API Response:', data);
-    
-    // Check for status code 5001 (incorrect access code)
+    // Check for HTTP errors
     if (response.status === 500) {
         throw new Error('INCORRECT_CODES');
     }
     
-    // Check if response status is 200
     if (response.status !== 200) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    // Handle different response formats
-    let body = null;
+    const data = await response.json();
+    console.log('API Response:', data);
     
-    if (data.body) {
-        // If body is a string, parse it
-        if (typeof data.body === 'string') {
-            try {
-                body = JSON.parse(data.body);
-            } catch (e) {
-                console.error('Error parsing body string:', e);
-                throw new Error('Invalid response format: body is not valid JSON');
-            }
-        } else {
-            // Body is already an object
-            body = data.body;
-        }
-    } else if (data.survey || data.matches) {
-        // Response might be directly the body object
-        body = data;
-    } else {
-        console.error('Unexpected response structure:', data);
-        throw new Error('Unexpected response format: missing body or survey/matches');
-    }
+    // Parse response body
+    const body = parseResponseBody(data);
     
     // Extract survey and matches arrays
     const surveyArray = body.survey || [];
@@ -235,8 +199,8 @@ async function fetchCandidateData(completionCode) {
         throw new Error('NO_SURVEY_DATA');
     }
     
-    const surveyData = surveyArray[0]; // First item in survey array
-    const jobMatches = matchesArray; // All items in matches array
+    const surveyData = surveyArray[0];
+    const jobMatches = matchesArray;
     
     // Display the data
     displayCandidateData(surveyData, jobMatches);
@@ -246,24 +210,33 @@ async function fetchCandidateData(completionCode) {
 // Display candidate data
 function displayCandidateData(surveyData, jobMatches) {
     // Display completion code
-    document.getElementById('display-code').textContent = currentCompletionCode;
+    const displayCodeElement = document.getElementById('display-code');
+    if (displayCodeElement) displayCodeElement.textContent = currentCompletionCode;
     
-    // Display survey answers from the first item in the response array
-    document.getElementById('info-name').textContent = formatValue(surveyData.Name);
-    document.getElementById('info-email').textContent = formatValue(surveyData.Email);
-    document.getElementById('info-age-range').textContent = formatValue(surveyData.AgeRange);
-    document.getElementById('info-education').textContent = formatValue(surveyData.Education);
-    document.getElementById('info-phone').textContent = formatValue(surveyData.Phone);
-    document.getElementById('info-availability').textContent = formatValue(surveyData.Availability);
-    document.getElementById('info-living-district').textContent = formatValue(surveyData.LivingDistrict);
-    document.getElementById('info-remarks').textContent = formatValue(surveyData.Remarks || surveyData.Skills);
-    document.getElementById('info-job-function').textContent = formatValue(surveyData.JobFunction);
-    document.getElementById('info-experience-level').textContent = formatValue(surveyData.ExperienceLevel);
-    document.getElementById('info-salary-range').textContent = formatValue(surveyData.SalaryRange);
+    // Display survey answers
+    const infoFields = {
+        'info-name': surveyData.Name,
+        'info-email': surveyData.Email,
+        'info-age-range': surveyData.AgeRange,
+        'info-education': surveyData.Education,
+        'info-phone': surveyData.Phone,
+        'info-availability': surveyData.Availability,
+        'info-living-district': surveyData.LivingDistrict,
+        'info-remarks': surveyData.Remarks || surveyData.Skills,
+        'info-job-function': surveyData.JobFunction,
+        'info-experience-level': surveyData.ExperienceLevel,
+        'info-salary-range': surveyData.SalaryRange
+    };
     
-    // Display job matches (remaining items from the response array)
+    Object.entries(infoFields).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = formatValue(value);
+    });
+    
+    // Display job matches
     const jobs = jobMatches || [];
-    document.getElementById('results-count').textContent = jobs.length;
+    const countElement = document.getElementById('results-count');
+    if (countElement) countElement.textContent = jobs.length;
     
     displayJobMatches(jobs);
 }
@@ -272,7 +245,8 @@ function displayCandidateData(surveyData, jobMatches) {
 function displayJobMatches(jobs) {
     displayJobs(jobs, {
         listElementId: 'jobs-list',
-        noResultsMessage: 'No job matches found for this candidate.',
+        countElementId: 'results-count',
+        noResultsMessage: window.i18n ? window.i18n.t('results.noMatchesProfile') : 'No job matches found for this candidate.',
         propertyNames: {
             score: 'Score',
             jobTitle: 'JobTitle',
@@ -281,6 +255,109 @@ function displayJobMatches(jobs) {
             reason: 'Reason'
         }
     });
+    
+    // Update profile subtitle with translated text and count
+    updateProfileSubtitle(jobs.length);
+}
+
+// Update profile subtitle with translated text
+function updateProfileSubtitle(count) {
+    const subtitleElement = document.querySelector('.results-subtitle');
+    if (subtitleElement && window.i18n) {
+        const translatedText = window.i18n.t('profile.foundMatches', { count: count });
+        subtitleElement.innerHTML = translatedText.replace('{count}', `<span id="results-count">${count}</span>`);
+    }
+}
+
+// Helper Functions
+
+// Clear all error states
+function clearErrors() {
+    if (!errorDiv) return;
+    
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
+    completionCodeInput?.classList.remove('required-error');
+    accessCodeInput?.classList.remove('required-error');
+}
+
+// Validate required fields
+function validateRequiredFields(completionCode, accessCode) {
+    const errors = [];
+    
+    if (!completionCode || completionCode.length === 0) {
+        completionCodeInput?.classList.add('required-error');
+        errors.push(completionCodeInput);
+    }
+    
+    if (!accessCode || accessCode.length === 0) {
+        accessCodeInput?.classList.add('required-error');
+        errors.push(accessCodeInput);
+    }
+    
+    if (errors.length > 0) {
+        showError(getTranslatedError('REQUIRED_FIELDS'));
+        errors[0]?.focus();
+        return false;
+    }
+    
+    return true;
+}
+
+// Validate completion code format
+function validateCompletionCodeFormat(completionCode) {
+    if (completionCode.length !== COMPLETION_CODE_LENGTH || !COMPLETION_CODE_PATTERN.test(completionCode)) {
+        completionCodeInput?.classList.add('required-error');
+        showError(getTranslatedError('INVALID_FORMAT'));
+        completionCodeInput?.focus();
+        return false;
+    }
+    return true;
+}
+
+// Handle login errors
+function handleLoginError(error) {
+    if (!errorDiv) return;
+    
+    if (error.message === 'INCORRECT_CODES') {
+        showError(getTranslatedError('INCORRECT_CODES'));
+        completionCodeInput?.classList.add('required-error');
+        accessCodeInput?.classList.add('required-error');
+        accessCodeInput?.focus();
+    } else if (error.message === 'NO_SURVEY_DATA') {
+        showError(getTranslatedError('NO_SURVEY_DATA'));
+        completionCodeInput?.classList.add('required-error');
+        completionCodeInput?.focus();
+    } else {
+        showError(getTranslatedError('LOAD_ERROR'));
+    }
+}
+
+// Show error message
+function showError(message) {
+    if (!errorDiv) return;
+    
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+}
+
+// Parse API response body (using shared function from script.js)
+function parseResponseBody(data) {
+    const result = parseApiResponse(data, {
+        dataPath: ['body.survey', 'body.matches', 'survey', 'matches'],
+        bodyPath: 'body'
+    });
+    
+    if (result.parsedData.body) {
+        return result.parsedData.body;
+    }
+    
+    if (result.parsedData.survey || result.parsedData.matches) {
+        return result.parsedData;
+    }
+    
+    console.error('Unexpected response structure:', data);
+    throw new Error('Unexpected response format: missing body or survey/matches');
 }
 
 // Show specific view (using shared function from script.js)

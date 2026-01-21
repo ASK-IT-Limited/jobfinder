@@ -1,8 +1,20 @@
 // Configuration
 const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f27dec901814802b7ab56f193b31790/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n3JBo3Jl9GCO4p3jhknnqM721MTm8DGhMxCqEzRfDo0';
 
+// Constants
+const STORAGE_KEY = 'jobFinderFormData';
+const MAX_JOB_FUNCTIONS = 3;
+const SCROLL_DELAY = 100;
+const JOB_FUNCTION_HELPER_TEXT = 'Select up to 3 job categories.';
+const JOB_FUNCTION_ERROR_TEXT = `Select at most ${MAX_JOB_FUNCTIONS} job categories.`;
+
+// Helper function to get translated text
+function getTranslatedText(key, defaultValue) {
+    return window.i18n ? window.i18n.t(key) : defaultValue;
+}
+
 // State management
-let formData = {
+const initialFormData = {
     experienceLevel: '',
     salaryRange: '',
     jobFunction: [],
@@ -15,6 +27,8 @@ let formData = {
     availability: '',
     livingDistrict: ''
 };
+
+let formData = { ...initialFormData };
 
 // View management
 let views = {};
@@ -43,20 +57,12 @@ function initializeEventListeners() {
     form.addEventListener('submit', handleFormSubmit);
 
     // Clear form buttons - consolidate handlers
-    const clearSessionButtons = [
-        'clear-form',
-        'clear-session-review',
-        'clear-session-loading',
-        'clear-session-results'
-    ];
-    
-    clearSessionButtons.forEach(buttonId => {
+    ['clear-form', 'clear-session-review', 'clear-session-loading', 'clear-session-results'].forEach(buttonId => {
         const button = document.getElementById(buttonId);
         if (button) {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 clearForm();
-                // Show form view for session clear buttons (not the main clear-form button)
                 if (buttonId !== 'clear-form') {
                     showView('form');
                 }
@@ -78,7 +84,7 @@ function initializeEventListeners() {
     });
 
     document.getElementById('find-jobs').addEventListener('click', () => {
-        submitJobSearch();
+        withRateLimit(RATE_LIMIT_KEYS.FIND_JOB_MATCHES, submitJobSearch);
     });
 
     // Edit individual fields
@@ -93,7 +99,7 @@ function initializeEventListeners() {
                     fieldElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     fieldElement.focus();
                 }
-            }, 100);
+            }, SCROLL_DELAY);
         });
     });
 
@@ -103,19 +109,29 @@ function initializeEventListeners() {
     // Helper function to validate email and update error state
     const validateEmailInput = (input) => {
         if (input.type === 'email' && input.value.trim()) {
-            const isValid = isValidEmail(input.value.trim());
-            input.classList.toggle('required-error', !isValid);
+            input.classList.toggle('required-error', !isValidEmail(input.value.trim()));
         } else {
-            // Remove error state when user starts typing/selecting
             input.classList.remove('required-error');
         }
     };
     
+    // Helper function to validate job function selection count
+    const validateJobFunction = (select) => {
+        if (select.id === 'job-function' && select.hasAttribute('multiple')) {
+            const selectedCount = Array.from(select.selectedOptions)
+                .filter(option => option.value !== '').length;
+            setJobFunctionError(select, selectedCount > MAX_JOB_FUNCTIONS);
+        }
+    };
+    
     formInputs.forEach(input => {
-        input.addEventListener('change', () => {
+        const handleChange = () => {
             saveFormData();
             validateEmailInput(input);
-        });
+            validateJobFunction(input);
+        };
+        
+        input.addEventListener('change', handleChange);
         input.addEventListener('input', () => {
             saveFormData();
             validateEmailInput(input);
@@ -151,12 +167,6 @@ function handleFormSubmit(e) {
     return false;
 }
 
-// Validate email format
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
 // Validate form
 function validateForm() {
     let isValid = true;
@@ -187,14 +197,13 @@ function validateForm() {
                 isEmpty = selectedNonEmpty.length === 0;
                 
                 // Special validation for job function: max 3 items
-                if (field.id === 'job-function' && selectedNonEmpty.length > 3) {
-                    isInvalidFormat = true; // Mark as invalid to prevent class removal
-                    isValid = false;
-                    // Show error message
-                    const helperText = field.parentElement.querySelector('.form-helper');
-                    if (helperText) {
-                        helperText.textContent = 'Please select at most 3 job functions.';
-                        helperText.style.color = 'var(--error-red)';
+                if (field.id === 'job-function') {
+                    if (selectedNonEmpty.length > MAX_JOB_FUNCTIONS) {
+                        isInvalidFormat = true;
+                        isValid = false;
+                        setJobFunctionError(field, true);
+                    } else {
+                        setJobFunctionError(field, false);
                     }
                 }
             } else {
@@ -215,12 +224,36 @@ function validateForm() {
     return isValid;
 }
 
+// Helper function to set/clear job function error state and helper text
+function setJobFunctionError(select, hasError) {
+    if (hasError) {
+        select.classList.add('required-error');
+        const helperText = select.parentElement.querySelector('.form-helper');
+        if (helperText) {
+            helperText.textContent = getTranslatedText('error.jobFunctionLimit', JOB_FUNCTION_ERROR_TEXT);
+            helperText.style.color = 'var(--error-red)';
+        }
+    } else {
+        select.classList.remove('required-error');
+        const helperText = select.parentElement.querySelector('.form-helper');
+        if (helperText && helperText.style.color === 'var(--error-red)') {
+            helperText.textContent = getTranslatedText('form.jobFunctionHelper', JOB_FUNCTION_HELPER_TEXT);
+            helperText.style.color = '';
+        }
+    }
+}
+
 // Clear validation errors
 function clearValidationErrors() {
     const form = document.getElementById('job-form');
     const errorFields = form.querySelectorAll('.required-error');
     errorFields.forEach(field => {
         field.classList.remove('required-error');
+        
+        // Reset helper text for job-function field if it was showing an error
+        if (field.id === 'job-function') {
+            setJobFunctionError(field, false);
+        }
     });
 }
 
@@ -230,12 +263,9 @@ function collectSelectFieldValue(form, selector) {
     if (!selectElement) return '';
     
     if (selectElement.hasAttribute('multiple')) {
-        // Handle multi-select: return array of selected values
         return Array.from(selectElement.selectedOptions).map(option => option.value);
-    } else {
-        // Handle single-select: return single value
-        return selectElement.value.trim() || '';
     }
+    return selectElement.value.trim() || '';
 }
 
 // Collect form data
@@ -260,19 +290,19 @@ function collectFormData() {
 // Save form data to localStorage
 function saveFormData() {
     collectFormData();
-    localStorage.setItem('jobFinderFormData', JSON.stringify(formData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
 }
 
 // Load form data from localStorage
 function loadFormData() {
-    const saved = localStorage.getItem('jobFinderFormData');
-    if (saved) {
-        try {
-            formData = JSON.parse(saved);
-            populateForm();
-        } catch (e) {
-            console.error('Error loading form data:', e);
-        }
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    
+    try {
+        formData = JSON.parse(saved);
+        populateForm();
+    } catch (e) {
+        console.error('Error loading form data:', e);
     }
 }
 
@@ -285,28 +315,20 @@ function populateSelectField(form, selector, fieldName) {
     if (!fieldValue) return;
     
     if (selectElement.hasAttribute('multiple')) {
-        // Handle multi-select: clear previous selections
         Array.from(selectElement.options).forEach(option => {
             option.selected = false;
         });
-        // Set selected options
         if (Array.isArray(fieldValue) && fieldValue.length > 0) {
             fieldValue.forEach(value => {
                 const option = selectElement.querySelector(`option[value="${value}"]`);
-                if (option) {
-                    option.selected = true;
-                }
+                if (option) option.selected = true;
             });
         }
     } else {
-        // Handle single-select: backward compatibility for array values
         const singleValue = Array.isArray(fieldValue) ? fieldValue[0] : fieldValue;
-        if (singleValue) {
-            selectElement.value = singleValue;
-        }
+        if (singleValue) selectElement.value = singleValue;
     }
     
-    // Update color styling using existing function
     updateSelectColor(selectElement);
 }
 
@@ -318,54 +340,36 @@ function populateForm() {
     populateSelectField(form, '#job-function', 'jobFunction');
     
     // Populate text/input fields
-    const textFields = [
+    [
         { id: 'remarks', name: 'remarks' },
         { id: 'name', name: 'name' },
         { id: 'email', name: 'email' },
         { id: 'phone', name: 'phone' }
-    ];
-    
-    textFields.forEach(({ id, name }) => {
+    ].forEach(({ id, name }) => {
         const element = form.querySelector(`#${id}`);
         if (element && formData[name]) {
             element.value = formData[name];
         }
     });
     
-    // Populate single-select fields (populateSelectField handles color styling)
-    const selectFields = [
+    // Populate single-select fields
+    [
         { selector: '#age-range', name: 'ageRange' },
         { selector: '#education', name: 'education' },
         { selector: '#experience-level', name: 'experienceLevel' },
         { selector: '#salary-range', name: 'salaryRange' },
         { selector: '#availability', name: 'availability' },
         { selector: '#living-district', name: 'livingDistrict' }
-    ];
-    
-    selectFields.forEach(({ selector, name }) => {
+    ].forEach(({ selector, name }) => {
         populateSelectField(form, selector, name);
     });
 }
 
-// Populate review page
+// Populate review page (using shared formatSelectValue function from script.js)
 function populateReviewPage() {
-    const formatSelectValue = (value, selectId) => {
-        if (!value || value === '') return '—';
-        
-        // Handle backward compatibility with old array format
-        const singleValue = Array.isArray(value) ? value[0] : value;
-        if (!singleValue) return '—';
-        
-        const select = document.querySelector(`#${selectId}`);
-        if (!select) return singleValue;
-        
-        const option = select.querySelector(`option[value="${singleValue}"]`);
-        return option ? option.textContent : singleValue;
-    };
-
     document.getElementById('review-experience-level').textContent = formatSelectValue(formData.experienceLevel, 'experience-level');
     document.getElementById('review-salary-range').textContent = formatSelectValue(formData.salaryRange, 'salary-range');
-    document.getElementById('review-job-function').textContent = formatValue(formData.jobFunction);
+    document.getElementById('review-job-function').textContent = formatSelectValue(formData.jobFunction, 'job-function');
     document.getElementById('review-remarks').textContent = formatValue(formData.remarks);
     document.getElementById('review-name').textContent = formatValue(formData.name);
     document.getElementById('review-email').textContent = formatValue(formData.email);
@@ -417,11 +421,9 @@ async function submitJobSearch() {
     // Collect latest form data
     collectFormData();
     
-    // Show loading view
     showLoading();
     
-    // Prepare request body
-    // Convert single values to arrays for API compatibility (API expects arrays)
+    // Prepare request body - convert single values to arrays for API compatibility
     const getArrayValue = (value) => {
         if (Array.isArray(value)) {
             return value.length > 0 ? value : ['Any'];
@@ -440,8 +442,15 @@ async function submitJobSearch() {
         experienceLevel: formData.experienceLevel || '',
         remarks: formData.remarks || '',
         jobFunction: getArrayValue(formData.jobFunction),
-        salaryRange: formData.salaryRange || ''
+        salaryRange: formData.salaryRange || '',
+        lang: window.i18n ? window.i18n.currentLang() : 'en'
     };
+    
+    await submitJobSearchRequest(requestBody);
+}
+
+// Submit job search request to API
+async function submitJobSearchRequest(requestBody) {
     
     try {
         const response = await fetch(API_URL, {
@@ -452,48 +461,47 @@ async function submitJobSearch() {
             body: JSON.stringify(requestBody)
         });
         
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Job search submitted successfully:', result);
-            
-            // Extract jobs from response - check multiple possible structures
-            let jobs = [];
-            if (result.data && Array.isArray(result.data)) {
-                // Response has data at top level
-                jobs = result.data;
-            } else if (result.body && result.body.data && Array.isArray(result.body.data)) {
-                // Response has data nested in body
-                jobs = result.body.data;
-            } else {
-                console.error('Unexpected response format:', result);
-                showView('form');
-                alert('No jobs found. Please try adjusting your search criteria.');
-                return;
-            }
-            
-            // Extract completion code - check multiple possible structures
-            if (result.completionCode) {
-                // Completion code at top level
-                completionCode = result.completionCode;
-            } else if (result.body && result.body.completionCode) {
-                // Completion code nested in body
-                completionCode = result.body.completionCode;
-            }
-            
-            // Always display results view, even if there are 0 matches
-            jobResults = jobs;
-            displayJobResults(jobs);
-            showView('results');
-        } else {
-            console.error('Error submitting job search:', response.status, response.statusText);
-            showView('form');
-            alert('Error submitting your job search. Please try again.');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        console.log('Job search submitted successfully:', result);
+        
+        const { jobs, completionCode: code } = parseJobSearchResponse(result);
+        
+        if (jobs === null) {
+            showView('form');
+            alert(getTranslatedText('error.noJobs', 'No jobs found. Please try adjusting your search criteria.'));
+            return;
+        }
+        
+        completionCode = code || '';
+        jobResults = jobs;
+        displayJobResults(jobs);
+        showView('results');
     } catch (error) {
-        console.error('Network error submitting job search:', error);
+        console.error('Error submitting job search:', error);
         showView('form');
-        alert('Network error. Please check your connection and try again.');
+        const errorKey = error.message.includes('HTTP error') ? 'error.submitError' : 'error.networkError';
+        const defaultMsg = error.message.includes('HTTP error') 
+            ? 'Error submitting your job search. Please try again.'
+            : 'Network error. Please check your connection and try again.';
+        alert(getTranslatedText(errorKey, defaultMsg));
     }
+}
+
+// Parse job search API response (using shared function from script.js)
+function parseJobSearchResponse(result) {
+    const parsed = parseApiResponse(result, {
+        dataPath: ['data', 'body.data'],
+        codePath: ['completionCode', 'body.completionCode']
+    });
+    
+    return { 
+        jobs: parsed.data, 
+        completionCode: parsed.completionCode 
+    };
 }
 
 // Display job results (using shared function from script.js)
@@ -503,7 +511,7 @@ function displayJobResults(jobs) {
         countElementId: 'results-count',
         completionCodeElementId: 'completion-code',
         completionCode: completionCode,
-        noResultsMessage: 'No job matches found. Please try adjusting your search criteria.',
+        noResultsMessage: getTranslatedText('results.noMatches', 'No job matches found. Please try adjusting your search criteria.'),
         propertyNames: {
             score: 'score',
             jobTitle: 'jobTitle',
@@ -512,44 +520,37 @@ function displayJobResults(jobs) {
             reason: 'reason'
         }
     });
+    
+    // Update results subtitle with translated text and count
+    updateResultsSubtitle(jobs.length);
+}
+
+// Update results subtitle with translated text
+function updateResultsSubtitle(count) {
+    const subtitleElement = document.querySelector('.results-subtitle');
+    if (subtitleElement && window.i18n) {
+        const translatedText = window.i18n.t('results.subtitle', { count: count });
+        subtitleElement.innerHTML = translatedText.replace('{count}', `<span id="results-count">${count}</span>`);
+    }
 }
 
 // Update progress indicator
 function updateProgress(step) {
-    const steps = document.querySelectorAll('.progress-step');
-    steps.forEach((stepEl, index) => {
-        if (index + 1 <= step) {
-            stepEl.classList.add('active');
-        } else {
-            stepEl.classList.remove('active');
-        }
+    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
+        stepEl.classList.toggle('active', index + 1 <= step);
     });
 }
 
 // Clear form
 function clearForm() {
-    formData = {
-        experienceLevel: '',
-        salaryRange: '',
-        jobFunction: [],
-        remarks: '',
-        name: '',
-        email: '',
-        ageRange: '',
-        education: '',
-        phone: '',
-        availability: '',
-        livingDistrict: ''
-    };
+    formData = { ...initialFormData };
     
     const form = document.getElementById('job-form');
     form.reset();
     
-    // Reset select styling to placeholder using existing function
-    const selects = form.querySelectorAll('.form-select');
-    selects.forEach(select => {
+    // Reset select styling
+    form.querySelectorAll('.form-select').forEach(select => {
         if (select.hasAttribute('multiple')) {
-            // For multiple selects, deselect all
             Array.from(select.options).forEach(option => {
                 option.selected = false;
             });
@@ -559,31 +560,28 @@ function clearForm() {
         updateSelectColor(select);
     });
     
-    localStorage.removeItem('jobFinderFormData');
+    localStorage.removeItem(STORAGE_KEY);
     updateProgress(1);
 }
 
 // Get field element by name
 function getFieldElement(fieldName) {
     const fieldMap = {
-        'experienceLevel': '#experience-level',
-        'salaryRange': '#salary-range',
-        'jobFunction': '#job-function',
-        'remarks': '#remarks',
-        'name': '#name',
-        'email': '#email',
-        'ageRange': '#age-range',
-        'education': '#education',
-        'phone': '#phone',
-        'availability': '#availability',
-        'livingDistrict': '#living-district'
+        experienceLevel: '#experience-level',
+        salaryRange: '#salary-range',
+        jobFunction: '#job-function',
+        remarks: '#remarks',
+        name: '#name',
+        email: '#email',
+        ageRange: '#age-range',
+        education: '#education',
+        phone: '#phone',
+        availability: '#availability',
+        livingDistrict: '#living-district'
     };
     
     const selector = fieldMap[fieldName];
-    if (selector) {
-        return document.querySelector(selector);
-    }
-    return null;
+    return selector ? document.querySelector(selector) : null;
 }
 
 // Initialize selects to handle placeholder behavior
@@ -602,7 +600,7 @@ function initializeSelects() {
 
 // Update select color based on whether it has a value
 function updateSelectColor(select) {
-    let hasValue = false;
+    let hasValue;
     
     if (select.hasAttribute('multiple')) {
         hasValue = select.selectedOptions.length > 0 && 
