@@ -195,7 +195,7 @@ const TRANSLATIONS = {
     },
     zh: {
         // Logo
-        'logo.text': '搵工易',
+        'logo.text': '搵工啦',
         'logo.version': 'v3.5',
         
         // Header & Navigation
@@ -205,11 +205,11 @@ const TRANSLATIONS = {
         'nav.contactUs': '聯絡我們',
         
         // Main Page
-        'hero.title': '想搵一份啱自己嘅工？',
+        'hero.title': '想搵一份合適嘅工作？',
         'hero.subtitle': '回答以下幾個簡單嘅問題，我哋會為你配對合適嘅工作機會。',
         'step.quickSurvey': '填寫問卷',
-        'step.reviewAnswers': '檢閱答案',
-        'step.reviewMatches': '檢閱配對結果',
+        'step.reviewAnswers': '確認回答',
+        'step.reviewMatches': '查看配對結果',
         
         // Form Labels
         'form.information': '個人資料',
@@ -239,7 +239,7 @@ const TRANSLATIONS = {
         'form.salaryHelper': '請選擇您的每月稅前薪金期望。',
         
         // Dropdown Options - Age
-        'option.age.default': '選擇年齡範圍',
+        'option.age.default': '選擇年齡組別',
         'option.age.18-24': '18 - 24',
         'option.age.25-34': '25 - 34',
         'option.age.35-44': '35 - 44',
@@ -330,7 +330,7 @@ const TRANSLATIONS = {
         'form.newSearch': '重新搜尋',
         
         // Review Page
-        'review.title': '您的答案',
+        'review.title': '您的回答',
         'review.category.information': '個人資料',
         'review.category.preferences': '職位偏好',
         
@@ -355,7 +355,7 @@ const TRANSLATIONS = {
         'profile.accessCode': '存取代碼',
         'profile.completionCodePlaceholder': '例如：A1B2C',
         'profile.accessCodePlaceholder': '請輸入存取代碼',
-        'profile.viewProfile': '查看個人資料',
+        'profile.viewProfile': '查看配對結果',
         'profile.jobMatches': '職位配對',
         'profile.foundMatches': '找到 {count} 個配對職位',
         
