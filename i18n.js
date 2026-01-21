@@ -142,6 +142,7 @@ const TRANSLATIONS = {
         'review.title': 'Your Answers',
         'review.category.information': 'Information',
         'review.category.preferences': 'Preferences',
+        'review.consent': 'By clicking next, you consent ASK IT to use your data for job matching. If you do not agree, do not proceed.',
         
         // Loading
         'loading.finding': 'Finding tailored roles for you...',
@@ -333,6 +334,7 @@ const TRANSLATIONS = {
         'review.title': '您的回答',
         'review.category.information': '個人資料',
         'review.category.preferences': '職位偏好',
+        'review.consent': '點擊下一步即表示您同意 ASK IT 使用您的資料進行職位配對。如不同意，請勿繼續。',
         
         // Loading
         'loading.finding': '正在為您配對合適的職位...',
