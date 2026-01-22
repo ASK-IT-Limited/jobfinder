@@ -248,7 +248,6 @@ function displayJobMatches(jobs) {
         countElementId: 'results-count',
         noResultsMessage: window.i18n ? window.i18n.t('results.noMatchesProfile') : 'No job matches found for this candidate.',
         propertyNames: {
-            score: 'Score',
             jobTitle: 'JobTitle',
             jobID: 'JobID',
             jobDesc: 'JobDesc',

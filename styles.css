@@ -754,15 +754,6 @@ body {
     margin: 0;
 }
 
-.job-score {
-    background-color: var(--primary-navy);
-    color: var(--white);
-    padding: 6px 12px;
-    border-radius: var(--border-radius);
-    font-size: 14px;
-    font-weight: 600;
-}
-
 .job-description {
     font-size: 15px;
     color: var(--gray-dark);

@@ -490,7 +490,6 @@ function displayJobs(jobs, options) {
         completionCode,
         noResultsMessage = 'No matching jobs found.',
         propertyNames = {
-            score: 'score',
             jobTitle: 'jobTitle',
             jobID: 'jobID',
             jobDesc: 'jobDesc',
@@ -533,20 +532,11 @@ function displayJobs(jobs, options) {
         return;
     }
     
-    // Sort by score (highest first) - handle both camelCase and PascalCase property names
-    const scoreProp = propertyNames.score;
-    const sortedJobs = [...jobs].sort((a, b) => {
-        const scoreA = a[scoreProp] || a.Score || a.score || 0;
-        const scoreB = b[scoreProp] || b.Score || b.score || 0;
-        return scoreB - scoreA;
-    });
-    
-    sortedJobs.forEach((job) => {
+    jobs.forEach((job) => {
         const jobCard = document.createElement('div');
         jobCard.className = 'job-card';
         
         // Handle both camelCase and PascalCase property names
-        const jobScore = job[propertyNames.score] || job.Score || job.score || 0;
         const jobTitle = job[propertyNames.jobTitle] || job.JobTitle || job.jobTitle || null;
         const jobID = job[propertyNames.jobID] || job.JobID || job.jobID || null;
         const jobDesc = job[propertyNames.jobDesc] || job.JobDesc || job.jobDesc || null;

@@ -513,7 +513,6 @@ function displayJobResults(jobs) {
         completionCode: completionCode,
         noResultsMessage: getTranslatedText('results.noMatches', 'No job matches found. Please try adjusting your search criteria.'),
         propertyNames: {
-            score: 'score',
             jobTitle: 'jobTitle',
             jobID: 'jobID',
             jobDesc: 'jobDesc',
