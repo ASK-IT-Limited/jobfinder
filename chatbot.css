@@ -17,6 +17,7 @@
 .iframe-wrapper {
     overflow: hidden;
     position: relative;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
 }
 
 /* Overlay to block pointer events in clipped top area (65px) */
@@ -45,4 +46,10 @@ iframe {
     top: -50px; /* Shift up to account for clipping */
     clip-path: inset(65px 0 20px 7px); /* Clip: top 65px, bottom 20px, left 7px */
     filter: brightness(0.99) contrast(0.99);
+    transition: opacity 0.3s ease;
+}
+
+/* Loading state for iframe */
+iframe:not([src]) {
+    opacity: 0.5;
 }
