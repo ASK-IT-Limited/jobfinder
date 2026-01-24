@@ -393,6 +393,9 @@ const TRANSLATIONS = {
 // Current language (default: English)
 let currentLang = localStorage.getItem('preferredLanguage') || 'en';
 
+// Apply early language hint and preload class to prevent flash
+document.documentElement.lang = currentLang;
+
 // Get translation for a key
 function t(key, params = {}) {
     const translation = TRANSLATIONS[currentLang]?.[key] || TRANSLATIONS.en[key] || key;
@@ -421,6 +424,9 @@ function setLanguage(lang) {
     
     // Update language switcher active state
     updateLanguageSwitcher();
+
+    // Reveal page after translation completes
+    document.documentElement.classList.remove('i18n-preload');
 }
 
 // Translate the entire page

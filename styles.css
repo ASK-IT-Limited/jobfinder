@@ -8,6 +8,10 @@
     box-sizing: border-box;
 }
 
+html.i18n-preload body {
+    visibility: hidden;
+}
+
 :root {
     /* Refined Professional Color Palette */
     --primary-navy: #1a365d;

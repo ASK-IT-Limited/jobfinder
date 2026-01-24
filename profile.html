@@ -6,6 +6,13 @@
     <title>Job Compass - AI-Powered Job Matches</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script>
+        (function () {
+            var lang = localStorage.getItem('preferredLanguage') || 'en';
+            document.documentElement.lang = lang;
+            document.documentElement.classList.add('i18n-preload');
+        })();
+    </script>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="profile.css">
     <style>html { scroll-behavior: smooth; }</style>
