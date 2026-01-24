@@ -188,7 +188,7 @@ body {
 }
 
 .hamburger-btn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(5px, -5px);
+    transform: rotate(-45deg) translate(5px, -4px);
 }
 
 .nav-link {
@@ -1444,7 +1444,8 @@ body {
 
     .nav-links .language-switcher {
         margin-right: 0;
-        width: 100%;
+        width: auto;
+        align-self: center;
         justify-content: center;
         padding: 8px;
     }

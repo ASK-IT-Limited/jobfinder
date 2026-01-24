@@ -18,23 +18,16 @@
     overflow: hidden;
     position: relative;
     background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+    z-index: 1;
 }
 
 /* Overlay to block pointer events in clipped top area (65px) */
-.iframe-overlay-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 65px;
-    z-index: 10;
-    pointer-events: auto;
-    background: transparent;
-}
 
 /* Adjust footer margin to account for iframe positioning */
 .footer {
-    margin-top: -60px !important;
+    margin-top: -68px !important;
+    position: relative;
+    z-index: 5;
 }
 
 /* Iframe styling with clipping and filters */
@@ -43,9 +36,9 @@ iframe {
     height: calc(100vh - 140px); /* Viewport height minus header/footer space */
     border: none;
     position: relative;
-    top: -50px; /* Shift up to account for clipping */
-    clip-path: inset(65px 0 20px 7px); /* Clip: top 65px, bottom 20px, left 7px */
-    filter: brightness(0.99) contrast(0.99);
+    top: -62px; /* Shift up to account for clipping */
+    clip-path: inset(65px 0 0 7px); /* Clip: top 65px, left 7px */
+    filter: brightness(0.98) contrast(0.98)
     transition: opacity 0.3s ease;
 }
 
