@@ -409,8 +409,8 @@ function t(key, params = {}) {
 // Set language and update UI
 function setLanguage(lang) {
     if (!TRANSLATIONS[lang]) {
-        console.warn(`Language "${lang}" not supported`);
-        return;
+        console.warn(`Language "${lang}" not supported, falling back to English`);
+        lang = 'en'; // Fallback to English
     }
     
     currentLang = lang;
@@ -425,7 +425,7 @@ function setLanguage(lang) {
     // Update language switcher active state
     updateLanguageSwitcher();
 
-    // Reveal page after translation completes
+    // Reveal page after translation completes (always remove preload class)
     document.documentElement.classList.remove('i18n-preload');
 }
 
