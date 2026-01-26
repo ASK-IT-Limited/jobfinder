@@ -453,13 +453,7 @@ async function submitJobSearch() {
 async function submitJobSearchRequest(requestBody) {
     
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
+        const response = await apiPostRequest(API_URL, requestBody);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

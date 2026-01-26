@@ -165,15 +165,9 @@ async function handleLogin(e) {
 async function fetchCandidateData(completionCode) {
     const accessCode = accessCodeInput ? accessCodeInput.value : '';
     
-    const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            completionCode,
-            accessCode
-        })
+    const response = await apiPostRequest(API_URL, {
+        completionCode,
+        accessCode
     });
     
     // Check for HTTP errors
