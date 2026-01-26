@@ -1,32 +1,5 @@
 // Shared utility functions
 
-// UUID Storage Key
-const UUID_STORAGE_KEY = 'userUUID';
-
-// Generate a UUID v4
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-// Get or create user UUID (persisted in localStorage)
-function getUserUUID() {
-    let uuid = localStorage.getItem(UUID_STORAGE_KEY);
-    if (!uuid) {
-        uuid = generateUUID();
-        localStorage.setItem(UUID_STORAGE_KEY, uuid);
-    }
-    return uuid;
-}
-
-// Initialize UUID on page load
-(function initializeUUID() {
-    getUserUUID();
-})();
-
 // Format value for display (handles arrays, empty values, etc.)
 function formatValue(value) {
     if (!value || value === '') return '—';
