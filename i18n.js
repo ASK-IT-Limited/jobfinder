@@ -5,7 +5,7 @@ const TRANSLATIONS = {
     en: {
         // Logo
         'logo.text': 'Job Compass',
-        'logo.version': 'v3.5',
+        'logo.version': 'v4.0',
         
         // Header & Navigation
         'nav.yourProfile': 'Your Profile',
@@ -198,7 +198,7 @@ const TRANSLATIONS = {
     zh: {
         // Logo
         'logo.text': '搵工啦',
-        'logo.version': 'v3.5',
+        'logo.version': 'v4.0',
         
         // Header & Navigation
         'nav.yourProfile': '您的配對結果',
