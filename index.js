@@ -2,15 +2,30 @@
 const API_URL = 'https://default53918e53d56f4a4dba205adc87bbc2.3f.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/2f27dec901814802b7ab56f193b31790/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=n3JBo3Jl9GCO4p3jhknnqM721MTm8DGhMxCqEzRfDo0';
 
 // Constants
-const STORAGE_KEY = 'jobFinderFormData';
+const STORAGE_KEY = 'surveyFormData';
 const MAX_JOB_FUNCTIONS = 3;
 const SCROLL_DELAY = 100;
-const JOB_FUNCTION_HELPER_TEXT = 'Select up to 3 job categories.';
-const JOB_FUNCTION_ERROR_TEXT = `Select at most ${MAX_JOB_FUNCTIONS} job categories.`;
+const TEXT_MESSAGES = {
+    JOB_FUNCTION_LIMIT: `Select at most ${MAX_JOB_FUNCTIONS} job categories.`,
+    JOB_FUNCTION_HELPER: 'Select up to 3 job categories.',
+    NO_JOBS: 'No jobs found. Please try adjusting your search criteria.',
+    SUBMIT_ERROR: 'Error submitting your job search. Please try again.',
+    NETWORK_ERROR: 'Network error. Please check your connection and try again.',
+    NO_MATCHES: 'No job matches found. Please try adjusting your search criteria.'
+};
 
 // Helper function to get translated text
-function getTranslatedText(key, defaultValue) {
-    return window.i18n ? window.i18n.t(key) : defaultValue;
+function getTranslatedText(key) {
+    const textKeyMap = {
+        'JOB_FUNCTION_LIMIT': 'error.jobFunctionLimit',
+        'JOB_FUNCTION_HELPER': 'form.jobFunctionHelper',
+        'NO_JOBS': 'error.noJobs',
+        'SUBMIT_ERROR': 'error.submitError',
+        'NETWORK_ERROR': 'error.networkError',
+        'NO_MATCHES': 'results.noMatches'
+    };
+    const i18nKey = textKeyMap[key];
+    return window.i18n && i18nKey ? window.i18n.t(i18nKey) : TEXT_MESSAGES[key];
 }
 
 // State management
@@ -230,14 +245,14 @@ function setJobFunctionError(select, hasError) {
         select.classList.add('required-error');
         const helperText = select.parentElement.querySelector('.form-helper');
         if (helperText) {
-            helperText.textContent = getTranslatedText('error.jobFunctionLimit', JOB_FUNCTION_ERROR_TEXT);
+            helperText.textContent = getTranslatedText('JOB_FUNCTION_LIMIT');
             helperText.style.color = 'var(--error-red)';
         }
     } else {
         select.classList.remove('required-error');
         const helperText = select.parentElement.querySelector('.form-helper');
         if (helperText && helperText.style.color === 'var(--error-red)') {
-            helperText.textContent = getTranslatedText('form.jobFunctionHelper', JOB_FUNCTION_HELPER_TEXT);
+            helperText.textContent = getTranslatedText('JOB_FUNCTION_HELPER');
             helperText.style.color = '';
         }
     }
@@ -466,7 +481,7 @@ async function submitJobSearchRequest(requestBody) {
         
         if (jobs === null) {
             showView('form');
-            alert(getTranslatedText('error.noJobs', 'No jobs found. Please try adjusting your search criteria.'));
+            alert(getTranslatedText('NO_JOBS'));
             return;
         }
         
@@ -477,11 +492,8 @@ async function submitJobSearchRequest(requestBody) {
     } catch (error) {
         console.error('Error submitting job search:', error);
         showView('form');
-        const errorKey = error.message.includes('HTTP error') ? 'error.submitError' : 'error.networkError';
-        const defaultMsg = error.message.includes('HTTP error') 
-            ? 'Error submitting your job search. Please try again.'
-            : 'Network error. Please check your connection and try again.';
-        alert(getTranslatedText(errorKey, defaultMsg));
+        const errorKey = error.message.includes('HTTP error') ? 'SUBMIT_ERROR' : 'NETWORK_ERROR';
+        alert(getTranslatedText(errorKey));
     }
 }
 
@@ -505,7 +517,7 @@ function displayJobResults(jobs) {
         countElementId: 'results-count',
         completionCodeElementId: 'completion-code',
         completionCode: completionCode,
-        noResultsMessage: getTranslatedText('results.noMatches', 'No job matches found. Please try adjusting your search criteria.'),
+        noResultsMessage: getTranslatedText('NO_MATCHES'),
         propertyNames: {
             jobTitle: 'jobTitle',
             jobID: 'jobID',
