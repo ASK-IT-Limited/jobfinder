@@ -10,7 +10,7 @@ const TRANSLATIONS = {
         // Header & Navigation
         'nav.yourProfile': 'Your Profile',
         'nav.findJobs': 'Find Jobs',
-        'nav.ourServices': 'Our Services',
+        'nav.jobOpenings': 'Job Ads',
         'nav.contactUs': 'Contact Us',
         
         // Main Page
@@ -161,7 +161,7 @@ const TRANSLATIONS = {
         
         // Profile Page
         'profile.title': 'Your Profile',
-        'profile.subtitle': 'View your profile and personalised job matches.',
+        'profile.subtitle': 'View your profile and job matches.',
         'profile.completionCode': 'Completion Code',
         'profile.accessCode': 'Access Code',
         'profile.completionCodePlaceholder': 'e.g., A1B2C',
@@ -201,9 +201,9 @@ const TRANSLATIONS = {
         'logo.version': 'v4.0',
         
         // Header & Navigation
-        'nav.yourProfile': '您的配對結果',
-        'nav.findJobs': '尋找工作機會',
-        'nav.ourServices': '我們的服務',
+        'nav.yourProfile': '配對檢索',
+        'nav.findJobs': '求職搵工',
+        'nav.jobOpenings': '職位空缺',
         'nav.contactUs': '聯絡我們',
         
         // Main Page
@@ -345,7 +345,7 @@ const TRANSLATIONS = {
         'loading.noRefresh': '請勿重新整理此頁面',
         
         // Results
-        'results.title': '您的配對結果',
+        'results.title': '配對結果',
         'results.subtitle': '我們為您找到 {count} 個工作機會',
         'results.completionCode': '完成代碼',
         'results.completionCodeInstruction': '請於招聘會攤位向我們的工作人員出示此代碼，以獲取您的職位配對詳細資訊及個人化建議。',
@@ -353,8 +353,8 @@ const TRANSLATIONS = {
         'results.noMatchesProfile': '未能找到此用戶的配對結果。',
         
         // Profile Page
-        'profile.title': '您的配對結果',
-        'profile.subtitle': '查看您的用戶資料及個人化職位配對結果。',
+        'profile.title': '配對檢索',
+        'profile.subtitle': '查看您的用戶資料及職位配對結果。',
         'profile.completionCode': '完成代碼',
         'profile.accessCode': '存取代碼',
         'profile.completionCodePlaceholder': '例如：A1B2C',
