@@ -40,9 +40,15 @@ async function apiRequest(url, options = {}) {
  * @returns {Promise} Fetch response promise
  */
 async function apiPostRequest(url, body, additionalHeaders = {}) {
+    // Include user UUID in request body
+    const bodyWithUUID = {
+        ...body,
+        userUUID: typeof getUserUUID === 'function' ? getUserUUID() : null
+    };
+    
     return apiRequest(url, {
         method: 'POST',
-        body: JSON.stringify(body),
+        body: JSON.stringify(bodyWithUUID),
         headers: additionalHeaders
     });
 }
