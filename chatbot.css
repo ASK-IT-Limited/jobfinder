@@ -25,7 +25,7 @@
 
 /* Adjust footer margin to account for iframe positioning */
 .footer {
-    margin-top: -68px !important;
+    margin-top: -67px !important;
     position: relative;
     z-index: 5;
 }
@@ -33,7 +33,7 @@
 /* Iframe styling with clipping and filters */
 iframe {
     width: 100%;
-    height: calc(100vh - 140px); /* Viewport height minus header/footer space */
+    height: calc(100vh - 120px); /* Viewport height minus header/footer space */
     border: none;
     position: relative;
     top: -62px; /* Shift up to account for clipping */
